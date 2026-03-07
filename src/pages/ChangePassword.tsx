@@ -27,13 +27,7 @@ export default function ChangePassword() {
       const { error: updateError } = await supabase.auth.updateUser({ password });
       if (updateError) throw updateError;
 
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session?.user?.id) {
-        await supabase
-          .from("user_roles")
-          .update({ must_change_password: false })
-          .eq("user_id", session.user.id);
-      }
+      await supabase.rpc("clear_must_change_password");
 
       toast({ title: "Senha alterada com sucesso!" });
       // Force reload to re-evaluate auth state
