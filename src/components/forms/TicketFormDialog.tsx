@@ -240,7 +240,6 @@ export function TicketFormDialog({ open, onOpenChange, ticket, onSave }: Props) 
             <Label>Aberto por</Label>
             <Input value={watch("createdBy")} readOnly disabled className="bg-muted" />
           </div>
-          </div>
 
           {isNewTicket && (
             <div className="flex items-center justify-between rounded-lg border p-3 bg-muted/30">
