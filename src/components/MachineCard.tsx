@@ -85,10 +85,10 @@ export function MachineCard({ machine, onClick }: MachineCardProps) {
     return (
         <>
             <Card
-                className={cn("backdrop-blur-sm hover:border-primary/30 transition-all cursor-pointer group active:scale-[0.99] duration-200 shadow-sm hover:shadow-md rounded-[2px]", statusBgVariant[machine.status])}
+                className={cn("backdrop-blur-sm hover:border-primary/30 transition-all cursor-pointer group active:scale-[0.99] duration-200 shadow-sm hover:shadow-md rounded-[2px] h-full flex flex-col", statusBgVariant[machine.status])}
                 onClick={handleCardClick}
             >
-                <CardContent className="p-4 space-y-3">
+                <CardContent className="p-4 space-y-3 flex-1 flex flex-col">
                     {/* Header: Tag, Status & Action */}
                     <div className="flex justify-between items-start">
                         <div className="flex-1 min-w-0 pr-2">
@@ -137,12 +137,21 @@ export function MachineCard({ machine, onClick }: MachineCardProps) {
 
                     {/* OS Aberta flashing banner */}
                     {hasOpenOS && (
-                        <div className="rounded-md px-3 py-1.5 text-center text-xs font-bold uppercase tracking-wider animate-[blink-red-white_1s_ease-in-out_infinite]">
-                            ⚠ OS Aberta
+                        <div
+                            className="rounded-md px-3 py-1.5 text-center text-xs font-bold uppercase tracking-wider animate-[blink-red-white_1s_ease-in-out_infinite] cursor-pointer hover:opacity-80"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                if (openTicket) {
+                                    navigate(`/tickets?os=${openTicket.id}`);
+                                }
+                            }}
+                        >
+                            ⚠ {openTicket?.code ? `OS-${String(openTicket.code).padStart(4, '0')}` : 'OS Aberta'}
                         </div>
                     )}
+
                     {/* Stats Grid */}
-                    <div className="grid grid-cols-2 gap-2 pt-1">
+                    <div className="grid grid-cols-2 gap-2 pt-1 mt-auto">
                         {/* Checklist */}
                         <div className="rounded-md border border-border bg-muted/30 p-2 space-y-1.5">
                             <div className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wide">
