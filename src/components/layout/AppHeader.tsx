@@ -1,4 +1,5 @@
-import { Menu, Building2, LogOut, User } from "lucide-react";
+import { useState } from "react";
+import { Menu, Building2, LogOut, User, KeyRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -10,6 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/hooks/useAuth";
+import { ChangePasswordDialog } from "@/components/dialogs/ChangePasswordDialog";
 import watLogo from "@/assets/logo.png";
 
 const ROLE_LABELS: Record<string, string> = {
