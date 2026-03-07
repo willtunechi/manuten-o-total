@@ -89,7 +89,8 @@ export default function Tickets() {
               <CardContent className="p-4 flex items-center gap-4">
                 <div className="flex-1 space-y-1">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className="font-mono font-bold">{assetLabel}</span>
+                    <span className="font-mono font-bold">{t.code ? `OS-${String(t.code).padStart(4, '0')}` : assetLabel}</span>
+                    <span className="text-xs text-muted-foreground">({assetLabel})</span>
                     <Badge className={priorityColor[t.priority]}>{PRIORITY_LABELS[t.priority]}</Badge>
                     <Badge variant="outline" className="text-[10px]">{OS_TYPE_LABELS[t.type]}</Badge>
                     {t.type === "corrective" && t.maintenanceType && (
