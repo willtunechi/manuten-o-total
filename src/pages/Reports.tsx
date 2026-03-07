@@ -326,7 +326,7 @@ export default function Reports() {
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             <SummaryCard title="Aderência Preventiva" value={`${preventiveCompliance.percent}%`} subtitle={`${preventiveCompliance.done} em dia / ${preventiveCompliance.overdue} atrasados`} />
             <SummaryCard title="Ordens de Serviço" value={String(workOrderStats.total)} subtitle={`${workOrderStats.open} abertas · ${workOrderStats.completed} concluídas`} />
-            <SummaryCard title="OS Reabertas" value={String(workOrderStats.reopened)} subtitle="no período" />
+            <SummaryCard title="OS Abertas" value={String(workOrderStats.reopened)} subtitle="no período" />
             <SummaryCard title="Total Paradas" value={String(assetStopRecords.filter((r) => new Date(r.stoppedAt) >= windowStart).length)} subtitle="registros no período" />
           </div>
 
