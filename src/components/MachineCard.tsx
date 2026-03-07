@@ -74,6 +74,10 @@ export function MachineCard({ machine, onClick }: MachineCardProps) {
     const correctivePending = machine.correctivePending || 0;
     const lubricationPending = (machine as any).lubricationPending || 0;
 
+    const { workOrders } = useData();
+    const hasOpenOS = (machine.status === 'stopped' || machine.status === 'maintenance') &&
+        workOrders.some((wo) => wo.assetId === machine.id && (wo.status === 'open' || wo.status === 'in_progress'));
+
     return (
         <>
             <Card
