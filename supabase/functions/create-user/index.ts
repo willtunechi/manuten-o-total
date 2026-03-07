@@ -135,16 +135,8 @@ Deno.serve(async (req) => {
         });
       }
 
-      // Bootstrap: only admin role allowed
-      if (isBootstrap && role !== "admin") {
-        return new Response(JSON.stringify({ error: "Bootstrap mode: only admin role allowed" }), {
-          status: 403,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-
       // Supervisors can only create operator/mechanic
-      if (!isBootstrap && isSupervisor && !isAdmin && !SUBORDINATE_ROLES.includes(role)) {
+      if (isSupervisor && !isAdmin && !SUBORDINATE_ROLES.includes(role)) {
         return new Response(JSON.stringify({ error: "Supervisors can only create operator or mechanic users" }), {
           status: 403,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
