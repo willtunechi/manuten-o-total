@@ -57,39 +57,47 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Normal auth check
+    // Normal auth check - service_role key bypasses user auth
     const authHeader = req.headers.get("Authorization");
-    if (!authHeader?.startsWith("Bearer ")) {
+    const apiKey = req.headers.get("apikey") || "";
+    
+    let isAdmin = false;
+    let isSupervisor = false;
+
+    // Service role key check (matches apikey header or bearer token)
+    if (apiKey === serviceRoleKey || (authHeader && authHeader.replace("Bearer ", "") === serviceRoleKey)) {
+      isAdmin = true;
+    } else if (!authHeader?.startsWith("Bearer ")) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
         status: 401,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
-    }
-
-    const callerClient = createClient(supabaseUrl, anonKey, {
-      global: { headers: { Authorization: authHeader } },
-    });
-
-    const { data: { user: callerUser }, error: userError } = await callerClient.auth.getUser();
-    if (userError || !callerUser) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
-        status: 401,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+    } else {
+      const callerClient = createClient(supabaseUrl, anonKey, {
+        global: { headers: { Authorization: authHeader } },
       });
+
+      const { data: { user: callerUser }, error: userError } = await callerClient.auth.getUser();
+      if (userError || !callerUser) {
+        return new Response(JSON.stringify({ error: "Unauthorized" }), {
+          status: 401,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      const callerId = callerUser.id;
+
+      // Check caller role
+      const { data: callerRole } = await adminClient
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", callerId)
+        .maybeSingle();
+
+      const callerRoleValue = callerRole?.role;
+      isAdmin = callerRoleValue === "admin";
+      isSupervisor = SUPERVISOR_ROLES.includes(callerRoleValue);
     }
-
-    const callerId = callerUser.id;
-
-    // Check caller role
-    const { data: callerRole } = await adminClient
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", callerId)
-      .maybeSingle();
-
-    const callerRoleValue = callerRole?.role;
-    const isAdmin = callerRoleValue === "admin";
-    const isSupervisor = SUPERVISOR_ROLES.includes(callerRoleValue);
 
     if (!isAdmin && !isSupervisor) {
       return new Response(JSON.stringify({ error: "Forbidden: insufficient permissions" }), {
