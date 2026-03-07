@@ -224,8 +224,12 @@ export default function Tickets() {
 
               {viewing.photoUrl && (
                 <div>
-                  <span className="text-xs text-muted-foreground">Foto</span>
-                  <img src={viewing.photoUrl} alt="Foto do chamado" className="mt-1 rounded-md border border-border max-h-48 object-contain" />
+                  <span className="text-xs text-muted-foreground">Foto / Vídeo</span>
+                  {/\.(mp4|webm|mov)$/i.test(viewing.photoUrl) ? (
+                    <video src={viewing.photoUrl} controls className="mt-1 rounded-md border border-border max-h-64 w-full object-contain" />
+                  ) : (
+                    <img src={viewing.photoUrl} alt="Anexo do chamado" className="mt-1 rounded-md border border-border max-h-48 object-contain" />
+                  )}
                 </div>
               )}
 
