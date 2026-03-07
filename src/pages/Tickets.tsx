@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -24,11 +24,27 @@ const ticketStatusColor: Record<TicketStatus, string> = {
 };
 
 export default function Tickets() {
-  const { tickets, machines, components, addTicket, updateTicket, removeTicket, stopMachine, stopComponent } = useData();
+  const { tickets, machines, components, mechanics, addTicket, updateTicket, removeTicket, stopMachine, stopComponent } = useData();
+  const { role, session } = useAuth();
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<Ticket | undefined>();
   const [deleting, setDeleting] = useState<Ticket | undefined>();
   const [statusFilter, setStatusFilter] = useState<"pending" | "resolved" | "all">("pending");
+
+  // Resolve current user's name from mechanics table
+  const currentUserName = useMemo(() => {
+    const email = session?.user?.email || "";
+    const mechanic = mechanics.find((m) => m.email === email);
+    return mechanic?.name || email;
+  }, [session, mechanics]);
+
+  const isOperator = role === "operator";
+
+  const canEditTicket = (ticket: Ticket) => {
+    if (!isOperator) return true;
+    const ticketAuthor = ticket.reportedBy || ticket.createdBy || "";
+    return ticketAuthor === currentUserName;
+  };
 
   const filteredTickets = tickets.filter((t) => {
     if (statusFilter === "all") return true;
@@ -67,8 +83,9 @@ export default function Tickets() {
           const machine = machines.find((m) => m.id === t.machineId);
           const component = components.find((c) => c.id === t.machineId);
           const assetLabel = machine?.tag || component?.tag || "Sem vínculo";
+          const editable = canEditTicket(t);
           return (
-            <Card key={t.id} className="bg-card border-border cursor-pointer hover:border-primary/40 transition-colors" onClick={() => { setEditing(t); setFormOpen(true); }}>
+            <Card key={t.id} className={`bg-card border-border transition-colors ${editable ? "cursor-pointer hover:border-primary/40" : "opacity-80"}`} onClick={() => { if (editable) { setEditing(t); setFormOpen(true); } }}>
               <CardContent className="p-4 flex items-center gap-4">
                 <div className="flex-1 space-y-1">
                   <div className="flex items-center gap-2 flex-wrap">
@@ -86,17 +103,19 @@ export default function Tickets() {
                   </div>
                   <p className="text-sm">{t.symptom}</p>
                   <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <span>Por {t.createdBy} · {new Date(t.createdAt).toLocaleDateString("pt-BR")}</span>
+                    <span>Por {t.reportedBy || t.createdBy} · {new Date(t.createdAt).toLocaleDateString("pt-BR")}</span>
                   </div>
                 </div>
-                <div className="flex items-center gap-2 shrink-0">
-                  <Button size="sm" variant="outline" className="gap-1" onClick={(e) => { e.stopPropagation(); setEditing(t); setFormOpen(true); }}>
-                    <Pencil className="h-3.5 w-3.5" />
-                  </Button>
-                  <Button size="sm" variant="outline" className="gap-1 text-destructive hover:text-destructive" onClick={(e) => { e.stopPropagation(); setDeleting(t); }}>
-                    <Trash2 className="h-3.5 w-3.5" />
-                  </Button>
-                </div>
+                {editable && (
+                  <div className="flex items-center gap-2 shrink-0">
+                    <Button size="sm" variant="outline" className="gap-1" onClick={(e) => { e.stopPropagation(); setEditing(t); setFormOpen(true); }}>
+                      <Pencil className="h-3.5 w-3.5" />
+                    </Button>
+                    <Button size="sm" variant="outline" className="gap-1 text-destructive hover:text-destructive" onClick={(e) => { e.stopPropagation(); setDeleting(t); }}>
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </Button>
+                  </div>
+                )}
               </CardContent>
             </Card>
           );
