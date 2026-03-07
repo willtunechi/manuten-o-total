@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -6,6 +6,7 @@ import { Plus, Pencil, Trash2 } from "lucide-react";
 import { PRIORITY_LABELS, OS_TYPE_LABELS, TICKET_STATUS_LABELS } from "@/data/types";
 import type { Priority, TicketStatus, Ticket } from "@/data/types";
 import { useData } from "@/contexts/DataContext";
+import { useAuth } from "@/hooks/useAuth";
 import { TicketFormDialog } from "@/components/forms/TicketFormDialog";
 import { DeleteConfirmDialog } from "@/components/forms/DeleteConfirmDialog";
 
