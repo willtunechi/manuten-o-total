@@ -715,7 +715,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       probable_cause: f.probableCause || f.rootCause || "",
       recommended_action: f.recommendedAction || f.solution || "",
       common_parts: f.commonParts || [],
-      machine_id: f.machineId || "", component_id: f.componentId || "",
+      machine_id: f.machineId || null, component_id: f.componentId || null,
     });
     if (error) { toast({ title: "Erro ao cadastrar falha", description: error.message, variant: "destructive" }); return; }
     await loadFailures();
