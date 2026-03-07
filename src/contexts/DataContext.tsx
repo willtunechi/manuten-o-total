@@ -1051,36 +1051,29 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
 
   // ─── PLAN EXECUTIONS ──────────────────────────────────────
 
-  const startPlanExecution = useCallback((planId: string, machineId?: string): string => {
-    const id = genId("pe");
+  const startPlanExecution = useCallback(async (planId: string, machineId?: string): Promise<string> => {
     const plan = maintenancePlans.find((p) => p.id === planId);
 
-    // Insert execution to DB (fire and forget, reload picks it up)
-    supabase.from("plan_executions").insert({
+    const { data, error } = await supabase.from("plan_executions").insert({
       plan_id: planId, machine_id: machineId || "",
-    }).select().single().then(async ({ data, error }) => {
-      if (error) { console.error("start execution:", error); return; }
-      // Insert initial item results
-      if (plan?.items?.length) {
-        await supabase.from("plan_item_results").insert(plan.items.map((item) => ({
-          execution_id: data.id, item_id: item.id, completed: false,
-        })));
-      }
-      await loadPlanExecutions();
-    });
+    }).select().single();
 
-    // Optimistic local update for immediate UI
-    const execution: PlanExecution = {
-      id, planId, machineId, startedAt: new Date().toISOString(),
-      status: 'in_progress', machineStops: [],
-      itemResults: plan ? plan.items.map((item) => ({
-        itemId: item.id, completed: false, comment: "", photoUrl: "", partsUsed: [],
-      })) : [],
-    };
-    setPlanExecutions((prev) => [...prev, execution]);
+    if (error || !data) {
+      console.error("start execution:", error);
+      toast({ title: "Erro ao iniciar execução", variant: "destructive" });
+      return "";
+    }
+
+    // Insert initial item results
+    if (plan?.items?.length) {
+      await supabase.from("plan_item_results").insert(plan.items.map((item) => ({
+        execution_id: data.id, item_id: item.id, completed: false,
+      })));
+    }
+
     toast({ title: "Execução iniciada" });
-    return id;
-  }, [maintenancePlans, loadPlanExecutions]);
+    return data.id;
+  }, [maintenancePlans]);
 
   const updatePlanItemResult = useCallback(async (executionId: string, itemResult: PlanItemResult) => {
     // Optimistic local update
