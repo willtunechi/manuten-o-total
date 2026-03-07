@@ -54,12 +54,23 @@ Deno.serve(async (req) => {
     const isAdmin = callerRoleValue === "admin";
     const isSupervisor = SUPERVISOR_ROLES.includes(callerRoleValue);
 
-    if (!isAdmin && !isSupervisor) {
+    // Bootstrap mode: if no admin exists at all, allow first admin creation
+    const { data: anyAdmin } = await adminClient
+      .from("user_roles")
+      .select("id")
+      .eq("role", "admin")
+      .limit(1);
+    const noAdminExists = !anyAdmin || anyAdmin.length === 0;
+
+    if (!isAdmin && !isSupervisor && !noAdminExists) {
       return new Response(JSON.stringify({ error: "Forbidden: insufficient permissions" }), {
         status: 403,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+
+    // In bootstrap mode, only allow creating admin role
+    const isBootstrap = noAdminExists && !isAdmin && !isSupervisor;
 
     const body = await req.json();
     const { action } = body;
