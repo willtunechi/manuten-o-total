@@ -75,9 +75,9 @@ interface DataContextType {
   addMaintenancePlan: (p: Omit<MaintenancePlan, "id">) => void;
   updateMaintenancePlan: (id: string, p: Partial<MaintenancePlan>) => void;
   removeMaintenancePlan: (id: string) => void;
-  startPlanExecution: (planId: string, machineId?: string) => string;
-  updatePlanItemResult: (executionId: string, itemResult: PlanItemResult) => void;
-  completePlanExecution: (executionId: string) => void;
+  startPlanExecution: (planId: string, machineId?: string) => Promise<string>;
+  updatePlanItemResult: (executionId: string, itemResult: PlanItemResult) => Promise<void>;
+  completePlanExecution: (executionId: string) => Promise<void>;
   stopMachineForExecution: (executionId: string) => void;
   resumeMachineForExecution: (executionId: string) => void;
   addWorkOrder: (w: {
