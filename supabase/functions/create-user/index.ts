@@ -66,7 +66,7 @@ Deno.serve(async (req) => {
       });
     }
 
-    const token = authHeader.replace("Bearer ", "");
+    const token = authHeader ? authHeader.replace("Bearer ", "") : "";
     let isAdmin = false;
     let isSupervisor = false;
 
