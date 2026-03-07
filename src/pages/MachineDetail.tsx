@@ -529,7 +529,6 @@ export default function MachineDetail() {
       for (const pu of allPartsUsed) {
         const part = parts.find((p) => p.id === pu.partId);
         if (part) {
-          const { supabase } = await import("@/integrations/supabase/client");
           await supabase.from("parts").update({ quantity: Math.max(0, (part.quantity || 0) - pu.quantity) }).eq("id", pu.partId);
         }
       }
