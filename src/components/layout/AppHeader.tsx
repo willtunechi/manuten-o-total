@@ -1,4 +1,5 @@
-import { Menu, Building2, LogOut, User } from "lucide-react";
+import { useState } from "react";
+import { Menu, Building2, LogOut, User, KeyRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -10,6 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/hooks/useAuth";
+import { ChangePasswordDialog } from "@/components/dialogs/ChangePasswordDialog";
 import watLogo from "@/assets/logo.png";
 
 const ROLE_LABELS: Record<string, string> = {
@@ -23,6 +25,7 @@ interface AppHeaderProps {
 }
 
 export function AppHeader({ onMenuToggle }: AppHeaderProps) {
+  const [changePasswordOpen, setChangePasswordOpen] = useState(false);
   const { session, userRole, signOut } = useAuth();
 
   return (
@@ -57,12 +60,17 @@ export function AppHeader({ onMenuToggle }: AppHeaderProps) {
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={() => setChangePasswordOpen(true)}>
+              <KeyRound className="h-4 w-4 mr-2" />
+              Mudar Senha
+            </DropdownMenuItem>
             <DropdownMenuItem onClick={() => signOut()} className="text-destructive">
               <LogOut className="h-4 w-4 mr-2" />
               Sair
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
+        <ChangePasswordDialog open={changePasswordOpen} onOpenChange={setChangePasswordOpen} />
       </div>
     </header>
   );
