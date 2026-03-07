@@ -996,7 +996,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
 
   const stopMachine = useCallback(async (id: string, reason: StopReason, description: string, maintenanceType?: 'mechanical' | 'electrical') => {
     let newStatus: MachineStatus = 'stopped';
-    if (reason === 'preventive' || reason === 'lubrication' || reason === 'corrective') newStatus = 'maintenance';
+    if (reason === 'preventive' || reason === 'lubrication') newStatus = 'maintenance';
 
     await supabase.from("machines").update({ status: newStatus }).eq("id", id);
     await supabase.from("asset_stop_records").insert({
