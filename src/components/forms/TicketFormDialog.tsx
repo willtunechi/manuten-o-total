@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -9,10 +9,12 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
+import { ImagePlus, X, Loader2 } from "lucide-react";
 import { useData } from "@/contexts/DataContext";
 import { supabase } from "@/integrations/supabase/client";
 import { MACHINE_TYPE_LABELS, PRIORITY_LABELS, OS_TYPE_LABELS } from "@/data/types";
 import type { Ticket, Priority, OSType, MachineType } from "@/data/types";
+import { toast } from "@/hooks/use-toast";
 
 const schema = z
   .object({
@@ -49,6 +51,10 @@ export function TicketFormDialog({ open, onOpenChange, ticket, onSave }: Props) 
     [allComponents, userAssignedComponentIds],
   );
   const [stopMachineOnCreate, setStopMachineOnCreate] = useState(false);
+  const [uploadedUrl, setUploadedUrl] = useState<string>("");
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const {
     register,
     handleSubmit,
@@ -73,6 +79,7 @@ export function TicketFormDialog({ open, onOpenChange, ticket, onSave }: Props) 
   useEffect(() => {
     if (!open) return;
     setStopMachineOnCreate(false);
+    setUploadedUrl(ticket?.photoUrl || "");
 
     const targetMachine = machines.find((m) => m.id === ticket?.machineId);
     const targetComponent = components.find((c) => c.id === ticket?.machineId);
@@ -131,6 +138,43 @@ export function TicketFormDialog({ open, onOpenChange, ticket, onSave }: Props) 
 
   const isNewTicket = !ticket;
 
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'video/mp4', 'video/webm', 'video/quicktime'];
+    if (!allowedTypes.includes(file.type)) {
+      toast({ title: "Formato não suportado", description: "Use imagens (JPG, PNG, WebP) ou vídeos (MP4, WebM)", variant: "destructive" });
+      return;
+    }
+
+    // Validate size (20MB)
+    if (file.size > 20 * 1024 * 1024) {
+      toast({ title: "Arquivo muito grande", description: "Tamanho máximo: 20MB", variant: "destructive" });
+      return;
+    }
+
+    setUploading(true);
+    try {
+      const ext = file.name.split('.').pop() || 'jpg';
+      const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+      const filePath = `tickets/${fileName}`;
+
+      const { error } = await supabase.storage.from('ticket-attachments').upload(filePath, file);
+      if (error) throw error;
+
+      const { data: { publicUrl } } = supabase.storage.from('ticket-attachments').getPublicUrl(filePath);
+      setUploadedUrl(publicUrl);
+      toast({ title: "Arquivo enviado" });
+    } catch (err: any) {
+      toast({ title: "Erro ao enviar", description: err.message, variant: "destructive" });
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  };
+
   const onSubmit = (data: FormData) => {
     onSave({
       code: ticket?.code || 0,
@@ -143,17 +187,20 @@ export function TicketFormDialog({ open, onOpenChange, ticket, onSave }: Props) 
       createdAt: ticket?.createdAt || new Date().toISOString(),
       status: ticket?.status || "pending",
       comment: ticket?.comment || "",
-      photoUrl: ticket?.photoUrl || "",
+      photoUrl: uploadedUrl || "",
       partsUsed: ticket?.partsUsed || [],
       resolvedAt: ticket?.resolvedAt,
     }, isNewTicket ? stopMachineOnCreate : false);
     reset();
+    setUploadedUrl("");
     onOpenChange(false);
   };
 
+  const isVideo = (url: string) => /\.(mp4|webm|mov)$/i.test(url);
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange} modal={false}>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{ticket ? "Editar Chamado" : "Novo Chamado"}</DialogTitle>
         </DialogHeader>
@@ -237,6 +284,51 @@ export function TicketFormDialog({ open, onOpenChange, ticket, onSave }: Props) 
             <Textarea {...register("symptom")} rows={3} placeholder="Descreva o problema observado..." />
             {errors.symptom && <p className="text-xs text-destructive">{errors.symptom.message}</p>}
           </div>
+
+          {/* File Upload */}
+          <div className="space-y-2">
+            <Label>Foto / Vídeo</Label>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*,video/mp4,video/webm,video/quicktime"
+              className="hidden"
+              onChange={handleFileUpload}
+            />
+            {uploadedUrl ? (
+              <div className="relative rounded-md border border-border overflow-hidden bg-muted/30">
+                {isVideo(uploadedUrl) ? (
+                  <video src={uploadedUrl} controls className="w-full max-h-48 object-contain" />
+                ) : (
+                  <img src={uploadedUrl} alt="Anexo" className="w-full max-h-48 object-contain" />
+                )}
+                <Button
+                  type="button"
+                  variant="destructive"
+                  size="sm"
+                  className="absolute top-2 right-2 h-7 w-7 p-0"
+                  onClick={() => setUploadedUrl("")}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+            ) : (
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full h-20 border-dashed gap-2"
+                disabled={uploading}
+                onClick={() => fileInputRef.current?.click()}
+              >
+                {uploading ? (
+                  <><Loader2 className="h-5 w-5 animate-spin" /> Enviando...</>
+                ) : (
+                  <><ImagePlus className="h-5 w-5" /> Adicionar foto ou vídeo</>
+                )}
+              </Button>
+            )}
+          </div>
+
           <div className="space-y-1">
             <Label>Aberto por</Label>
             <Input value={watch("createdBy")} readOnly disabled className="bg-muted" />
@@ -254,7 +346,7 @@ export function TicketFormDialog({ open, onOpenChange, ticket, onSave }: Props) 
 
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>
-            <Button type="submit">{ticket ? "Salvar" : "Abrir Chamado"}</Button>
+            <Button type="submit" disabled={uploading}>{ticket ? "Salvar" : "Abrir Chamado"}</Button>
           </DialogFooter>
         </form>
       </DialogContent>
