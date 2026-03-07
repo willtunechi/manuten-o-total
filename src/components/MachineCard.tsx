@@ -23,6 +23,14 @@ const statusTextVariant: Record<MachineStatus, string> = {
     scheduled: "text-blue-600 dark:text-blue-400",
 };
 
+const statusBgVariant: Record<MachineStatus, string> = {
+    operating: "bg-green-500/15 border-green-500/30 dark:bg-green-500/10 dark:border-green-500/20",
+    stopped: "bg-red-500/15 border-red-500/30 dark:bg-red-500/10 dark:border-red-500/20",
+    maintenance: "bg-orange-500/15 border-orange-500/30 dark:bg-orange-500/10 dark:border-orange-500/20",
+    waiting: "bg-yellow-500/15 border-yellow-500/30 dark:bg-yellow-500/10 dark:border-yellow-500/20",
+    scheduled: "bg-blue-500/15 border-blue-500/30 dark:bg-blue-500/10 dark:border-blue-500/20",
+};
+
 export function MachineCard({ machine, onClick }: MachineCardProps) {
     const navigate = useNavigate();
     const { stopMachine, resumeMachine, stopComponent, resumeComponent } = useData();
