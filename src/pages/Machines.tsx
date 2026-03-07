@@ -41,17 +41,20 @@ export default function Machines() {
     const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime();
     const todayEnd = todayStart + 86400000;
 
-    function getChecklistStats(assetId: string) {
+    function getChecklistStats(assetId: string, assetType: string) {
       const checklistPlans = maintenancePlans.filter(
-        (p) => p.planType === "checklist" && (p.machineIds?.includes(assetId) || p.machineId === assetId)
+        (p) => p.planType === "checklist" && p.active && (
+          p.machineIds?.includes(assetId) || p.machineId === assetId || 
+          (!p.machineId && (!p.machineIds || p.machineIds.length === 0) && p.machineType === assetType)
+        )
       );
       const totalItems = checklistPlans.reduce((acc, plan) => acc + (plan.items?.length || 0), 0);
 
       const planIds = new Set(checklistPlans.map((p) => p.id));
       const todayExecutions = planExecutions.filter((ex) => {
         if (!planIds.has(ex.planId)) return false;
-        const started = new Date(ex.startedAt).getTime();
-        return started >= todayStart && started < todayEnd;
+        if (ex.machineId !== assetId) return false;
+        return true;
       });
 
       let okCount = 0;
@@ -59,6 +62,9 @@ export default function Machines() {
       todayExecutions.forEach((ex) => {
         if (ex.itemResults) {
           ex.itemResults.forEach((r) => {
+            if (!r.completed || !r.completedAt) return;
+            const completedTime = new Date(r.completedAt).getTime();
+            if (completedTime < todayStart || completedTime >= todayEnd) return;
             if (r.result === "ok") okCount++;
             else if (r.result === "nok") nokCount++;
           });
@@ -68,9 +74,12 @@ export default function Machines() {
       return { dailyChecklistTotal: totalItems, dailyChecklistCompleted: okCount + nokCount, checklistOk: okCount, checklistNok: nokCount };
     }
 
-    function getPreventiveStats(assetId: string) {
+    function getPreventiveStats(assetId: string, assetType: string) {
       const preventivePlans = maintenancePlans.filter(
-        (p) => p.planType === "preventive" && (p.machineIds?.includes(assetId) || p.machineId === assetId)
+        (p) => p.planType === "preventive" && p.active && (
+          p.machineIds?.includes(assetId) || p.machineId === assetId ||
+          (!p.machineId && (!p.machineIds || p.machineIds.length === 0) && p.machineType === assetType)
+        )
       );
 
       let overdue = 0;
@@ -78,10 +87,18 @@ export default function Machines() {
       let preventiveNok = 0;
 
       preventivePlans.forEach((plan) => {
-        const completedExecs = planExecutions.filter((ex) => ex.planId === plan.id && ex.status === "completed");
+        const completedExecs = planExecutions.filter(
+          (ex) => ex.planId === plan.id && ex.status === "completed" && ex.machineId === assetId
+        );
+
+        // Only count recent results (last 30 days) for card display
+        const recentCutoff = todayStart - 30 * 86400000;
         completedExecs.forEach((ex) => {
           if (ex.itemResults) {
             ex.itemResults.forEach((r) => {
+              if (!r.completed || !r.completedAt) return;
+              const completedTime = new Date(r.completedAt).getTime();
+              if (completedTime < recentCutoff) return;
               if (r.result === "ok") preventiveOk++;
               else if (r.result === "nok") preventiveNok++;
             });
@@ -119,16 +136,16 @@ export default function Machines() {
 
     const machines = rawMachines.map((m) => ({
       ...m,
-      ...getChecklistStats(m.id),
-      ...getPreventiveStats(m.id),
+      ...getChecklistStats(m.id, m.type),
+      ...getPreventiveStats(m.id, m.type),
       correctivePending: getCorrectivePending(m.id),
       lubricationPending: getLubricationPending(m.id),
     }));
 
     const components = rawComponents.map((c) => ({
       ...c,
-      ...getChecklistStats(c.id),
-      ...getPreventiveStats(c.id),
+      ...getChecklistStats(c.id, c.machineType),
+      ...getPreventiveStats(c.id, c.machineType),
       correctivePending: getCorrectivePending(c.id),
       lubricationPending: getLubricationPending(c.id),
     }));
