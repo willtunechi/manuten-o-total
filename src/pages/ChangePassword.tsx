@@ -27,11 +27,12 @@ export default function ChangePassword() {
       const { error: updateError } = await supabase.auth.updateUser({ password });
       if (updateError) throw updateError;
 
-      await supabase.rpc("clear_must_change_password");
+      const { error: rpcError } = await supabase.rpc("clear_must_change_password");
+      if (rpcError) throw rpcError;
 
       toast({ title: "Senha alterada com sucesso!" });
-      // Force reload to re-evaluate auth state
-      window.location.href = "/";
+      // Small delay to ensure DB write is committed before reload
+      setTimeout(() => { window.location.href = "/"; }, 500);
     } catch (error: any) {
       toast({ title: "Erro", description: error.message, variant: "destructive" });
     } finally {
