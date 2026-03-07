@@ -25,6 +25,7 @@ interface AppHeaderProps {
 }
 
 export function AppHeader({ onMenuToggle }: AppHeaderProps) {
+  const [changePasswordOpen, setChangePasswordOpen] = useState(false);
   const { session, userRole, signOut } = useAuth();
 
   return (
