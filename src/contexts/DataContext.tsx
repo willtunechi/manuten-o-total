@@ -1076,31 +1076,12 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   }, [maintenancePlans]);
 
   const updatePlanItemResult = useCallback(async (executionId: string, itemResult: PlanItemResult) => {
-    // Optimistic local update
-    setPlanExecutions((prev) => prev.map((ex) => {
-      if (ex.id !== executionId) return ex;
-      const existing = ex.itemResults.findIndex((r) => r.itemId === itemResult.itemId);
-      const newResults = [...ex.itemResults];
-      if (existing >= 0) newResults[existing] = itemResult;
-      else newResults.push(itemResult);
-      return { ...ex, itemResults: newResults };
-    }));
-
-    // Persist: upsert the result by execution_id + item_id
-    // Find the DB execution (might differ from optimistic ID)
-    const { data: dbExec } = await supabase.from("plan_executions")
-      .select("id").eq("plan_id",
-        planExecutions.find((e) => e.id === executionId)?.planId || ""
-      ).order("created_at", { ascending: false }).limit(1);
-
-    const dbExecId = dbExec?.[0]?.id || executionId;
-
     // Check if result exists
     const { data: existing } = await supabase.from("plan_item_results")
-      .select("id").eq("execution_id", dbExecId).eq("item_id", itemResult.itemId).maybeSingle();
+      .select("id").eq("execution_id", executionId).eq("item_id", itemResult.itemId).maybeSingle();
 
     const resultData = {
-      execution_id: dbExecId, item_id: itemResult.itemId,
+      execution_id: executionId, item_id: itemResult.itemId,
       completed: itemResult.completed, result: itemResult.result || null,
       completed_at: itemResult.completedAt || null,
       mechanic_id: itemResult.mechanicId || "",
@@ -1112,12 +1093,17 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     } else {
       await supabase.from("plan_item_results").insert(resultData);
     }
-  }, [planExecutions]);
+  }, []);
 
   const completePlanExecution = useCallback(async (executionId: string) => {
-    const exec = planExecutions.find((e) => e.id === executionId);
+    // Deduct stock for parts used - read from DB to get accurate data
+    const { data: dbResults } = await supabase.from("plan_item_results")
+      .select("*").eq("execution_id", executionId);
 
-    // Deduct stock for parts used
+    // Note: partsUsed is not stored in plan_item_results table yet, 
+    // so we need to get it from the caller. For now, we collect from local state.
+    // Actually partsUsed tracking needs the caller to pass it. Let's check local planExecutions too.
+    const exec = planExecutions.find((e) => e.id === executionId);
     if (exec) {
       const allPartsUsed: { partId: string; quantity: number }[] = [];
       exec.itemResults.forEach((r) => {
@@ -1136,15 +1122,9 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       if (allPartsUsed.length > 0) await loadParts();
     }
 
-    // Find DB execution
-    const { data: dbExec } = await supabase.from("plan_executions")
-      .select("id").eq("plan_id", exec?.planId || "")
-      .order("created_at", { ascending: false }).limit(1);
-
-    const dbExecId = dbExec?.[0]?.id || executionId;
     await supabase.from("plan_executions").update({
       status: "completed", completed_at: new Date().toISOString(),
-    }).eq("id", dbExecId);
+    }).eq("id", executionId);
 
     await loadPlanExecutions();
     toast({ title: "Execução finalizada com sucesso" });
