@@ -1096,39 +1096,14 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const completePlanExecution = useCallback(async (executionId: string) => {
-    // Deduct stock for parts used - read from DB to get accurate data
-    const { data: dbResults } = await supabase.from("plan_item_results")
-      .select("*").eq("execution_id", executionId);
-
-    // Note: partsUsed is not stored in plan_item_results table yet, 
-    // so we need to get it from the caller. For now, we collect from local state.
-    // Actually partsUsed tracking needs the caller to pass it. Let's check local planExecutions too.
-    const exec = planExecutions.find((e) => e.id === executionId);
-    if (exec) {
-      const allPartsUsed: { partId: string; quantity: number }[] = [];
-      exec.itemResults.forEach((r) => {
-        if (r.partsUsed) r.partsUsed.forEach((pu) => {
-          const existing = allPartsUsed.find((p) => p.partId === pu.partId);
-          if (existing) existing.quantity += pu.quantity;
-          else allPartsUsed.push({ ...pu });
-        });
-      });
-      for (const pu of allPartsUsed) {
-        const part = parts.find((p) => p.id === pu.partId);
-        if (part) {
-          await supabase.from("parts").update({ quantity: Math.max(0, (part.quantity || 0) - pu.quantity) }).eq("id", pu.partId);
-        }
-      }
-      if (allPartsUsed.length > 0) await loadParts();
-    }
-
     await supabase.from("plan_executions").update({
       status: "completed", completed_at: new Date().toISOString(),
     }).eq("id", executionId);
 
     await loadPlanExecutions();
+    await loadParts();
     toast({ title: "Execução finalizada com sucesso" });
-  }, [planExecutions, parts, loadPlanExecutions, loadParts]);
+  }, [loadPlanExecutions, loadParts]);
 
   const stopMachineForExecution = useCallback(async (executionId: string) => {
     const exec = planExecutions.find((e) => e.id === executionId);
