@@ -133,6 +133,7 @@ export function TicketFormDialog({ open, onOpenChange, ticket, onSave }: Props) 
 
   const onSubmit = (data: FormData) => {
     onSave({
+      code: ticket?.code || 0,
       machineId: data.machineId,
       symptom: data.symptom,
       createdBy: data.createdBy,
