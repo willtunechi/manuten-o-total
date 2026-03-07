@@ -126,7 +126,7 @@ export function TicketFormDialog({ open, onOpenChange, ticket, onSave }: Props) 
         label: `${c.tag} - ${c.name}`,
       }));
 
-    return [...machineItems, ...componentItems];
+    return [...machineItems, ...componentItems].sort((a, b) => a.label.localeCompare(b.label, 'pt-BR', { numeric: true }));
   }, [selectedMachineType, machines, components]);
 
   const isNewTicket = !ticket;

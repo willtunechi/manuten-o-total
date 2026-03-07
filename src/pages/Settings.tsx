@@ -153,7 +153,7 @@ export default function Settings() {
   );
   const selectableLines = useMemo(() => lines.filter((line) => line.active).map((line) => line.name), [lines]);
   const machinesByType = useMemo(
-    () => machines.filter((machine) => machine.type === componentForm.machineType),
+    () => machines.filter((machine) => machine.type === componentForm.machineType).sort((a, b) => a.tag.localeCompare(b.tag, 'pt-BR', { numeric: true })),
     [machines, componentForm.machineType],
   );
 
