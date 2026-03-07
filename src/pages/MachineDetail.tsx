@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   ArrowLeft,
@@ -487,7 +488,7 @@ export default function MachineDetail() {
     return result ? count + 1 : count;
   }, 0);
 
-  const persistDrafts = (drafts: ItemDraftMap, rows: PlanItemRow[]) => {
+  const persistDrafts = async (drafts: ItemDraftMap, rows: PlanItemRow[]) => {
     const grouped: Record<string, Array<{ itemId: string; draft: ItemDraft }>> = {};
 
     rows.forEach((row) => {
@@ -497,13 +498,14 @@ export default function MachineDetail() {
       grouped[row.planId].push({ itemId: row.item.id, draft });
     });
 
-    Object.entries(grouped).forEach(([planId, items]) => {
-      if (items.length === 0) return;
-      if (!machineId) return;
-      const executionId = startPlanExecution(planId, machineId);
+    for (const [planId, items] of Object.entries(grouped)) {
+      if (items.length === 0) continue;
+      if (!machineId) continue;
+      const executionId = await startPlanExecution(planId, machineId);
+      if (!executionId) continue;
       const nowIso = new Date().toISOString();
-      items.forEach(({ itemId, draft }) => {
-        updatePlanItemResult(executionId, {
+      for (const { itemId, draft } of items) {
+        await updatePlanItemResult(executionId, {
           itemId,
           completed: true,
           result: draft.result,
@@ -512,18 +514,35 @@ export default function MachineDetail() {
           photoUrl: draft.photoUrl || "",
           partsUsed: draft.partsUsed || [],
         });
+      }
+      // Deduct stock for parts used directly here since completePlanExecution
+      // can't access draft data
+      const allPartsUsed: { partId: string; quantity: number }[] = [];
+      items.forEach(({ draft }) => {
+        (draft.partsUsed || []).forEach((pu) => {
+          const existing = allPartsUsed.find((p) => p.partId === pu.partId);
+          if (existing) existing.quantity += pu.quantity;
+          else allPartsUsed.push({ ...pu });
+        });
       });
-      completePlanExecution(executionId);
-    });
+      // Import supabase for stock deduction
+      for (const pu of allPartsUsed) {
+        const part = parts.find((p) => p.id === pu.partId);
+        if (part) {
+          await supabase.from("parts").update({ quantity: Math.max(0, (part.quantity || 0) - pu.quantity) }).eq("id", pu.partId);
+        }
+      }
+      await completePlanExecution(executionId);
+    }
   };
 
-  const handleSaveChecklist = () => {
-    persistDrafts(checklistDrafts, checklistPendingRows);
+  const handleSaveChecklist = async () => {
+    await persistDrafts(checklistDrafts, checklistPendingRows);
     setChecklistDrafts({});
   };
 
-  const handleSavePreventive = () => {
-    persistDrafts(preventiveDrafts, preventiveRowsWithDue);
+  const handleSavePreventive = async () => {
+    await persistDrafts(preventiveDrafts, preventiveRowsWithDue);
     setPreventiveDrafts({});
   };
 

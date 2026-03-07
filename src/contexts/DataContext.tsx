@@ -75,9 +75,9 @@ interface DataContextType {
   addMaintenancePlan: (p: Omit<MaintenancePlan, "id">) => void;
   updateMaintenancePlan: (id: string, p: Partial<MaintenancePlan>) => void;
   removeMaintenancePlan: (id: string) => void;
-  startPlanExecution: (planId: string, machineId?: string) => string;
-  updatePlanItemResult: (executionId: string, itemResult: PlanItemResult) => void;
-  completePlanExecution: (executionId: string) => void;
+  startPlanExecution: (planId: string, machineId?: string) => Promise<string>;
+  updatePlanItemResult: (executionId: string, itemResult: PlanItemResult) => Promise<void>;
+  completePlanExecution: (executionId: string) => Promise<void>;
   stopMachineForExecution: (executionId: string) => void;
   resumeMachineForExecution: (executionId: string) => void;
   addWorkOrder: (w: {
@@ -1051,63 +1051,37 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
 
   // ─── PLAN EXECUTIONS ──────────────────────────────────────
 
-  const startPlanExecution = useCallback((planId: string, machineId?: string): string => {
-    const id = genId("pe");
+  const startPlanExecution = useCallback(async (planId: string, machineId?: string): Promise<string> => {
     const plan = maintenancePlans.find((p) => p.id === planId);
 
-    // Insert execution to DB (fire and forget, reload picks it up)
-    supabase.from("plan_executions").insert({
+    const { data, error } = await supabase.from("plan_executions").insert({
       plan_id: planId, machine_id: machineId || "",
-    }).select().single().then(async ({ data, error }) => {
-      if (error) { console.error("start execution:", error); return; }
-      // Insert initial item results
-      if (plan?.items?.length) {
-        await supabase.from("plan_item_results").insert(plan.items.map((item) => ({
-          execution_id: data.id, item_id: item.id, completed: false,
-        })));
-      }
-      await loadPlanExecutions();
-    });
+    }).select().single();
 
-    // Optimistic local update for immediate UI
-    const execution: PlanExecution = {
-      id, planId, machineId, startedAt: new Date().toISOString(),
-      status: 'in_progress', machineStops: [],
-      itemResults: plan ? plan.items.map((item) => ({
-        itemId: item.id, completed: false, comment: "", photoUrl: "", partsUsed: [],
-      })) : [],
-    };
-    setPlanExecutions((prev) => [...prev, execution]);
+    if (error || !data) {
+      console.error("start execution:", error);
+      toast({ title: "Erro ao iniciar execução", variant: "destructive" });
+      return "";
+    }
+
+    // Insert initial item results
+    if (plan?.items?.length) {
+      await supabase.from("plan_item_results").insert(plan.items.map((item) => ({
+        execution_id: data.id, item_id: item.id, completed: false,
+      })));
+    }
+
     toast({ title: "Execução iniciada" });
-    return id;
-  }, [maintenancePlans, loadPlanExecutions]);
+    return data.id;
+  }, [maintenancePlans]);
 
   const updatePlanItemResult = useCallback(async (executionId: string, itemResult: PlanItemResult) => {
-    // Optimistic local update
-    setPlanExecutions((prev) => prev.map((ex) => {
-      if (ex.id !== executionId) return ex;
-      const existing = ex.itemResults.findIndex((r) => r.itemId === itemResult.itemId);
-      const newResults = [...ex.itemResults];
-      if (existing >= 0) newResults[existing] = itemResult;
-      else newResults.push(itemResult);
-      return { ...ex, itemResults: newResults };
-    }));
-
-    // Persist: upsert the result by execution_id + item_id
-    // Find the DB execution (might differ from optimistic ID)
-    const { data: dbExec } = await supabase.from("plan_executions")
-      .select("id").eq("plan_id",
-        planExecutions.find((e) => e.id === executionId)?.planId || ""
-      ).order("created_at", { ascending: false }).limit(1);
-
-    const dbExecId = dbExec?.[0]?.id || executionId;
-
     // Check if result exists
     const { data: existing } = await supabase.from("plan_item_results")
-      .select("id").eq("execution_id", dbExecId).eq("item_id", itemResult.itemId).maybeSingle();
+      .select("id").eq("execution_id", executionId).eq("item_id", itemResult.itemId).maybeSingle();
 
     const resultData = {
-      execution_id: dbExecId, item_id: itemResult.itemId,
+      execution_id: executionId, item_id: itemResult.itemId,
       completed: itemResult.completed, result: itemResult.result || null,
       completed_at: itemResult.completedAt || null,
       mechanic_id: itemResult.mechanicId || "",
@@ -1119,43 +1093,17 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     } else {
       await supabase.from("plan_item_results").insert(resultData);
     }
-  }, [planExecutions]);
+  }, []);
 
   const completePlanExecution = useCallback(async (executionId: string) => {
-    const exec = planExecutions.find((e) => e.id === executionId);
-
-    // Deduct stock for parts used
-    if (exec) {
-      const allPartsUsed: { partId: string; quantity: number }[] = [];
-      exec.itemResults.forEach((r) => {
-        if (r.partsUsed) r.partsUsed.forEach((pu) => {
-          const existing = allPartsUsed.find((p) => p.partId === pu.partId);
-          if (existing) existing.quantity += pu.quantity;
-          else allPartsUsed.push({ ...pu });
-        });
-      });
-      for (const pu of allPartsUsed) {
-        const part = parts.find((p) => p.id === pu.partId);
-        if (part) {
-          await supabase.from("parts").update({ quantity: Math.max(0, (part.quantity || 0) - pu.quantity) }).eq("id", pu.partId);
-        }
-      }
-      if (allPartsUsed.length > 0) await loadParts();
-    }
-
-    // Find DB execution
-    const { data: dbExec } = await supabase.from("plan_executions")
-      .select("id").eq("plan_id", exec?.planId || "")
-      .order("created_at", { ascending: false }).limit(1);
-
-    const dbExecId = dbExec?.[0]?.id || executionId;
     await supabase.from("plan_executions").update({
       status: "completed", completed_at: new Date().toISOString(),
-    }).eq("id", dbExecId);
+    }).eq("id", executionId);
 
     await loadPlanExecutions();
+    await loadParts();
     toast({ title: "Execução finalizada com sucesso" });
-  }, [planExecutions, parts, loadPlanExecutions, loadParts]);
+  }, [loadPlanExecutions, loadParts]);
 
   const stopMachineForExecution = useCallback(async (executionId: string) => {
     const exec = planExecutions.find((e) => e.id === executionId);
