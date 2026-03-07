@@ -205,6 +205,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     const { data: partsUsed } = await supabase.from("ticket_parts_used").select("*");
     setTickets((data || []).map((t) => ({
       id: t.id,
+      code: (t as any).code || 0,
       machineId: t.machine_id,
       type: t.type as Ticket["type"],
       maintenanceType: t.maintenance_type as Ticket["maintenanceType"],

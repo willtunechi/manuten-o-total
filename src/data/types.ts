@@ -108,6 +108,7 @@ export interface Mechanic {
 
 export interface Ticket {
   id: string;
+  code: number;
   machineId: string;
   type: OSType;
   maintenanceType?: 'mechanical' | 'electrical';

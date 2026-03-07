@@ -811,6 +811,7 @@ export type Database = {
       }
       tickets: {
         Row: {
+          code: number
           comment: string | null
           created_at: string
           id: string
@@ -825,6 +826,7 @@ export type Database = {
           type: string
         }
         Insert: {
+          code?: number
           comment?: string | null
           created_at?: string
           id?: string
@@ -839,6 +841,7 @@ export type Database = {
           type?: string
         }
         Update: {
+          code?: number
           comment?: string | null
           created_at?: string
           id?: string

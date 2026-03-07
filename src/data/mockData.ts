@@ -48,11 +48,11 @@ export const parts: Part[] = [
 
 export const tickets: Ticket[] = [
   {
-    id: 't1', machineId: 'm1', type: 'corrective', symptom: 'Ruído metálico', title: 'Máquina fazendo barulho anormal', description: 'Ruído metálico vindo do redutor',
+    id: 't1', code: 1, machineId: 'm1', type: 'corrective', symptom: 'Ruído metálico', title: 'Máquina fazendo barulho anormal', description: 'Ruído metálico vindo do redutor',
     priority: 'high', status: 'pending', reportedBy: 'Operador João', createdAt: '2024-01-15T07:30:00Z',
   },
   {
-    id: 't2', machineId: 'm3', type: 'corrective', symptom: 'Temperatura alta', title: 'Temperatura elevada', description: 'Zona 3 atingindo 280°C',
+    id: 't2', code: 2, machineId: 'm3', type: 'corrective', symptom: 'Temperatura alta', title: 'Temperatura elevada', description: 'Zona 3 atingindo 280°C',
     priority: 'critical', status: 'pending', reportedBy: 'Operador Maria', createdAt: '2024-01-15T09:00:00Z',
   },
 ];
