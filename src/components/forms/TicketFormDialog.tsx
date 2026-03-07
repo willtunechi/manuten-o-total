@@ -39,7 +39,7 @@ interface Props {
 }
 
 export function TicketFormDialog({ open, onOpenChange, ticket, onSave }: Props) {
-  const { machines: allMachines, components: allComponents, userAssignedMachineIds, userAssignedComponentIds } = useData();
+  const { machines: allMachines, components: allComponents, mechanics, userAssignedMachineIds, userAssignedComponentIds } = useData();
   const machines = useMemo(
     () => (userAssignedMachineIds !== null ? allMachines.filter((m) => userAssignedMachineIds.includes(m.id)) : allMachines),
     [allMachines, userAssignedMachineIds],
@@ -80,6 +80,8 @@ export function TicketFormDialog({ open, onOpenChange, ticket, onSave }: Props) 
 
     supabase.auth.getSession().then(({ data: { session } }) => {
       const userEmail = session?.user?.email || "";
+      const mechanic = mechanics.find((m) => m.email === userEmail);
+      const userName = mechanic?.name || userEmail;
       reset(
         ticket
           ? {
@@ -98,11 +100,11 @@ export function TicketFormDialog({ open, onOpenChange, ticket, onSave }: Props) 
               maintenanceType: "mechanical",
               symptom: "",
               priority: "medium",
-              createdBy: userEmail,
+              createdBy: userName,
             },
       );
     });
-  }, [ticket, open, reset, machines, components]);
+  }, [ticket, open, reset, machines, components, mechanics]);
 
   const selectedMachineType = watch("machineType") as MachineType | "";
   const ticketType = watch("type");
@@ -176,7 +178,7 @@ export function TicketFormDialog({ open, onOpenChange, ticket, onSave }: Props) 
 
           <div className="space-y-1">
             <Label>Máquina/Equipamento *</Label>
-            <Select value={watch("machineId")} onValueChange={(v) => setValue("machineId", v)}>
+            <Select value={watch("machineId")} onValueChange={(v) => setValue("machineId", v, { shouldValidate: true })}>
               <SelectTrigger><SelectValue placeholder={selectedMachineType ? "Selecione" : "Selecione o tipo antes"} /></SelectTrigger>
               <SelectContent>
                 {machineOptions.map((item) => (
@@ -235,9 +237,8 @@ export function TicketFormDialog({ open, onOpenChange, ticket, onSave }: Props) 
             {errors.symptom && <p className="text-xs text-destructive">{errors.symptom.message}</p>}
           </div>
           <div className="space-y-1">
-            <Label>Aberto por *</Label>
-            <Input {...register("createdBy")} placeholder="Nome do operador" />
-            {errors.createdBy && <p className="text-xs text-destructive">{errors.createdBy.message}</p>}
+            <Label>Aberto por</Label>
+            <Input value={watch("createdBy")} readOnly disabled className="bg-muted" />
           </div>
 
           {isNewTicket && (
