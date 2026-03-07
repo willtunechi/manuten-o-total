@@ -39,7 +39,7 @@ interface Props {
 }
 
 export function TicketFormDialog({ open, onOpenChange, ticket, onSave }: Props) {
-  const { machines: allMachines, components: allComponents, userAssignedMachineIds, userAssignedComponentIds } = useData();
+  const { machines: allMachines, components: allComponents, mechanics, userAssignedMachineIds, userAssignedComponentIds } = useData();
   const machines = useMemo(
     () => (userAssignedMachineIds !== null ? allMachines.filter((m) => userAssignedMachineIds.includes(m.id)) : allMachines),
     [allMachines, userAssignedMachineIds],
