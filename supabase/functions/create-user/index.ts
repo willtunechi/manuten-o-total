@@ -98,7 +98,6 @@ Deno.serve(async (req) => {
       });
     }
 
-    const body = await req.json();
     const { action } = body;
 
     if (action === "list") {
