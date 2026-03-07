@@ -141,9 +141,7 @@ export function MachineCard({ machine, onClick }: MachineCardProps) {
                             className="rounded-md px-3 py-1.5 text-center text-xs font-bold uppercase tracking-wider animate-[blink-red-white_1s_ease-in-out_infinite] cursor-pointer hover:opacity-80"
                             onClick={(e) => {
                                 e.stopPropagation();
-                                if (openTicket) {
-                                    navigate(`/tickets?os=${openTicket.id}`);
-                                }
+                                navigate(isComponent ? `/components/${machine.id}` : `/machines/${machine.id}`);
                             }}
                         >
                             ⚠ {openTicket?.code ? `OS-${String(openTicket.code).padStart(4, '0')}` : 'OS Aberta'}
