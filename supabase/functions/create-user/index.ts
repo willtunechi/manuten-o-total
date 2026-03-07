@@ -57,22 +57,22 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Normal auth check
+    // Normal auth check - service_role key bypasses user auth
     const authHeader = req.headers.get("Authorization");
-    if (!authHeader?.startsWith("Bearer ")) {
+    const apiKey = req.headers.get("apikey") || "";
+    
+    let isAdmin = false;
+    let isSupervisor = false;
+
+    // Service role key check (matches apikey header or bearer token)
+    if (apiKey === serviceRoleKey || (authHeader && authHeader.replace("Bearer ", "") === serviceRoleKey)) {
+      isAdmin = true;
+    } else if (!authHeader?.startsWith("Bearer ")) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
         status: 401,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
-    }
-
-    const token = authHeader ? authHeader.replace("Bearer ", "") : "";
-    let isAdmin = false;
-    let isSupervisor = false;
-
-    // Check if caller is using the service_role key (trusted server-side call)
-    if (token === serviceRoleKey) {
-      isAdmin = true;
+    } else {
     } else {
       const callerClient = createClient(supabaseUrl, anonKey, {
         global: { headers: { Authorization: authHeader } },
