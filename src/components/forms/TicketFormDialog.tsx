@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { useData } from "@/contexts/DataContext";
+import { supabase } from "@/integrations/supabase/client";
 import { MACHINE_TYPE_LABELS, PRIORITY_LABELS, OS_TYPE_LABELS } from "@/data/types";
 import type { Ticket, Priority, OSType, MachineType } from "@/data/types";
 
@@ -77,27 +78,30 @@ export function TicketFormDialog({ open, onOpenChange, ticket, onSave }: Props) 
     const targetComponent = components.find((c) => c.id === ticket?.machineId);
     const defaultMachineType = targetMachine?.type || targetComponent?.machineType || "";
 
-    reset(
-      ticket
-        ? {
-            machineType: defaultMachineType,
-            machineId: ticket.machineId,
-            type: ticket.type,
-            maintenanceType: ticket.maintenanceType,
-            symptom: ticket.symptom,
-            priority: ticket.priority,
-            createdBy: ticket.createdBy,
-          }
-        : {
-            machineType: "",
-            machineId: "",
-            type: "corrective",
-            maintenanceType: "mechanical",
-            symptom: "",
-            priority: "medium",
-            createdBy: "",
-          },
-    );
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      const userEmail = session?.user?.email || "";
+      reset(
+        ticket
+          ? {
+              machineType: defaultMachineType,
+              machineId: ticket.machineId,
+              type: ticket.type,
+              maintenanceType: ticket.maintenanceType,
+              symptom: ticket.symptom,
+              priority: ticket.priority,
+              createdBy: ticket.createdBy,
+            }
+          : {
+              machineType: "",
+              machineId: "",
+              type: "corrective",
+              maintenanceType: "mechanical",
+              symptom: "",
+              priority: "medium",
+              createdBy: userEmail,
+            },
+      );
+    });
   }, [ticket, open, reset, machines, components]);
 
   const selectedMachineType = watch("machineType") as MachineType | "";
