@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { useData } from "@/contexts/DataContext";
+import { supabase } from "@/integrations/supabase/client";
 import { MACHINE_TYPE_LABELS, PRIORITY_LABELS, OS_TYPE_LABELS } from "@/data/types";
 import type { Ticket, Priority, OSType, MachineType } from "@/data/types";
 
