@@ -209,12 +209,13 @@ export default function Machines() {
 
     lineTabs.forEach((lineTab) => {
       const lineName = lineTab.name;
+      const sortByTag = <T extends { tag: string }>(arr: T[]) => [...arr].sort((a, b) => a.tag.localeCompare(b.tag, 'pt-BR', { numeric: true }));
       map.set(lineName, {
-        misturador: machines.filter((machine) => machine.type === "misturador" && machine.sector === lineName && byFilters(machine)),
-        extrusora: machines.filter((machine) => machine.type === "extrusora" && machine.sector === lineName && byFilters(machine)),
-        trocador_calor: components.filter((component) => component.type === "trocador_calor" && component.sector === lineName && byFilters(component)),
-        bomba_vacuo: components.filter((component) => component.type === "bomba_vacuo" && component.sector === lineName && byFilters(component)),
-        tanque_agua: components.filter((component) => component.type === "tanque_agua" && component.sector === lineName && byFilters(component)),
+        misturador: sortByTag(machines.filter((machine) => machine.type === "misturador" && machine.sector === lineName && byFilters(machine))),
+        extrusora: sortByTag(machines.filter((machine) => machine.type === "extrusora" && machine.sector === lineName && byFilters(machine))),
+        trocador_calor: sortByTag(components.filter((component) => component.type === "trocador_calor" && component.sector === lineName && byFilters(component))),
+        bomba_vacuo: sortByTag(components.filter((component) => component.type === "bomba_vacuo" && component.sector === lineName && byFilters(component))),
+        tanque_agua: sortByTag(components.filter((component) => component.type === "tanque_agua" && component.sector === lineName && byFilters(component))),
       });
     });
 
