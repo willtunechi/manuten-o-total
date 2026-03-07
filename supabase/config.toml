@@ -1,1 +1,7 @@
 project_id = "rkwapcbzgcjzpizhzhtc"
+
+[functions.create-user]
+verify_jwt = false
+
+[functions.nfe-fetch]
+verify_jwt = false
