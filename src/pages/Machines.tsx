@@ -163,7 +163,7 @@ export default function Machines() {
     const opts: { value: string; label: string }[] = [];
     machines.forEach((m) => opts.push({ value: m.id, label: m.tag }));
     components.forEach((c) => opts.push({ value: c.id, label: c.tag }));
-    return opts.sort((a, b) => a.label.localeCompare(b.label));
+    return opts.sort((a, b) => a.label.localeCompare(b.label, 'pt-BR', { numeric: true }));
   }, [machines, components]);
 
   const byFilters = <T extends { id: string; status: keyof typeof MACHINE_STATUS_LABELS }>(item: T) =>

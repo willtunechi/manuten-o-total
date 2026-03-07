@@ -107,7 +107,7 @@ export function MaintenancePlanEditorDialog({
   const selectedMachineIds = watch("machineIds") || [];
 
   // Filter machines by selected type
-  const filteredMachines: Machine[] = machines.filter((m) => m.type === selectedMachineType);
+  const filteredMachines: Machine[] = machines.filter((m) => m.type === selectedMachineType).sort((a, b) => a.tag.localeCompare(b.tag, 'pt-BR', { numeric: true }));
 
   const toggleMachine = (machineId: string) => {
     if (readOnly) return;
