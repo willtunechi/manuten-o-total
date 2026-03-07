@@ -15,6 +15,49 @@ Deno.serve(async (req) => {
   }
 
   try {
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+    const adminClient = createClient(supabaseUrl, serviceRoleKey);
+
+    // Check if bootstrap mode (no admin exists)
+    const { data: anyAdmin } = await adminClient
+      .from("user_roles")
+      .select("id")
+      .eq("role", "admin")
+      .limit(1);
+    const noAdminExists = !anyAdmin || anyAdmin.length === 0;
+
+    const body = await req.json();
+
+    // Bootstrap: allow creating first admin without auth
+    if (noAdminExists && body.action === "create" && body.role === "admin") {
+      const { email, password } = body;
+      if (!email) {
+        return new Response(JSON.stringify({ error: "email is required" }), {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      const finalPassword = password || "watbrazil123";
+      const { data: newUser, error: createError } = await adminClient.auth.admin.createUser({
+        email,
+        password: finalPassword,
+        email_confirm: true,
+      });
+      if (createError) throw createError;
+      const { error: roleError } = await adminClient.from("user_roles").insert({
+        user_id: newUser.user.id,
+        role: "admin",
+        must_change_password: false,
+      });
+      if (roleError) throw roleError;
+      return new Response(JSON.stringify({ userId: newUser.user.id, email, role: "admin" }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // Normal auth check
     const authHeader = req.headers.get("Authorization");
     if (!authHeader?.startsWith("Bearer ")) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
@@ -23,11 +66,6 @@ Deno.serve(async (req) => {
       });
     }
 
-    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
-
-    // Verify caller identity
     const callerClient = createClient(supabaseUrl, anonKey, {
       global: { headers: { Authorization: authHeader } },
     });
@@ -41,7 +79,6 @@ Deno.serve(async (req) => {
     }
 
     const callerId = callerUser.id;
-    const adminClient = createClient(supabaseUrl, serviceRoleKey);
 
     // Check caller role
     const { data: callerRole } = await adminClient
@@ -61,7 +98,6 @@ Deno.serve(async (req) => {
       });
     }
 
-    const body = await req.json();
     const { action } = body;
 
     if (action === "list") {
