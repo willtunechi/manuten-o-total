@@ -78,27 +78,30 @@ export function TicketFormDialog({ open, onOpenChange, ticket, onSave }: Props) 
     const targetComponent = components.find((c) => c.id === ticket?.machineId);
     const defaultMachineType = targetMachine?.type || targetComponent?.machineType || "";
 
-    reset(
-      ticket
-        ? {
-            machineType: defaultMachineType,
-            machineId: ticket.machineId,
-            type: ticket.type,
-            maintenanceType: ticket.maintenanceType,
-            symptom: ticket.symptom,
-            priority: ticket.priority,
-            createdBy: ticket.createdBy,
-          }
-        : {
-            machineType: "",
-            machineId: "",
-            type: "corrective",
-            maintenanceType: "mechanical",
-            symptom: "",
-            priority: "medium",
-            createdBy: "",
-          },
-    );
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      const userEmail = session?.user?.email || "";
+      reset(
+        ticket
+          ? {
+              machineType: defaultMachineType,
+              machineId: ticket.machineId,
+              type: ticket.type,
+              maintenanceType: ticket.maintenanceType,
+              symptom: ticket.symptom,
+              priority: ticket.priority,
+              createdBy: ticket.createdBy,
+            }
+          : {
+              machineType: "",
+              machineId: "",
+              type: "corrective",
+              maintenanceType: "mechanical",
+              symptom: "",
+              priority: "medium",
+              createdBy: userEmail,
+            },
+      );
+    });
   }, [ticket, open, reset, machines, components]);
 
   const selectedMachineType = watch("machineType") as MachineType | "";
