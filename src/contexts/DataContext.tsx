@@ -715,7 +715,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       probable_cause: f.probableCause || f.rootCause || "",
       recommended_action: f.recommendedAction || f.solution || "",
       common_parts: f.commonParts || [],
-      machine_id: f.machineId || "", component_id: f.componentId || "",
+      machine_id: f.machineId || null, component_id: f.componentId || null,
     });
     if (error) { toast({ title: "Erro ao cadastrar falha", description: error.message, variant: "destructive" }); return; }
     await loadFailures();
@@ -1055,7 +1055,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     const plan = maintenancePlans.find((p) => p.id === planId);
 
     const { data, error } = await supabase.from("plan_executions").insert({
-      plan_id: planId, machine_id: machineId || "",
+      plan_id: planId, machine_id: machineId || null,
     }).select().single();
 
     if (error || !data) {
@@ -1084,7 +1084,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       execution_id: executionId, item_id: itemResult.itemId,
       completed: itemResult.completed, result: itemResult.result || null,
       completed_at: itemResult.completedAt || null,
-      mechanic_id: itemResult.mechanicId || "",
+      mechanic_id: itemResult.mechanicId || null,
       comment: itemResult.comment || "", photo_url: itemResult.photoUrl || "",
     };
 
