@@ -77,7 +77,7 @@ export function MachineCard({ machine, onClick }: MachineCardProps) {
     return (
         <>
             <Card
-                className="bg-card/50 backdrop-blur-sm border-border hover:border-primary/30 transition-all cursor-pointer group active:scale-[0.99] duration-200 shadow-sm hover:shadow-md rounded-[2px]"
+                className={cn("backdrop-blur-sm hover:border-primary/30 transition-all cursor-pointer group active:scale-[0.99] duration-200 shadow-sm hover:shadow-md rounded-[2px]", statusBgVariant[machine.status])}
                 onClick={handleCardClick}
             >
                 <CardContent className="p-4 space-y-3">
