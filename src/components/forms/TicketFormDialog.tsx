@@ -178,7 +178,7 @@ export function TicketFormDialog({ open, onOpenChange, ticket, onSave }: Props) 
 
           <div className="space-y-1">
             <Label>Máquina/Equipamento *</Label>
-            <Select value={watch("machineId")} onValueChange={(v) => setValue("machineId", v)}>
+            <Select value={watch("machineId")} onValueChange={(v) => setValue("machineId", v, { shouldValidate: true })}>
               <SelectTrigger><SelectValue placeholder={selectedMachineType ? "Selecione" : "Selecione o tipo antes"} /></SelectTrigger>
               <SelectContent>
                 {machineOptions.map((item) => (
@@ -237,9 +237,9 @@ export function TicketFormDialog({ open, onOpenChange, ticket, onSave }: Props) 
             {errors.symptom && <p className="text-xs text-destructive">{errors.symptom.message}</p>}
           </div>
           <div className="space-y-1">
-            <Label>Aberto por *</Label>
-            <Input {...register("createdBy")} placeholder="Nome do operador" />
-            {errors.createdBy && <p className="text-xs text-destructive">{errors.createdBy.message}</p>}
+            <Label>Aberto por</Label>
+            <Input value={watch("createdBy")} readOnly disabled className="bg-muted" />
+          </div>
           </div>
 
           {isNewTicket && (
