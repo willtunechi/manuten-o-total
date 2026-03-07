@@ -14,6 +14,7 @@
   X,
   Droplets,
   FileBarChart,
+  BookOpen,
 } from "lucide-react";
 import watLogo from "@/assets/logo.png";
 import { NavLink } from "@/components/NavLink";
@@ -36,6 +37,7 @@ const allMenuItems = [
   { title: "Compras", url: "/purchases", icon: ShoppingCart },
   { title: "Entrada de Peças", url: "/stock-entries", icon: PackagePlus },
   { title: "Inventário", url: "/stock-count", icon: ClipboardCheck },
+  { title: "Cadastros", url: "/registrations", icon: BookOpen },
   { title: "Configurações", url: "/settings", icon: Cog },
 ];
 

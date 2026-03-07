@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { supabase } from "@/integrations/supabase/client";
 import type { Part } from "@/data/types";
 
 const schema = z.object({
@@ -32,6 +33,20 @@ interface Props {
 const units = ["un", "kg", "m", "L", "balde"];
 
 export function PartFormDialog({ open, onOpenChange, part, onSave }: Props) {
+  const [locations, setLocations] = useState<string[]>([]);
+  const [suppliers, setSuppliers] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (open) {
+      supabase.from("locations").select("name").order("name").then(({ data }) => {
+        if (data) setLocations(data.map((d) => d.name));
+      });
+      supabase.from("suppliers").select("name").order("name").then(({ data }) => {
+        if (data) setSuppliers(data.map((d) => d.name));
+      });
+    }
+  }, [open]);
+
   const { register, handleSubmit, setValue, watch, formState: { errors }, reset } = useForm<FormData>({
     resolver: zodResolver(schema),
     defaultValues: part
@@ -85,12 +100,22 @@ export function PartFormDialog({ open, onOpenChange, part, onSave }: Props) {
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1">
               <Label>Localização *</Label>
-              <Input {...register("location")} placeholder="A1-03" />
+              <Select value={watch("location")} onValueChange={(v) => setValue("location", v)}>
+                <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
+                <SelectContent>
+                  {locations.map((l) => <SelectItem key={l} value={l}>{l}</SelectItem>)}
+                </SelectContent>
+              </Select>
               {errors.location && <p className="text-xs text-destructive">{errors.location.message}</p>}
             </div>
             <div className="space-y-1">
               <Label>Fornecedor *</Label>
-              <Input {...register("supplier")} />
+              <Select value={watch("supplier")} onValueChange={(v) => setValue("supplier", v)}>
+                <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
+                <SelectContent>
+                  {suppliers.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                </SelectContent>
+              </Select>
               {errors.supplier && <p className="text-xs text-destructive">{errors.supplier.message}</p>}
             </div>
           </div>
