@@ -80,6 +80,8 @@ export function TicketFormDialog({ open, onOpenChange, ticket, onSave }: Props) 
 
     supabase.auth.getSession().then(({ data: { session } }) => {
       const userEmail = session?.user?.email || "";
+      const mechanic = mechanics.find((m) => m.email === userEmail);
+      const userName = mechanic?.name || userEmail;
       reset(
         ticket
           ? {
@@ -98,11 +100,11 @@ export function TicketFormDialog({ open, onOpenChange, ticket, onSave }: Props) 
               maintenanceType: "mechanical",
               symptom: "",
               priority: "medium",
-              createdBy: userEmail,
+              createdBy: userName,
             },
       );
     });
-  }, [ticket, open, reset, machines, components]);
+  }, [ticket, open, reset, machines, components, mechanics]);
 
   const selectedMachineType = watch("machineType") as MachineType | "";
   const ticketType = watch("type");
