@@ -74,6 +74,10 @@ export function MachineCard({ machine, onClick }: MachineCardProps) {
     const correctivePending = machine.correctivePending || 0;
     const lubricationPending = (machine as any).lubricationPending || 0;
 
+    const { workOrders } = useData();
+    const hasOpenOS = (machine.status === 'stopped' || machine.status === 'maintenance') &&
+        workOrders.some((wo) => wo.assetId === machine.id && (wo.status === 'open' || wo.status === 'in_progress'));
+
     return (
         <>
             <Card
@@ -127,6 +131,12 @@ export function MachineCard({ machine, onClick }: MachineCardProps) {
                         </div>
                     </div>
 
+                    {/* OS Aberta flashing banner */}
+                    {hasOpenOS && (
+                        <div className="rounded-md px-3 py-1.5 text-center text-xs font-bold uppercase tracking-wider animate-[blink-red-white_1s_ease-in-out_infinite]">
+                            ⚠ OS Aberta
+                        </div>
+                    )}
                     {/* Stats Grid */}
                     <div className="grid grid-cols-2 gap-2 pt-1">
                         {/* Checklist */}

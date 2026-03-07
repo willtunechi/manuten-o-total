@@ -91,3 +91,14 @@
     background: hsl(var(--muted-foreground));
   }
 }
+
+@keyframes blink-red-white {
+  0%, 100% {
+    background-color: hsl(0 72% 50%);
+    color: white;
+  }
+  50% {
+    background-color: white;
+    color: hsl(0 72% 50%);
+  }
+}
