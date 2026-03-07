@@ -114,7 +114,7 @@ export function TicketFormDialog({ open, onOpenChange, ticket, onSave }: Props) 
       }));
 
     const componentItems = components
-      .filter((c) => c.machineType === selectedMachineType)
+      .filter((c) => c.type === selectedMachineType)
       .map((c) => ({
         id: c.id,
         label: `${c.tag} - ${c.name}`,
