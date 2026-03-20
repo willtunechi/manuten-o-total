@@ -710,7 +710,7 @@ export default function MachineDetail() {
         </div>
       </div>
 
-      <Tabs defaultValue="checklist" className="w-full">
+      <Tabs defaultValue={initialTab} className="w-full">
         <TabsList className="grid w-full grid-cols-6 overflow-x-auto">
           <TabsTrigger value="checklist">
             <ClipboardList className="h-4 w-4 mr-2" />
