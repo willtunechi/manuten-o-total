@@ -6,15 +6,13 @@ export type AppRole =
   | "admin"
   | "mechanic"
   | "operator"
-  | "logistica"
+  | "planejador"
   | "supervisor_manutencao"
-  | "supervisor_operacoes"
-  | "supervisor_logistica";
+  | "supervisor_operacoes";
 
 const SUPERVISOR_ROLES: AppRole[] = [
   "supervisor_manutencao",
   "supervisor_operacoes",
-  "supervisor_logistica",
 ];
 
 interface UserRole {
