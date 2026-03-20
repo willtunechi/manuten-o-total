@@ -690,7 +690,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
         })));
       }
 
-      // Calculate net change per part and update stock
+      // Calculate net change per part and update stock (prevMap uses part_id from DB)
       const newMap = new Map(t.partsUsed.map((pu) => [pu.partId, pu.quantity]));
       const allPartIds = new Set([...prevMap.keys(), ...newMap.keys()]);
       for (const partId of allPartIds) {
