@@ -464,6 +464,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     loadPlanExecutions();
     loadWorkOrders();
     loadAssetStopRecords();
+    loadSuppliers();
   }, []);
 
   // ─── MACHINES ──────────────────────────────────────────────
