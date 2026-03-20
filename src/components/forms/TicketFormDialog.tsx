@@ -200,7 +200,7 @@ export function TicketFormDialog({ open, onOpenChange, ticket, onSave }: Props) 
       photoUrl: uploadedUrl || "",
       partsUsed: ticket?.partsUsed || [],
       resolvedAt: ticket?.resolvedAt,
-    }, isNewTicket ? stopMachineOnCreate : false);
+    }, isNewTicket && !selectedAssetAlreadyStopped ? stopMachineOnCreate : false);
     reset();
     setUploadedUrl("");
     onOpenChange(false);
