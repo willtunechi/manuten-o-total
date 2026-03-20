@@ -316,6 +316,13 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     const { data: execs, error } = await supabase.from("plan_executions").select("*");
     if (error) { console.error("load plan_executions:", error); return; }
     const { data: results } = await supabase.from("plan_item_results").select("*");
+    const { data: planPartsUsed } = await supabase.from("plan_item_parts_used").select("*");
+    const partsUsedByResultId = new Map<string, { partId: string; quantity: number }[]>();
+    (planPartsUsed || []).forEach((pu) => {
+      const list = partsUsedByResultId.get(pu.plan_item_result_id) || [];
+      list.push({ partId: pu.part_id, quantity: Number(pu.quantity) });
+      partsUsedByResultId.set(pu.plan_item_result_id, list);
+    });
     setPlanExecutions((execs || []).map((e) => ({
       id: e.id,
       planId: e.plan_id,
@@ -332,7 +339,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
         mechanicId: r.mechanic_id || undefined,
         comment: r.comment || undefined,
         photoUrl: r.photo_url || undefined,
-        partsUsed: [],
+        partsUsed: partsUsedByResultId.get(r.id) || [],
       })),
     })));
   }, []);
@@ -1108,10 +1115,28 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       comment: itemResult.comment || "", photo_url: itemResult.photoUrl || "",
     };
 
+    let resultId: string | undefined;
     if (existing) {
       await supabase.from("plan_item_results").update(resultData).eq("id", existing.id);
+      resultId = existing.id;
     } else {
-      await supabase.from("plan_item_results").insert(resultData);
+      const { data: inserted } = await supabase.from("plan_item_results")
+        .insert(resultData).select("id").maybeSingle();
+      resultId = inserted?.id;
+    }
+
+    // Persist parts used
+    if (resultId && itemResult.partsUsed) {
+      await supabase.from("plan_item_parts_used").delete().eq("plan_item_result_id", resultId);
+      if (itemResult.partsUsed.length > 0) {
+        await supabase.from("plan_item_parts_used").insert(
+          itemResult.partsUsed.map((pu) => ({
+            plan_item_result_id: resultId,
+            part_id: pu.partId,
+            quantity: pu.quantity,
+          }))
+        );
+      }
     }
   }, []);
 
