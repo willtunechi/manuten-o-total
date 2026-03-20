@@ -217,6 +217,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       status: t.status as Ticket["status"],
       comment: (t.comment && t.comment !== "null") ? t.comment : undefined,
       photoUrl: t.photo_url || undefined,
+      resolutionPhotoUrl: (t as any).resolution_photo_url || undefined,
       partsUsed: (partsUsed || []).filter((pu) => pu.ticket_id === t.id).map((pu) => ({
         partId: pu.part_id,
         quantity: Number(pu.quantity),
@@ -668,6 +669,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     if (t.status !== undefined) update.status = t.status;
     if (t.comment !== undefined) update.comment = t.comment;
     if (t.photoUrl !== undefined) update.photo_url = t.photoUrl;
+    if (t.resolutionPhotoUrl !== undefined) update.resolution_photo_url = t.resolutionPhotoUrl;
     if (t.resolvedAt !== undefined) update.resolved_at = t.resolvedAt;
     if (t.reportedBy !== undefined) update.reported_by = t.reportedBy;
 

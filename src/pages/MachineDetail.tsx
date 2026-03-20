@@ -483,7 +483,7 @@ export default function MachineDetail() {
       status: ticket.status,
       comment: (ticket.comment && ticket.comment !== "null") ? ticket.comment : "",
       photoUrl: ticket.photoUrl || "",
-      resolutionPhotoUrl: "",
+      resolutionPhotoUrl: ticket.resolutionPhotoUrl || "",
       machineReturned: null,
       partsUsed: ticket.partsUsed || [],
     });
@@ -608,6 +608,7 @@ export default function MachineDetail() {
       resolvedAt: ticketDraft.status === "resolved" ? new Date().toISOString() : undefined,
       comment: ticketDraft.comment,
       photoUrl: ticketDraft.photoUrl,
+      resolutionPhotoUrl: ticketDraft.resolutionPhotoUrl,
       partsUsed: ticketDraft.partsUsed,
     });
 

@@ -1,0 +1,1 @@
+ALTER TABLE public.tickets ADD COLUMN resolution_photo_url text;
