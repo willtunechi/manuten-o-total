@@ -81,8 +81,8 @@ export function TicketFormDialog({ open, onOpenChange, ticket, onSave }: Props) 
     setStopMachineOnCreate(false);
     setUploadedUrl(ticket?.photoUrl || "");
 
-    const targetMachine = machines.find((m) => m.id === ticket?.machineId);
-    const targetComponent = components.find((c) => c.id === ticket?.machineId);
+    const targetMachine = allMachines.find((m) => m.id === ticket?.machineId);
+    const targetComponent = allComponents.find((c) => c.id === ticket?.machineId);
     const defaultMachineType = targetMachine?.type || targetComponent?.type || "";
 
     supabase.auth.getSession().then(({ data: { session } }) => {
