@@ -1479,6 +1479,7 @@ export default function MachineDetail() {
         </DialogContent>
       </Dialog>
 
+      <Dialog open={!!ticketModal} onOpenChange={(open) => !open && setTicketModal(null)}>
         <DialogContent className="max-w-lg">
           {ticketModal && (
             <>
