@@ -121,6 +121,7 @@ export interface Ticket {
   status: TicketStatus;
   comment?: string;
   photoUrl?: string;
+  resolutionPhotoUrl?: string;
   partsUsed?: { partId: string; quantity: number }[];
   title?: string; // Compatibility
   description?: string; // Compatibility
