@@ -466,7 +466,9 @@ export default function MachineDetail() {
     drafts[planId]?.[itemId] || {};
 
   const openEditor = (kind: "checklist" | "preventive", row: PlanItemRow) => {
-    const sourceDraft = (kind === "preventive" ? preventiveDrafts : checklistDrafts)[row.planId]?.[row.item.id] || {};
+    const draftsMap = kind === "preventive" ? preventiveDrafts : checklistDrafts;
+    const sourceDraft = draftsMap[row.planId]?.[row.item.id] || {};
+    console.log("[openEditor] sourceDraft for", row.planId, row.item.id, ":", JSON.stringify(sourceDraft));
     setEditorForm({
       result: sourceDraft.result,
       comment: sourceDraft.comment || "",
@@ -642,13 +644,15 @@ export default function MachineDetail() {
   };
 
   const saveEditorAndClose = () => {
-    if (!editorTarget) return;
+    if (!editorTarget) { console.warn("[saveEditorAndClose] editorTarget is null, skipping save"); return; }
     const setter = editorTarget.kind === "preventive" ? setPreventiveDrafts : setChecklistDrafts;
+    const partsToSave = editorForm.partsUsed || [];
+    console.log("[saveEditorAndClose] saving partsUsed:", JSON.stringify(partsToSave), "for", editorTarget.row.planId, editorTarget.row.item.id);
     updateDraft(setter, editorTarget.row.planId, editorTarget.row.item.id, {
       result: editorForm.result,
       comment: editorForm.comment || "",
       photoUrl: editorForm.photoUrl || "",
-      partsUsed: editorForm.partsUsed || [],
+      partsUsed: partsToSave,
     });
     closeEditorWithoutSaving();
   };
