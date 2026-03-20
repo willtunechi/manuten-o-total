@@ -27,6 +27,8 @@ import type {
 } from "@/data/types";
 import { toast } from "@/hooks/use-toast";
 
+type Supplier = { id: string; name: string };
+
 interface DataContextType {
   machines: Machine[];
   mechanics: Mechanic[];
@@ -43,6 +45,7 @@ interface DataContextType {
   planExecutions: PlanExecution[];
   workOrders: WorkOrder[];
   assetStopRecords: AssetStopRecord[];
+  suppliers: Supplier[];
   userAssignedMachineIds: string[] | null; // null = no restriction (admin/supervisor)
   userAssignedComponentIds: string[] | null;
   addMachine: (m: Omit<Machine, "id">) => void;
@@ -125,6 +128,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   const [workOrders, setWorkOrders] = useState<WorkOrder[]>([]);
   const [assetStopRecords, setAssetStopRecords] = useState<AssetStopRecord[]>([]);
   const [components, setComponents] = useState<MachineComponent[]>([]);
+  const [suppliers, setSuppliers] = useState<Supplier[]>([]);
   const [userAssignedMachineIds, setUserAssignedMachineIds] = useState<string[] | null>(null);
   const [userAssignedComponentIds, setUserAssignedComponentIds] = useState<string[] | null>(null);
 
@@ -379,6 +383,12 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     })));
   }, []);
 
+  const loadSuppliers = useCallback(async () => {
+    const { data, error } = await supabase.from("suppliers").select("*").order("name");
+    if (error) { console.error("load suppliers:", error); return; }
+    setSuppliers((data || []).map((s) => ({ id: s.id, name: s.name })));
+  }, []);
+
   // ─── RESOLVE USER ASSIGNMENTS ────────────────────────────────
 
   useEffect(() => {
@@ -454,6 +464,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     loadPlanExecutions();
     loadWorkOrders();
     loadAssetStopRecords();
+    loadSuppliers();
   }, []);
 
   // ─── MACHINES ──────────────────────────────────────────────
@@ -1171,7 +1182,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       value={{
         machines, mechanics, parts, tickets, preventivePlans, failures, notifications,
         purchaseOrders, stockEntries, inventoryCounts, checklistTemplates,
-        maintenancePlans, planExecutions, workOrders, assetStopRecords,
+        maintenancePlans, planExecutions, workOrders, assetStopRecords, suppliers,
         userAssignedMachineIds, userAssignedComponentIds,
         addMachine, updateMachine, removeMachine,
         addMechanic, updateMechanic, removeMechanic,
