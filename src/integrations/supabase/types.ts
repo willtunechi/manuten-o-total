@@ -610,6 +610,42 @@ export type Database = {
           },
         ]
       }
+      plan_item_parts_used: {
+        Row: {
+          id: string
+          part_id: string
+          plan_item_result_id: string
+          quantity: number
+        }
+        Insert: {
+          id?: string
+          part_id: string
+          plan_item_result_id: string
+          quantity?: number
+        }
+        Update: {
+          id?: string
+          part_id?: string
+          plan_item_result_id?: string
+          quantity?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "plan_item_parts_used_part_id_fkey"
+            columns: ["part_id"]
+            isOneToOne: false
+            referencedRelation: "parts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "plan_item_parts_used_plan_item_result_id_fkey"
+            columns: ["plan_item_result_id"]
+            isOneToOne: false
+            referencedRelation: "plan_item_results"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       plan_item_results: {
         Row: {
           comment: string | null
