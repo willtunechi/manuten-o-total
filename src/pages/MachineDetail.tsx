@@ -12,6 +12,7 @@ import {
   MonitorStop,
   PlayCircle,
   Plus,
+  Pencil,
   Droplets,
   CalendarCheck2,
 } from "lucide-react";
