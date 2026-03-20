@@ -115,7 +115,7 @@ export function MechanicFormDialog({ open, onOpenChange, mechanic, onSave }: Pro
   const selectedComponentIds = watch("componentIds") || [];
   const selectedRole = watch("role");
 
-  const isSupervisorRole = selectedRole?.startsWith("supervisor_") || selectedRole === "logistica";
+  const isSupervisorRole = selectedRole?.startsWith("supervisor_") || selectedRole === "planejador";
 
   const extrusoras = machines.filter((m) => m.type === "extrusora");
   const misturadores = machines.filter((m) => m.type === "misturador");
