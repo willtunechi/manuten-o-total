@@ -113,6 +113,8 @@ export default function Reports() {
       corrective: "Corretiva",
       preventive: "Preventiva",
       checklist: "Checklist",
+      lubrication: "Lubrificação",
+      no_production: "Sem Produção",
       other: "Outros",
     };
     const map = new Map<string, number>();
