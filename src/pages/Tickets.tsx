@@ -228,18 +228,29 @@ export default function Tickets() {
 
               {viewing.comment && (
                 <div>
-                  <span className="text-xs text-muted-foreground">Comentário</span>
+                  <span className="text-xs text-muted-foreground">Comentário da manutenção</span>
                   <p className="text-sm mt-1 bg-muted/30 rounded-md p-3 border border-border">{viewing.comment}</p>
                 </div>
               )}
 
               {viewing.photoUrl && (
                 <div>
-                  <span className="text-xs text-muted-foreground">Foto / Vídeo</span>
+                  <span className="text-xs text-muted-foreground">Anexo do solicitante</span>
                   {/\.(mp4|webm|mov)$/i.test(viewing.photoUrl) ? (
                     <video src={viewing.photoUrl} controls className="mt-1 rounded-md border border-border max-h-64 w-full object-contain" />
                   ) : (
                     <img src={viewing.photoUrl} alt="Anexo do chamado" className="mt-1 rounded-md border border-border max-h-48 object-contain" />
+                  )}
+                </div>
+              )}
+
+              {viewing.resolutionPhotoUrl && (
+                <div>
+                  <span className="text-xs text-muted-foreground">Anexo da manutenção</span>
+                  {/\.(mp4|webm|mov)$/i.test(viewing.resolutionPhotoUrl) ? (
+                    <video src={viewing.resolutionPhotoUrl} controls className="mt-1 rounded-md border border-border max-h-64 w-full object-contain" />
+                  ) : (
+                    <img src={viewing.resolutionPhotoUrl} alt="Anexo da manutenção" className="mt-1 rounded-md border border-border max-h-48 object-contain" />
                   )}
                 </div>
               )}
