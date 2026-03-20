@@ -39,10 +39,9 @@ interface Props {
 const roleLabels: Record<FormData["role"], string> = {
   mechanic: "Mecânico",
   operator: "Operador",
-  logistica: "Logística",
+  planejador: "Planejador",
   supervisor_manutencao: "Supervisor Manutenção",
   supervisor_operacoes: "Supervisor Operações",
-  supervisor_logistica: "Supervisor Logística",
 };
 
 const levelLabels: Record<FormData["level"], string> = {
