@@ -680,7 +680,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     if (t.partsUsed !== undefined) {
       // Get previously saved parts to compare
       const { data: prevParts } = await supabase.from("ticket_parts_used").select("part_id, quantity").eq("ticket_id", id);
-      const prevMap = new Map((prevParts || []).map((p) => [p.part_id, p.quantity]));
+      const prevMap = new Map((prevParts || []).map((p) => [p.part_id, Number(p.quantity)]));
 
       // Replace parts in junction table
       await supabase.from("ticket_parts_used").delete().eq("ticket_id", id);
