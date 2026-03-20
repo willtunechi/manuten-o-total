@@ -95,7 +95,7 @@ export interface Mechanic {
   id: string;
   name: string;
   email?: string;
-  role: 'mechanic' | 'operator' | 'logistica' | 'supervisor_manutencao' | 'supervisor_operacoes' | 'supervisor_logistica';
+  role: 'mechanic' | 'operator' | 'planejador' | 'supervisor_manutencao' | 'supervisor_operacoes';
   shift: string;
   level: 'junior' | 'mid' | 'senior';
   available: boolean;
