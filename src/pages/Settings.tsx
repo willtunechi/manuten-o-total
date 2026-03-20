@@ -478,7 +478,7 @@ export default function Settings() {
                   <span className="font-mono font-semibold">{component.tag}</span>
                   <Badge variant="outline">{component.name}</Badge>
                   <span className="text-sm text-muted-foreground">{MACHINE_TYPE_LABELS[component.machineType]}</span>
-                  <span className="text-sm text-muted-foreground">• {component.sector || "Sem linha"}</span>
+                  <span className="text-sm text-muted-foreground">{MACHINE_TYPE_LABELS[component.machineType]}</span>
                   <div className="ml-auto flex gap-2">
                     <Button size="sm" variant="outline" onClick={() => handleEditComponent(component.id)}>
                       Editar
