@@ -210,8 +210,11 @@ export default function MachineDetail() {
     status: "pending",
     comment: "",
     photoUrl: "",
+    resolutionPhotoUrl: "",
+    machineReturned: null,
     partsUsed: [],
   });
+  const [resolutionUploading, setResolutionUploading] = useState(false);
   const [ticketPartSelection, setTicketPartSelection] = useState<{ partId: string; quantity: number }>({ partId: "", quantity: 1 });
 
   // Lubrication state
