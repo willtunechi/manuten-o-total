@@ -16,7 +16,6 @@ const schema = z.object({
   model: z.string().min(1, "Modelo obrigatório"),
   manufacturer: z.string().min(1, "Fabricante obrigatório"),
   year: z.coerce.number().min(1990, "Ano mínimo 1990").max(new Date().getFullYear(), "Ano inválido"),
-  sector: z.string().min(1, "Setor obrigatório"),
   status: z.string().min(1, "Status obrigatório"),
   horimeter: z.coerce.number().min(0, "Valor inválido"),
 });
@@ -34,15 +33,15 @@ export function MachineFormDialog({ open, onOpenChange, machine, onSave }: Props
   const { register, handleSubmit, setValue, watch, formState: { errors }, reset } = useForm<FormData>({
     resolver: zodResolver(schema),
     defaultValues: machine
-      ? { tag: machine.tag, type: machine.type, model: machine.model, manufacturer: machine.manufacturer, year: machine.year, sector: machine.sector, status: machine.status, horimeter: machine.horimeter }
-      : { tag: "", type: "", model: "", manufacturer: "", year: new Date().getFullYear(), sector: "", status: "operating", horimeter: 0 },
+      ? { tag: machine.tag, type: machine.type, model: machine.model, manufacturer: machine.manufacturer, year: machine.year, status: machine.status, horimeter: machine.horimeter }
+      : { tag: "", type: "", model: "", manufacturer: "", year: new Date().getFullYear(), status: "operating", horimeter: 0 },
   });
 
   useEffect(() => {
     if (open) {
       reset(machine
-        ? { tag: machine.tag, type: machine.type, model: machine.model, manufacturer: machine.manufacturer, year: machine.year, sector: machine.sector, status: machine.status, horimeter: machine.horimeter }
-        : { tag: "", type: "", model: "", manufacturer: "", year: new Date().getFullYear(), sector: "", status: "operating", horimeter: 0 }
+        ? { tag: machine.tag, type: machine.type, model: machine.model, manufacturer: machine.manufacturer, year: machine.year, status: machine.status, horimeter: machine.horimeter }
+        : { tag: "", type: "", model: "", manufacturer: "", year: new Date().getFullYear(), status: "operating", horimeter: 0 }
       );
     }
   }, [machine, open, reset]);
@@ -54,7 +53,7 @@ export function MachineFormDialog({ open, onOpenChange, machine, onSave }: Props
       model: data.model,
       manufacturer: data.manufacturer,
       year: data.year,
-      sector: data.sector,
+      sector: "",
       horimeter: data.horimeter,
       status: data.status as MachineStatus,
     });
@@ -101,11 +100,6 @@ export function MachineFormDialog({ open, onOpenChange, machine, onSave }: Props
               <Label>Ano *</Label>
               <Input type="number" {...register("year")} />
               {errors.year && <p className="text-xs text-destructive">{errors.year.message}</p>}
-            </div>
-            <div className="space-y-1">
-              <Label>Setor *</Label>
-              <Input {...register("sector")} placeholder="Linha 1" />
-              {errors.sector && <p className="text-xs text-destructive">{errors.sector.message}</p>}
             </div>
             <div className="space-y-1">
               <Label>Horímetro</Label>
