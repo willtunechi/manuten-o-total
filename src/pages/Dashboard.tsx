@@ -176,6 +176,7 @@ export default function Dashboard() {
     const possibleHours = assetsCount * periodDays * 24;
 
     const downtimeHours = selectedStopRecords.reduce((sum, record) => {
+      if (record.reason === 'no_production') return sum; // Não conta nos indicadores
       const startMs = Math.max(new Date(record.stoppedAt).getTime(), windowStartMs);
       const endMs = Math.min(new Date(record.resumedAt || now.toISOString()).getTime(), nowMs);
       if (endMs <= startMs) return sum;

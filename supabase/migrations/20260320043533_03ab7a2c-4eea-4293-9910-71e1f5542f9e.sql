@@ -1,0 +1,1 @@
+ALTER TYPE public.stop_reason ADD VALUE 'no_production';

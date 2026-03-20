@@ -96,6 +96,7 @@ export default function Reports() {
     const map = new Map<string, number>();
     assetStopRecords.forEach((r) => {
       if (new Date(r.stoppedAt) < windowStart) return;
+      if (r.reason === 'no_production') return; // Não conta nos indicadores
       const end = r.resumedAt ? r.resumedAt : now.toISOString();
       const hours = hoursBetween(r.stoppedAt, end);
       map.set(r.assetId, (map.get(r.assetId) || 0) + hours);
@@ -112,6 +113,8 @@ export default function Reports() {
       corrective: "Corretiva",
       preventive: "Preventiva",
       checklist: "Checklist",
+      lubrication: "Lubrificação",
+      no_production: "Sem Produção",
       other: "Outros",
     };
     const map = new Map<string, number>();
