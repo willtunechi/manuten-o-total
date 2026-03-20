@@ -957,6 +957,7 @@ export type Database = {
         | "supervisor_manutencao"
         | "supervisor_operacoes"
         | "supervisor_logistica"
+        | "planejador"
       asset_kind: "machine" | "component"
       component_apply_mode: "current" | "current_and_future"
       component_type: "trocador_calor" | "bomba_vacuo" | "tanque_agua"
@@ -1137,6 +1138,7 @@ export const Constants = {
         "supervisor_manutencao",
         "supervisor_operacoes",
         "supervisor_logistica",
+        "planejador",
       ],
       asset_kind: ["machine", "component"],
       component_apply_mode: ["current", "current_and_future"],
