@@ -19,7 +19,7 @@ const shiftOptions = ["Manhã", "Tarde", "Noite"] as const;
 const schema = z.object({
   name: z.string().min(3, "Mínimo 3 caracteres"),
   email: z.string().email("Email inválido").optional().or(z.literal("")),
-  role: z.enum(["mechanic", "operator", "logistica", "supervisor_manutencao", "supervisor_operacoes", "supervisor_logistica"]),
+  role: z.enum(["mechanic", "operator", "planejador", "supervisor_manutencao", "supervisor_operacoes"]),
   shift: z.enum(shiftOptions).optional().default("Manhã"),
   level: z.enum(["junior", "mid", "senior"]),
   available: z.boolean(),
@@ -39,10 +39,9 @@ interface Props {
 const roleLabels: Record<FormData["role"], string> = {
   mechanic: "Mecânico",
   operator: "Operador",
-  logistica: "Logística",
+  planejador: "Planejador",
   supervisor_manutencao: "Supervisor Manutenção",
   supervisor_operacoes: "Supervisor Operações",
-  supervisor_logistica: "Supervisor Logística",
 };
 
 const levelLabels: Record<FormData["level"], string> = {
@@ -116,7 +115,7 @@ export function MechanicFormDialog({ open, onOpenChange, mechanic, onSave }: Pro
   const selectedComponentIds = watch("componentIds") || [];
   const selectedRole = watch("role");
 
-  const isSupervisorRole = selectedRole?.startsWith("supervisor_") || selectedRole === "logistica";
+  const isSupervisorRole = selectedRole?.startsWith("supervisor_") || selectedRole === "planejador";
 
   const extrusoras = machines.filter((m) => m.type === "extrusora");
   const misturadores = machines.filter((m) => m.type === "misturador");
@@ -255,7 +254,7 @@ export function MechanicFormDialog({ open, onOpenChange, mechanic, onSave }: Pro
 
           {isSupervisorRole ? (
             <div className="rounded-md border p-3 bg-muted/30 text-xs text-muted-foreground">
-              Supervisores e Logística têm acesso a todas as máquinas e componentes automaticamente.
+              Supervisores e Planejadores têm acesso a todas as máquinas e componentes automaticamente.
             </div>
           ) : (
             <div className="space-y-2">

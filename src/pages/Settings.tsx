@@ -20,10 +20,9 @@ const ROLE_LABELS: Record<string, string> = {
   admin: "Administrador",
   mechanic: "Mecânico",
   operator: "Operador",
-  logistica: "Logística",
+  planejador: "Planejador",
   supervisor_manutencao: "Supervisor Manutenção",
   supervisor_operacoes: "Supervisor Operações",
-  supervisor_logistica: "Supervisor Logística",
 };
 
 interface ManagedUser {

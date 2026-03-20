@@ -15,10 +15,9 @@ import type { Mechanic } from "@/data/types";
 const roleLabels: Record<Mechanic["role"], string> = {
   mechanic: "Mecânico",
   operator: "Operador",
-  logistica: "Logística",
+  planejador: "Planejador",
   supervisor_manutencao: "Supervisor Manutenção",
   supervisor_operacoes: "Supervisor Operações",
-  supervisor_logistica: "Supervisor Logística",
 };
 
 const levelLabels: Record<Mechanic["level"], string> = {
@@ -41,7 +40,6 @@ export default function Mechanics() {
     const subordinateMap: Record<string, string[]> = {
       supervisor_manutencao: ["mechanic"],
       supervisor_operacoes: ["operator"],
-      supervisor_logistica: ["logistica"],
     };
     const allowed = role ? subordinateMap[role] : undefined;
     if (!allowed) return mechanics;

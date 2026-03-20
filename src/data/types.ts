@@ -4,7 +4,7 @@ export type ComponentType = 'trocador_calor' | 'bomba_vacuo' | 'tanque_agua';
 export type Priority = 'critical' | 'high' | 'medium' | 'low';
 export type OSType = 'corrective' | 'inspection';
 export type TicketStatus = 'pending' | 'in_maintenance' | 'resolved';
-export type UserRole = 'admin' | 'mechanic' | 'operator' | 'logistica' | 'supervisor_manutencao' | 'supervisor_operacoes' | 'supervisor_logistica';
+export type UserRole = 'admin' | 'mechanic' | 'operator' | 'planejador' | 'supervisor_manutencao' | 'supervisor_operacoes';
 export type AssetKind = 'machine' | 'component';
 export type WorkOrderType = 'planned' | 'unplanned';
 export type WorkOrderStatus = 'open' | 'in_progress' | 'completed';
@@ -95,7 +95,7 @@ export interface Mechanic {
   id: string;
   name: string;
   email?: string;
-  role: 'mechanic' | 'operator' | 'logistica' | 'supervisor_manutencao' | 'supervisor_operacoes' | 'supervisor_logistica';
+  role: 'mechanic' | 'operator' | 'planejador' | 'supervisor_manutencao' | 'supervisor_operacoes';
   shift: string;
   level: 'junior' | 'mid' | 'senior';
   available: boolean;

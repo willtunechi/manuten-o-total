@@ -6,15 +6,13 @@ export type AppRole =
   | "admin"
   | "mechanic"
   | "operator"
-  | "logistica"
+  | "planejador"
   | "supervisor_manutencao"
-  | "supervisor_operacoes"
-  | "supervisor_logistica";
+  | "supervisor_operacoes";
 
 const SUPERVISOR_ROLES: AppRole[] = [
   "supervisor_manutencao",
   "supervisor_operacoes",
-  "supervisor_logistica",
 ];
 
 interface UserRole {
@@ -84,10 +82,9 @@ export function useAuth() {
       return [
         { value: "operator", label: "Operador" },
         { value: "mechanic", label: "Mecânico" },
-        { value: "logistica", label: "Logística" },
+        { value: "planejador", label: "Planejador" },
         { value: "supervisor_manutencao", label: "Supervisor Manutenção" },
         { value: "supervisor_operacoes", label: "Supervisor Operações" },
-        { value: "supervisor_logistica", label: "Supervisor Logística" },
       ];
     }
     if (isSupervisor) {
@@ -106,7 +103,7 @@ export function useAuth() {
     const match = (routes: string[]) =>
       routes.some((r) => path === r || (r !== "/" && path.startsWith(r)));
 
-    if (role === "logistica") {
+    if (role === "planejador") {
       return match(["/", "/inventory", "/purchases", "/stock-entries", "/stock-count", "/registrations"]);
     }
 
