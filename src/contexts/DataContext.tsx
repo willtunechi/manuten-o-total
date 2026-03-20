@@ -45,6 +45,7 @@ interface DataContextType {
   planExecutions: PlanExecution[];
   workOrders: WorkOrder[];
   assetStopRecords: AssetStopRecord[];
+  suppliers: Supplier[];
   userAssignedMachineIds: string[] | null; // null = no restriction (admin/supervisor)
   userAssignedComponentIds: string[] | null;
   addMachine: (m: Omit<Machine, "id">) => void;
