@@ -27,6 +27,8 @@ import type {
 } from "@/data/types";
 import { toast } from "@/hooks/use-toast";
 
+type Supplier = { id: string; name: string };
+
 interface DataContextType {
   machines: Machine[];
   mechanics: Mechanic[];
