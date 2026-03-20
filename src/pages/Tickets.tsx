@@ -264,11 +264,6 @@ export default function Tickets() {
               )}
 
               <div className="flex justify-end gap-2 pt-2">
-                {canEditTicket(viewing) && (
-                  <Button variant="outline" size="sm" onClick={() => { setEditing(viewing); setViewing(undefined); setFormOpen(true); }}>
-                    <Pencil className="h-3.5 w-3.5 mr-1" /> Editar
-                  </Button>
-                )}
                 <Button variant="outline" size="sm" onClick={() => setViewing(undefined)}>Fechar</Button>
               </div>
             </div>
