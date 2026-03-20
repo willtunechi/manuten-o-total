@@ -613,7 +613,7 @@ export default function MachineDetail() {
 
     // If resolved and machine returned, resume the machine
     if (ticketDraft.status === "resolved" && ticketDraft.machineReturned === true) {
-      const isComp = !allMachines.some((m) => m.id === ticketModal.machineId);
+      const isComp = !machines.some((m) => m.id === ticketModal.machineId);
       if (isComp) {
         resumeComponent(ticketModal.machineId);
       } else {
