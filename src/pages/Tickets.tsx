@@ -62,7 +62,16 @@ export default function Tickets() {
     return ticketAuthor === currentUserName;
   };
 
-  const filteredTickets = tickets.filter((t) => {
+  const visibleTickets = useMemo(() => {
+    if (!isOperator || (!userAssignedMachineIds && !userAssignedComponentIds)) return tickets;
+    const allowedIds = new Set([
+      ...(userAssignedMachineIds || []),
+      ...(userAssignedComponentIds || []),
+    ]);
+    return tickets.filter((t) => allowedIds.has(t.machineId));
+  }, [tickets, isOperator, userAssignedMachineIds, userAssignedComponentIds]);
+
+  const filteredTickets = visibleTickets.filter((t) => {
     if (statusFilter === "all") return true;
     if (statusFilter === "pending") return t.status === "pending" || t.status === "in_maintenance";
     return t.status === "resolved";
