@@ -82,10 +82,9 @@ export function useAuth() {
       return [
         { value: "operator", label: "Operador" },
         { value: "mechanic", label: "Mecânico" },
-        { value: "logistica", label: "Logística" },
+        { value: "planejador", label: "Planejador" },
         { value: "supervisor_manutencao", label: "Supervisor Manutenção" },
         { value: "supervisor_operacoes", label: "Supervisor Operações" },
-        { value: "supervisor_logistica", label: "Supervisor Logística" },
       ];
     }
     if (isSupervisor) {
