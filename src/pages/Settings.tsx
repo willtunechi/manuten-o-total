@@ -256,87 +256,16 @@ export default function Settings() {
       <div>
         <h1 className="text-2xl font-bold">Configurações</h1>
         <p className="text-sm text-muted-foreground">
-          Cadastro de linhas, máquinas e componentes com vínculo operacional.
+          Cadastro de máquinas e componentes.
         </p>
       </div>
 
-      <Tabs defaultValue="lines" className="space-y-4">
-        <TabsList className={`grid w-full md:w-[720px] ${canManageUsers ? "grid-cols-4" : "grid-cols-3"}`}>
-          <TabsTrigger value="lines">Linhas</TabsTrigger>
+      <Tabs defaultValue="machines" className="space-y-4">
+        <TabsList className={`grid w-full md:w-[720px] ${canManageUsers ? "grid-cols-3" : "grid-cols-2"}`}>
           <TabsTrigger value="machines">Máquinas</TabsTrigger>
           <TabsTrigger value="components">Componentes</TabsTrigger>
           {canManageUsers && <TabsTrigger value="users">Usuários</TabsTrigger>}
         </TabsList>
-
-        <TabsContent value="lines" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">Cadastrar linha</CardTitle>
-            </CardHeader>
-            <CardContent className="flex gap-2">
-              <Input value={newLineName} onChange={(event) => setNewLineName(event.target.value)} placeholder="Ex.: Linha 4" />
-              <Button
-                onClick={() => {
-                  addLine(newLineName);
-                  setNewLineName("");
-                }}
-              >
-                Adicionar
-              </Button>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">Linhas ativas</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              {lines.map((line) => (
-                <div key={line.id} className="flex flex-wrap items-center gap-2 border rounded-md p-2">
-                  {editingLineId === line.id ? (
-                    <>
-                      <Input value={editingLineName} onChange={(event) => setEditingLineName(event.target.value)} className="max-w-[260px]" />
-                      <Button
-                        size="sm"
-                        onClick={() => {
-                          updateLine(line.id, editingLineName);
-                          setEditingLineId(null);
-                          setEditingLineName("");
-                        }}
-                      >
-                        Salvar
-                      </Button>
-                      <Button size="sm" variant="outline" onClick={() => setEditingLineId(null)}>
-                        Cancelar
-                      </Button>
-                    </>
-                  ) : (
-                    <>
-                      <span className="font-medium">{line.name}</span>
-                      {line.isSystem && <Badge variant="secondary">Sistema</Badge>}
-                      <div className="ml-auto flex gap-2">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          disabled={line.isSystem}
-                          onClick={() => {
-                            setEditingLineId(line.id);
-                            setEditingLineName(line.name);
-                          }}
-                        >
-                          Editar
-                        </Button>
-                        <Button size="sm" variant="outline" className="text-destructive" disabled={line.isSystem} onClick={() => removeLine(line.id)}>
-                          Excluir
-                        </Button>
-                      </div>
-                    </>
-                  )}
-                </div>
-              ))}
-            </CardContent>
-          </Card>
-        </TabsContent>
 
         <TabsContent value="machines" className="space-y-4">
           <Card>
