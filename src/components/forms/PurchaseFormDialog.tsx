@@ -96,7 +96,14 @@ export function PurchaseFormDialog({ open, onOpenChange, editData }: PurchaseFor
           </div>
           <div className="space-y-2">
             <Label>Fornecedor</Label>
-            <Input value={supplier} onChange={(e) => setSupplier(e.target.value)} placeholder="Nome do fornecedor" />
+            <Select value={supplier} onValueChange={setSupplier}>
+              <SelectTrigger><SelectValue placeholder="Selecione o fornecedor" /></SelectTrigger>
+              <SelectContent>
+                {suppliers.map((s) => (
+                  <SelectItem key={s.id} value={s.name}>{s.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
           <div className="space-y-2">
             <Label>Status</Label>
