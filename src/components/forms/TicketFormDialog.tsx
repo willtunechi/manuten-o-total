@@ -114,7 +114,17 @@ export function TicketFormDialog({ open, onOpenChange, ticket, onSave }: Props) 
   }, [ticket, open, reset, machines, components, mechanics]);
 
   const selectedMachineType = watch("machineType") as MachineType | "";
+  const selectedMachineId = watch("machineId");
   const ticketType = watch("type");
+
+  const selectedAssetAlreadyStopped = useMemo(() => {
+    if (!selectedMachineId) return false;
+    const machine = allMachines.find((m) => m.id === selectedMachineId);
+    if (machine) return machine.status === "stopped" || machine.status === "maintenance";
+    const component = allComponents.find((c) => c.id === selectedMachineId);
+    if (component) return component.status === "stopped" || component.status === "maintenance";
+    return false;
+  }, [selectedMachineId, allMachines, allComponents]);
 
   const machineOptions = useMemo(() => {
     if (!selectedMachineType) return [];
@@ -190,7 +200,7 @@ export function TicketFormDialog({ open, onOpenChange, ticket, onSave }: Props) 
       photoUrl: uploadedUrl || "",
       partsUsed: ticket?.partsUsed || [],
       resolvedAt: ticket?.resolvedAt,
-    }, isNewTicket ? stopMachineOnCreate : false);
+    }, isNewTicket && !selectedAssetAlreadyStopped ? stopMachineOnCreate : false);
     reset();
     setUploadedUrl("");
     onOpenChange(false);
@@ -334,7 +344,13 @@ export function TicketFormDialog({ open, onOpenChange, ticket, onSave }: Props) 
             <Input value={watch("createdBy")} readOnly disabled className="bg-muted" />
           </div>
 
-          {isNewTicket && (
+          {isNewTicket && selectedMachineId && selectedAssetAlreadyStopped && (
+            <div className="rounded-lg border border-yellow-500/30 bg-yellow-500/10 p-3">
+              <p className="text-sm text-yellow-400 font-medium">Máquina já possui status em parada</p>
+            </div>
+          )}
+
+          {isNewTicket && !selectedAssetAlreadyStopped && (
             <div className="flex items-center justify-between rounded-lg border p-3 bg-muted/30">
               <div className="space-y-0.5">
                 <Label className="text-sm font-medium">Parar máquina?</Label>
