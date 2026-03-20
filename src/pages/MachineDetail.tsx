@@ -1043,7 +1043,7 @@ export default function MachineDetail() {
                         <tr
                           key={ticket.id}
                           className="border-b last:border-b-0 cursor-pointer hover:bg-muted/30"
-                          onClick={() => openTicketResolution(ticket)}
+                          onClick={() => setTicketViewing(ticket)}
                         >
                           {isMobile ? (
                             <>
