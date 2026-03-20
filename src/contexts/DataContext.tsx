@@ -1182,7 +1182,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       value={{
         machines, mechanics, parts, tickets, preventivePlans, failures, notifications,
         purchaseOrders, stockEntries, inventoryCounts, checklistTemplates,
-        maintenancePlans, planExecutions, workOrders, assetStopRecords,
+        maintenancePlans, planExecutions, workOrders, assetStopRecords, suppliers,
         userAssignedMachineIds, userAssignedComponentIds,
         addMachine, updateMachine, removeMachine,
         addMechanic, updateMechanic, removeMechanic,
