@@ -114,7 +114,17 @@ export function TicketFormDialog({ open, onOpenChange, ticket, onSave }: Props) 
   }, [ticket, open, reset, machines, components, mechanics]);
 
   const selectedMachineType = watch("machineType") as MachineType | "";
+  const selectedMachineId = watch("machineId");
   const ticketType = watch("type");
+
+  const selectedAssetAlreadyStopped = useMemo(() => {
+    if (!selectedMachineId) return false;
+    const machine = allMachines.find((m) => m.id === selectedMachineId);
+    if (machine) return machine.status === "stopped" || machine.status === "maintenance";
+    const component = allComponents.find((c) => c.id === selectedMachineId);
+    if (component) return component.status === "stopped" || component.status === "maintenance";
+    return false;
+  }, [selectedMachineId, allMachines, allComponents]);
 
   const machineOptions = useMemo(() => {
     if (!selectedMachineType) return [];
