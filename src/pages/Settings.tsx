@@ -282,7 +282,7 @@ export default function Settings() {
                   <span className="font-mono font-semibold">{machine.tag}</span>
                   <Badge variant="outline">{MACHINE_TYPE_LABELS[machine.type]}</Badge>
                   <span className="text-sm text-muted-foreground">{machine.model}</span>
-                  <span className="text-sm text-muted-foreground">- {machine.sector || "Sem linha"}</span>
+                  <span className="text-sm text-muted-foreground">- {MACHINE_STATUS_LABELS[machine.status]}</span>
                   <span className="text-sm text-muted-foreground">- {MACHINE_STATUS_LABELS[machine.status]}</span>
                   <div className="ml-auto flex gap-2">
                     <Button size="sm" variant="outline" onClick={() => handleEditMachine(machine.id)}>
