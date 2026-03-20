@@ -693,19 +693,22 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       }
 
       // Calculate net change per part and update stock
-      // prevMap keys use part_id (from DB), normalize both to same key format
       const newMap = new Map(t.partsUsed.map((pu) => [pu.partId, Number(pu.quantity)]));
-      // Combine all part IDs (both maps use UUID strings as keys)
       const allPartIds = new Set([...prevMap.keys(), ...newMap.keys()]);
       for (const partId of allPartIds) {
         const prevQty = prevMap.get(partId) || 0;
         const newQty = newMap.get(partId) || 0;
         const delta = newQty - prevQty; // positive = deduct more, negative = return stock
         if (delta !== 0) {
-          const part = parts.find((p) => p.id === partId);
-          if (part) {
-            const newStock = Math.max(0, (Number(part.quantity) || 0) - delta);
-            await supabase.from("parts").update({ quantity: newStock }).eq("id", partId);
+          // Fetch latest quantity from DB to avoid stale state
+          const { data: freshPart } = await supabase.from("parts").select("quantity").eq("id", partId).maybeSingle();
+          if (freshPart) {
+            const newStock = Math.max(0, (Number(freshPart.quantity) || 0) - delta);
+            const { error } = await supabase.from("parts").update({ quantity: newStock }).eq("id", partId);
+            if (error) {
+              console.error("Erro ao baixar estoque (ticket):", error);
+              toast({ title: "Erro ao baixar estoque", description: error.message, variant: "destructive" });
+            }
           }
         }
       }
