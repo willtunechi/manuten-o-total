@@ -190,7 +190,7 @@ export interface PlanItemResult {
   partsUsed: { partId: string; quantity: number }[];
 }
 
-export type StopReason = 'checklist' | 'preventive' | 'corrective' | 'lubrication' | 'other';
+export type StopReason = 'checklist' | 'preventive' | 'corrective' | 'lubrication' | 'no_production' | 'other';
 
 export interface MachineStopRecord {
   id: string;
