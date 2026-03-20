@@ -680,7 +680,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     if (t.partsUsed !== undefined) {
       // Get previously saved parts to compare
       const { data: prevParts } = await supabase.from("ticket_parts_used").select("part_id, quantity").eq("ticket_id", id);
-      const prevMap = new Map((prevParts || []).map((p) => [p.part_id, p.quantity]));
+      const prevMap = new Map((prevParts || []).map((p) => [p.part_id, Number(p.quantity)]));
 
       // Replace parts in junction table
       await supabase.from("ticket_parts_used").delete().eq("ticket_id", id);
@@ -691,16 +691,19 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       }
 
       // Calculate net change per part and update stock
-      const newMap = new Map(t.partsUsed.map((pu) => [pu.partId, pu.quantity]));
+      // prevMap keys use part_id (from DB), normalize both to same key format
+      const newMap = new Map(t.partsUsed.map((pu) => [pu.partId, Number(pu.quantity)]));
+      // Combine all part IDs (both maps use UUID strings as keys)
       const allPartIds = new Set([...prevMap.keys(), ...newMap.keys()]);
       for (const partId of allPartIds) {
         const prevQty = prevMap.get(partId) || 0;
         const newQty = newMap.get(partId) || 0;
-        const delta = newQty - prevQty; // positive = need to deduct more, negative = return stock
+        const delta = newQty - prevQty; // positive = deduct more, negative = return stock
         if (delta !== 0) {
           const part = parts.find((p) => p.id === partId);
           if (part) {
-            await supabase.from("parts").update({ quantity: Math.max(0, (part.quantity || 0) - delta) }).eq("id", partId);
+            const newStock = Math.max(0, (Number(part.quantity) || 0) - delta);
+            await supabase.from("parts").update({ quantity: newStock }).eq("id", partId);
           }
         }
       }

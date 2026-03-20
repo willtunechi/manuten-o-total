@@ -27,7 +27,7 @@ const ticketStatusColor: Record<TicketStatus, string> = {
 
 export default function Tickets() {
   const { tickets, machines, components, mechanics, parts, addTicket, updateTicket, removeTicket, stopMachine, stopComponent, userAssignedMachineIds, userAssignedComponentIds } = useData();
-  const { role, session } = useAuth();
+  const { role, session, isAdmin, isSupervisor } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<Ticket | undefined>();
@@ -55,11 +55,18 @@ export default function Tickets() {
   }, [session, mechanics]);
 
   const isOperator = role === "operator";
+  const isPlanejador = role === "planejador";
+  const canEditMaintenanceRoles = isAdmin || isSupervisor || role === "mechanic";
 
   const canEditTicket = (ticket: Ticket) => {
-    if (!isOperator) return true;
-    const ticketAuthor = ticket.reportedBy || ticket.createdBy || "";
-    return ticketAuthor === currentUserName;
+    // Resolved tickets: only maintenance, supervisors, admin
+    if (ticket.status === "resolved") return canEditMaintenanceRoles;
+    // Non-resolved: operators can only edit their own
+    if (isOperator) {
+      const ticketAuthor = ticket.reportedBy || ticket.createdBy || "";
+      return ticketAuthor === currentUserName;
+    }
+    return true;
   };
 
   const visibleTickets = useMemo(() => {
