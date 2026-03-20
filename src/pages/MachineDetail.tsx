@@ -537,12 +537,21 @@ export default function MachineDetail() {
           else allPartsUsed.push({ ...pu });
         });
       });
-      // Import supabase for stock deduction
-      for (const pu of allPartsUsed) {
-        const part = parts.find((p) => p.id === pu.partId);
-        if (part) {
-          await supabase.from("parts").update({ quantity: Math.max(0, (part.quantity || 0) - pu.quantity) }).eq("id", pu.partId);
+      // Deduct stock for each part used
+      if (allPartsUsed.length > 0) {
+        for (const pu of allPartsUsed) {
+          // Fetch latest quantity from DB to avoid stale state issues
+          const { data: freshPart } = await supabase.from("parts").select("quantity").eq("id", pu.partId).maybeSingle();
+          if (freshPart) {
+            const newQty = Math.max(0, (Number(freshPart.quantity) || 0) - pu.quantity);
+            const { error } = await supabase.from("parts").update({ quantity: newQty }).eq("id", pu.partId);
+            if (error) {
+              console.error("Erro ao baixar estoque:", error);
+              toast({ title: "Erro ao baixar estoque", description: error.message, variant: "destructive" });
+            }
+          }
         }
+        toast({ title: "Estoque atualizado", description: `${allPartsUsed.length} peça(s) baixada(s)` });
       }
       await completePlanExecution(executionId);
     }
