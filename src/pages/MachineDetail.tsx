@@ -1505,7 +1505,7 @@ export default function MachineDetail() {
       </Dialog>
 
       <Dialog open={!!ticketModal} onOpenChange={(open) => !open && setTicketModal(null)}>
-        <DialogContent className="max-w-lg">
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
           {ticketModal && (
             <>
               <DialogHeader>
@@ -1514,11 +1514,23 @@ export default function MachineDetail() {
               </DialogHeader>
 
               <div className="space-y-4">
+                {/* Original attachment from opener */}
+                {ticketModal.photoUrl && (
+                  <div className="space-y-1">
+                    <p className="text-xs text-muted-foreground">Anexo do solicitante</p>
+                    {/\.(mp4|webm|mov)$/i.test(ticketModal.photoUrl) ? (
+                      <video src={ticketModal.photoUrl} controls className="rounded-md border border-border max-h-48 w-full object-contain" />
+                    ) : (
+                      <img src={ticketModal.photoUrl} alt="Anexo do solicitante" className="rounded-md border border-border max-h-48 object-contain" />
+                    )}
+                  </div>
+                )}
+
                 <div className="space-y-1">
                   <p className="text-xs text-muted-foreground">Status</p>
                   <Select
                     value={ticketDraft.status}
-                    onValueChange={(value: Ticket["status"]) => setTicketDraft((prev) => ({ ...prev, status: value }))}
+                    onValueChange={(value: Ticket["status"]) => setTicketDraft((prev) => ({ ...prev, status: value, machineReturned: value !== "resolved" ? null : prev.machineReturned }))}
                   >
                     <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>
@@ -1528,6 +1540,34 @@ export default function MachineDetail() {
                     </SelectContent>
                   </Select>
                 </div>
+
+                {/* Machine returned question - required when resolved */}
+                {ticketDraft.status === "resolved" && (
+                  <div className="space-y-2 rounded-lg border p-3 bg-muted/30">
+                    <p className="text-sm font-medium">Máquina retornou à operação? *</p>
+                    <div className="flex gap-3">
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant={ticketDraft.machineReturned === true ? "default" : "outline"}
+                        onClick={() => setTicketDraft((prev) => ({ ...prev, machineReturned: true }))}
+                      >
+                        Sim
+                      </Button>
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant={ticketDraft.machineReturned === false ? "default" : "outline"}
+                        onClick={() => setTicketDraft((prev) => ({ ...prev, machineReturned: false }))}
+                      >
+                        Não
+                      </Button>
+                    </div>
+                    {ticketDraft.machineReturned === null && (
+                      <p className="text-xs text-destructive">Obrigatório informar</p>
+                    )}
+                  </div>
+                )}
 
                 <div className="space-y-1">
                   <p className="text-xs text-muted-foreground">Comentário</p>
@@ -1539,19 +1579,45 @@ export default function MachineDetail() {
                   />
                 </div>
 
+                {/* Mechanic attachment upload */}
                 <div className="space-y-1">
-                  <p className="text-xs text-muted-foreground">Anexo</p>
+                  <p className="text-xs text-muted-foreground">Anexo da manutenção</p>
                   <Input
                     type="file"
-                    accept="image/*"
-                    onChange={(e) => {
+                    accept="image/*,video/mp4,video/webm,video/quicktime"
+                    disabled={resolutionUploading}
+                    onChange={async (e) => {
                       const file = e.target.files?.[0];
                       if (!file) return;
-                      setTicketDraft((prev) => ({ ...prev, photoUrl: URL.createObjectURL(file) }));
+                      if (file.size > 20 * 1024 * 1024) {
+                        toast({ title: "Arquivo muito grande", description: "Máximo 20MB", variant: "destructive" });
+                        return;
+                      }
+                      setResolutionUploading(true);
+                      try {
+                        const ext = file.name.split('.').pop() || 'jpg';
+                        const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+                        const filePath = `resolutions/${fileName}`;
+                        const { error } = await supabase.storage.from('ticket-attachments').upload(filePath, file);
+                        if (error) throw error;
+                        const { data: { publicUrl } } = supabase.storage.from('ticket-attachments').getPublicUrl(filePath);
+                        setTicketDraft((prev) => ({ ...prev, resolutionPhotoUrl: publicUrl }));
+                      } catch (err: any) {
+                        toast({ title: "Erro ao enviar", description: err.message, variant: "destructive" });
+                      } finally {
+                        setResolutionUploading(false);
+                      }
                     }}
                   />
-                  {ticketDraft.photoUrl && (
-                    <img src={ticketDraft.photoUrl} alt="Anexo chamado" className="mt-2 h-20 w-20 rounded border object-cover" />
+                  {resolutionUploading && <p className="text-xs text-muted-foreground">Enviando...</p>}
+                  {ticketDraft.resolutionPhotoUrl && (
+                    <div className="mt-2">
+                      {/\.(mp4|webm|mov)$/i.test(ticketDraft.resolutionPhotoUrl) ? (
+                        <video src={ticketDraft.resolutionPhotoUrl} controls className="rounded-md border border-border max-h-48 w-full object-contain" />
+                      ) : (
+                        <img src={ticketDraft.resolutionPhotoUrl} alt="Anexo manutenção" className="rounded-md border border-border max-h-48 object-contain" />
+                      )}
+                    </div>
                   )}
                 </div>
 
@@ -1600,7 +1666,7 @@ export default function MachineDetail() {
 
               <DialogFooter>
                 <Button type="button" variant="outline" onClick={() => setTicketModal(null)}>Cancelar</Button>
-                <Button type="button" onClick={saveTicketResolution}>Salvar</Button>
+                <Button type="button" onClick={saveTicketResolution} disabled={resolutionUploading}>Salvar</Button>
               </DialogFooter>
             </>
           )}
