@@ -344,7 +344,13 @@ export function TicketFormDialog({ open, onOpenChange, ticket, onSave }: Props) 
             <Input value={watch("createdBy")} readOnly disabled className="bg-muted" />
           </div>
 
-          {isNewTicket && (
+          {isNewTicket && selectedMachineId && selectedAssetAlreadyStopped && (
+            <div className="rounded-lg border border-yellow-500/30 bg-yellow-500/10 p-3">
+              <p className="text-sm text-yellow-400 font-medium">Máquina já possui status em parada</p>
+            </div>
+          )}
+
+          {isNewTicket && !selectedAssetAlreadyStopped && (
             <div className="flex items-center justify-between rounded-lg border p-3 bg-muted/30">
               <div className="space-y-0.5">
                 <Label className="text-sm font-medium">Parar máquina?</Label>
