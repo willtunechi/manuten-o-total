@@ -61,6 +61,8 @@ type TicketResolutionDraft = {
   status: Ticket["status"];
   comment: string;
   photoUrl: string;
+  resolutionPhotoUrl: string;
+  machineReturned: boolean | null;
   partsUsed: Array<{ partId: string; quantity: number }>;
 };
 
