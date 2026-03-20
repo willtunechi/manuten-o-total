@@ -820,6 +820,7 @@ export type Database = {
           photo_url: string | null
           priority: string
           reported_by: string | null
+          resolution_photo_url: string | null
           resolved_at: string | null
           status: string
           symptom: string
@@ -835,6 +836,7 @@ export type Database = {
           photo_url?: string | null
           priority?: string
           reported_by?: string | null
+          resolution_photo_url?: string | null
           resolved_at?: string | null
           status?: string
           symptom?: string
@@ -850,6 +852,7 @@ export type Database = {
           photo_url?: string | null
           priority?: string
           reported_by?: string | null
+          resolution_photo_url?: string | null
           resolved_at?: string | null
           status?: string
           symptom?: string
