@@ -19,7 +19,7 @@ const shiftOptions = ["Manhã", "Tarde", "Noite"] as const;
 const schema = z.object({
   name: z.string().min(3, "Mínimo 3 caracteres"),
   email: z.string().email("Email inválido").optional().or(z.literal("")),
-  role: z.enum(["mechanic", "operator", "logistica", "supervisor_manutencao", "supervisor_operacoes", "supervisor_logistica"]),
+  role: z.enum(["mechanic", "operator", "planejador", "supervisor_manutencao", "supervisor_operacoes"]),
   shift: z.enum(shiftOptions).optional().default("Manhã"),
   level: z.enum(["junior", "mid", "senior"]),
   available: z.boolean(),
