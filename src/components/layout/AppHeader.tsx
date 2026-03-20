@@ -18,6 +18,9 @@ const ROLE_LABELS: Record<string, string> = {
   admin: "Administrador",
   mechanic: "Mecânico",
   operator: "Operador",
+  planejador: "Planejador",
+  supervisor_manutencao: "Supervisor Manutenção",
+  supervisor_operacoes: "Supervisor Operações",
 };
 
 interface AppHeaderProps {

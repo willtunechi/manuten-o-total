@@ -6,8 +6,8 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const SUPERVISOR_ROLES = ["supervisor_manutencao", "supervisor_operacoes", "supervisor_logistica"];
-const SUBORDINATE_ROLES = ["operator", "mechanic", "logistica"];
+const SUPERVISOR_ROLES = ["supervisor_manutencao", "supervisor_operacoes"];
+const SUBORDINATE_ROLES = ["operator", "mechanic", "planejador"];
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {

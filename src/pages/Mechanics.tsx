@@ -40,7 +40,6 @@ export default function Mechanics() {
     const subordinateMap: Record<string, string[]> = {
       supervisor_manutencao: ["mechanic"],
       supervisor_operacoes: ["operator"],
-      supervisor_logistica: ["logistica"],
     };
     const allowed = role ? subordinateMap[role] : undefined;
     if (!allowed) return mechanics;

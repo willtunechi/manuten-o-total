@@ -103,7 +103,7 @@ export function useAuth() {
     const match = (routes: string[]) =>
       routes.some((r) => path === r || (r !== "/" && path.startsWith(r)));
 
-    if (role === "logistica") {
+    if (role === "planejador") {
       return match(["/", "/inventory", "/purchases", "/stock-entries", "/stock-count", "/registrations"]);
     }
 

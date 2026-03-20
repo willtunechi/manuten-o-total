@@ -254,7 +254,7 @@ export function MechanicFormDialog({ open, onOpenChange, mechanic, onSave }: Pro
 
           {isSupervisorRole ? (
             <div className="rounded-md border p-3 bg-muted/30 text-xs text-muted-foreground">
-              Supervisores e Logística têm acesso a todas as máquinas e componentes automaticamente.
+              Supervisores e Planejadores têm acesso a todas as máquinas e componentes automaticamente.
             </div>
           ) : (
             <div className="space-y-2">
