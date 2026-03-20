@@ -155,16 +155,6 @@ export default function Tickets() {
                   <Button size="sm" variant="ghost" className="gap-1" onClick={(e) => { e.stopPropagation(); setViewing(t); }}>
                     <Eye className="h-3.5 w-3.5" />
                   </Button>
-                  {editable && (
-                    <>
-                      <Button size="sm" variant="outline" className="gap-1" onClick={(e) => { e.stopPropagation(); setEditing(t); setFormOpen(true); }}>
-                        <Pencil className="h-3.5 w-3.5" />
-                      </Button>
-                      <Button size="sm" variant="outline" className="gap-1 text-destructive hover:text-destructive" onClick={(e) => { e.stopPropagation(); setDeleting(t); }}>
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </Button>
-                    </>
-                  )}
                 </div>
               </CardContent>
             </Card>
