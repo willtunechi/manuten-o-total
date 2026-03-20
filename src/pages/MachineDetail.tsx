@@ -481,7 +481,7 @@ export default function MachineDetail() {
     setTicketModal(ticket);
     setTicketDraft({
       status: ticket.status,
-      comment: ticket.comment || "",
+      comment: (ticket.comment && ticket.comment !== "null") ? ticket.comment : "",
       photoUrl: ticket.photoUrl || "",
       resolutionPhotoUrl: "",
       machineReturned: null,
