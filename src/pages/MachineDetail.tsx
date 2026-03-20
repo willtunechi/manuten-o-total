@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import {
   ArrowLeft,
   Factory,
@@ -161,6 +161,8 @@ function ResultSelector({
 export default function MachineDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const initialTab = searchParams.get("tab") || "checklist";
   const isMobile = useIsMobile();
   const { role, loading: authLoading } = useAuth();
   const isOperator = role === "operator";
@@ -708,7 +710,7 @@ export default function MachineDetail() {
         </div>
       </div>
 
-      <Tabs defaultValue="checklist" className="w-full">
+      <Tabs defaultValue={initialTab} className="w-full">
         <TabsList className="grid w-full grid-cols-6 overflow-x-auto">
           <TabsTrigger value="checklist">
             <ClipboardList className="h-4 w-4 mr-2" />
