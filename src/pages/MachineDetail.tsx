@@ -597,6 +597,11 @@ export default function MachineDetail() {
 
   const saveTicketResolution = () => {
     if (!ticketModal) return;
+    if (ticketDraft.status === "resolved" && ticketDraft.machineReturned === null) {
+      toast({ title: "Informe se a máquina retornou à operação", variant: "destructive" });
+      return;
+    }
+
     updateTicket(ticketModal.id, {
       status: ticketDraft.status,
       resolvedAt: ticketDraft.status === "resolved" ? new Date().toISOString() : undefined,
@@ -604,6 +609,17 @@ export default function MachineDetail() {
       photoUrl: ticketDraft.photoUrl,
       partsUsed: ticketDraft.partsUsed,
     });
+
+    // If resolved and machine returned, resume the machine
+    if (ticketDraft.status === "resolved" && ticketDraft.machineReturned === true) {
+      const isComp = !allMachines.some((m) => m.id === ticketModal.machineId);
+      if (isComp) {
+        resumeComponent(ticketModal.machineId);
+      } else {
+        resumeMachine(ticketModal.machineId);
+      }
+    }
+
     setTicketModal(null);
     setTicketPartSelection({ partId: "", quantity: 1 });
   };
