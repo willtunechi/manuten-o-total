@@ -171,7 +171,7 @@ export default function Settings() {
         year: Number(machineForm.year) || new Date().getFullYear(),
         horimeter: Number(machineForm.horimeter) || 0,
         status: machineForm.status,
-        sector: machineForm.line || "Sem linha",
+        sector: "",
       });
       setMachineDialogOpen(false);
       resetMachineForm();
@@ -186,8 +186,8 @@ export default function Settings() {
       year: Number(machineForm.year) || new Date().getFullYear(),
       horimeter: Number(machineForm.horimeter) || 0,
       status: machineForm.status,
-      lineMode: machineForm.lineMode,
-      line: machineForm.line || "Sem linha",
+      lineMode: "single",
+      line: "",
     });
     setMachineDialogOpen(false);
     resetMachineForm();
@@ -205,8 +205,6 @@ export default function Settings() {
       year: String(machine.year),
       horimeter: String(machine.horimeter),
       status: machine.status,
-      lineMode: "single",
-      line: machine.sector || "Sem linha",
     });
     setMachineDialogOpen(true);
   };
