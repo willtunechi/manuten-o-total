@@ -482,6 +482,8 @@ export default function MachineDetail() {
       status: ticket.status,
       comment: ticket.comment || "",
       photoUrl: ticket.photoUrl || "",
+      resolutionPhotoUrl: "",
+      machineReturned: null,
       partsUsed: ticket.partsUsed || [],
     });
     setTicketPartSelection({ partId: "", quantity: 1 });
