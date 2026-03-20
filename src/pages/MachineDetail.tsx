@@ -34,6 +34,7 @@ import { ResumeMachineDialog } from "@/components/dialogs/ResumeMachineDialog";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useConfig } from "@/contexts/ConfigContext";
 import { useAuth } from "@/hooks/useAuth";
+import { toast } from "@/hooks/use-toast";
 
 type ItemResultValue = "ok" | "nok";
 
