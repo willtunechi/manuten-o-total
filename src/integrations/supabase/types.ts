@@ -995,6 +995,7 @@ export type Database = {
         | "corrective"
         | "lubrication"
         | "other"
+        | "no_production"
       ticket_status: "pending" | "in_maintenance" | "resolved"
       work_order_status: "open" | "in_progress" | "completed"
       work_order_type: "planned" | "unplanned"
@@ -1181,6 +1182,7 @@ export const Constants = {
         "corrective",
         "lubrication",
         "other",
+        "no_production",
       ],
       ticket_status: ["pending", "in_maintenance", "resolved"],
       work_order_status: ["open", "in_progress", "completed"],
