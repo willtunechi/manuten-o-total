@@ -608,6 +608,7 @@ export default function MachineDetail() {
       resolvedAt: ticketDraft.status === "resolved" ? new Date().toISOString() : undefined,
       comment: ticketDraft.comment,
       photoUrl: ticketDraft.photoUrl,
+      resolutionPhotoUrl: ticketDraft.resolutionPhotoUrl,
       partsUsed: ticketDraft.partsUsed,
     });
 
