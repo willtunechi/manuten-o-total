@@ -676,24 +676,35 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       if (error) { toast({ title: "Erro ao atualizar chamado", description: error.message, variant: "destructive" }); return; }
     }
 
-    // Handle parts used: if resolving with parts, update stock
+    // Handle parts used: sync and deduct stock for new parts
     if (t.partsUsed !== undefined) {
+      // Get previously saved parts to compare
+      const { data: prevParts } = await supabase.from("ticket_parts_used").select("part_id, quantity").eq("ticket_id", id);
+      const prevMap = new Map((prevParts || []).map((p) => [p.part_id, p.quantity]));
+
+      // Replace parts in junction table
       await supabase.from("ticket_parts_used").delete().eq("ticket_id", id);
       if (t.partsUsed.length > 0) {
         await supabase.from("ticket_parts_used").insert(t.partsUsed.map((pu) => ({
           ticket_id: id, part_id: pu.partId, quantity: pu.quantity,
         })));
       }
-      // Deduct stock if resolving
-      if (t.status === "resolved") {
-        for (const pu of t.partsUsed) {
-          const part = parts.find((p) => p.id === pu.partId);
+
+      // Calculate net change per part and update stock
+      const newMap = new Map(t.partsUsed.map((pu) => [pu.partId, pu.quantity]));
+      const allPartIds = new Set([...prevMap.keys(), ...newMap.keys()]);
+      for (const partId of allPartIds) {
+        const prevQty = prevMap.get(partId) || 0;
+        const newQty = newMap.get(partId) || 0;
+        const delta = newQty - prevQty; // positive = need to deduct more, negative = return stock
+        if (delta !== 0) {
+          const part = parts.find((p) => p.id === partId);
           if (part) {
-            await supabase.from("parts").update({ quantity: Math.max(0, (part.quantity || 0) - pu.quantity) }).eq("id", pu.partId);
+            await supabase.from("parts").update({ quantity: Math.max(0, (part.quantity || 0) - delta) }).eq("id", partId);
           }
         }
-        await loadParts();
       }
+      await loadParts();
     }
 
     await loadTickets();
