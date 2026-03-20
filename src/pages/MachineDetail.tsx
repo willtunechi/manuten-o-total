@@ -12,6 +12,7 @@ import {
   MonitorStop,
   PlayCircle,
   Plus,
+  Pencil,
   Droplets,
   CalendarCheck2,
 } from "lucide-react";
@@ -200,6 +201,7 @@ export default function MachineDetail() {
   const [partSelection, setPartSelection] = useState<{ partId: string; quantity: number }>({ partId: "", quantity: 1 });
   const [ticketTypeFilter, setTicketTypeFilter] = useState<"all" | Ticket["type"]>("all");
   const [ticketPriorityFilter, setTicketPriorityFilter] = useState<"all" | Priority>("all");
+  const [ticketViewing, setTicketViewing] = useState<Ticket | null>(null);
   const [ticketModal, setTicketModal] = useState<Ticket | null>(null);
   const [historyModal, setHistoryModal] = useState<HistoryRow | null>(null);
   const [ticketDraft, setTicketDraft] = useState<TicketResolutionDraft>({
@@ -1042,7 +1044,7 @@ export default function MachineDetail() {
                         <tr
                           key={ticket.id}
                           className="border-b last:border-b-0 cursor-pointer hover:bg-muted/30"
-                          onClick={() => openTicketResolution(ticket)}
+                          onClick={() => setTicketViewing(ticket)}
                         >
                           {isMobile ? (
                             <>
@@ -1351,6 +1353,128 @@ export default function MachineDetail() {
                 <Button type="button" variant="outline" onClick={closeEditorWithoutSaving}>Cancelar</Button>
                 <Button type="button" onClick={saveEditorAndClose}>Salvar</Button>
               </DialogFooter>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Ticket View Dialog */}
+      <Dialog open={!!ticketViewing} onOpenChange={(open) => { if (!open) setTicketViewing(null); }}>
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+          {ticketViewing && (
+            <>
+              <DialogHeader>
+                <DialogTitle>
+                  {ticketViewing.code ? `OS-${String(ticketViewing.code).padStart(4, '0')}` : 'Detalhes do Chamado'}
+                </DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <span className="text-xs text-muted-foreground">Equipamento</span>
+                    <p className="font-mono font-bold">{machine?.tag || "—"}</p>
+                  </div>
+                  <div>
+                    <span className="text-xs text-muted-foreground">Status</span>
+                    <div className="mt-0.5">
+                      <Badge variant="outline" className={ticketStatusColor[ticketViewing.status]}>
+                        {TICKET_STATUS_LABELS[ticketViewing.status]}
+                      </Badge>
+                    </div>
+                  </div>
+                  <div>
+                    <span className="text-xs text-muted-foreground">Prioridade</span>
+                    <div className="mt-0.5">
+                      <Badge className={
+                        ticketViewing.priority === "critical" ? "bg-red-600 text-white" :
+                        ticketViewing.priority === "high" ? "bg-orange-600 text-white" :
+                        ticketViewing.priority === "medium" ? "bg-yellow-500 text-black" :
+                        "bg-blue-600 text-white"
+                      }>
+                        {PRIORITY_LABELS[ticketViewing.priority]}
+                      </Badge>
+                    </div>
+                  </div>
+                  <div>
+                    <span className="text-xs text-muted-foreground">Tipo</span>
+                    <p className="text-sm font-medium">
+                      {OS_TYPE_LABELS[ticketViewing.type]}
+                      {ticketViewing.type === "corrective" && ticketViewing.maintenanceType && (
+                        <span className="text-muted-foreground"> · {ticketViewing.maintenanceType === "mechanical" ? "Mecânica" : "Elétrica"}</span>
+                      )}
+                    </p>
+                  </div>
+                  <div>
+                    <span className="text-xs text-muted-foreground">Aberto por</span>
+                    <p className="text-sm font-medium">{ticketViewing.reportedBy || ticketViewing.createdBy || "—"}</p>
+                  </div>
+                  <div>
+                    <span className="text-xs text-muted-foreground">Data de abertura</span>
+                    <p className="text-sm font-medium">{new Date(ticketViewing.createdAt).toLocaleString("pt-BR")}</p>
+                  </div>
+                  {ticketViewing.resolvedAt && (
+                    <div>
+                      <span className="text-xs text-muted-foreground">Resolvido em</span>
+                      <p className="text-sm font-medium">{new Date(ticketViewing.resolvedAt).toLocaleString("pt-BR")}</p>
+                    </div>
+                  )}
+                </div>
+
+                <div>
+                  <span className="text-xs text-muted-foreground">Descrição / Sintoma</span>
+                  <p className="text-sm mt-1 bg-muted/30 rounded-md p-3 border border-border">{ticketViewing.symptom}</p>
+                </div>
+
+                {ticketViewing.comment && (
+                  <div>
+                    <span className="text-xs text-muted-foreground">Comentário</span>
+                    <p className="text-sm mt-1 bg-muted/30 rounded-md p-3 border border-border">{ticketViewing.comment}</p>
+                  </div>
+                )}
+
+                {ticketViewing.photoUrl && (
+                  <div>
+                    <span className="text-xs text-muted-foreground">Foto / Vídeo</span>
+                    {/\.(mp4|webm|mov)$/i.test(ticketViewing.photoUrl) ? (
+                      <video src={ticketViewing.photoUrl} controls className="mt-1 rounded-md border border-border max-h-64 w-full object-contain" />
+                    ) : (
+                      <img src={ticketViewing.photoUrl} alt="Anexo do chamado" className="mt-1 rounded-md border border-border max-h-48 object-contain" />
+                    )}
+                  </div>
+                )}
+
+                {ticketViewing.partsUsed && ticketViewing.partsUsed.length > 0 && (
+                  <div>
+                    <span className="text-xs text-muted-foreground">Peças utilizadas</span>
+                    <ul className="mt-1 space-y-1">
+                      {ticketViewing.partsUsed.map((pu, i) => {
+                        const part = parts.find((p) => p.id === pu.partId);
+                        return (
+                          <li key={i} className="text-sm flex justify-between bg-muted/30 rounded-md px-3 py-1.5 border border-border">
+                            <span>{part?.description || part?.sku || pu.partId}</span>
+                            <span className="font-mono text-muted-foreground">x{pu.quantity}</span>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </div>
+                )}
+
+                <div className="flex justify-end gap-2 pt-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      const t = ticketViewing;
+                      setTicketViewing(null);
+                      openTicketResolution(t);
+                    }}
+                  >
+                    <Pencil className="h-3.5 w-3.5 mr-1" /> Editar / Concluir
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={() => setTicketViewing(null)}>Fechar</Button>
+                </div>
+              </div>
             </>
           )}
         </DialogContent>
