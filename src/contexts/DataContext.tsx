@@ -383,6 +383,12 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     })));
   }, []);
 
+  const loadSuppliers = useCallback(async () => {
+    const { data, error } = await supabase.from("suppliers").select("*").order("name");
+    if (error) { console.error("load suppliers:", error); return; }
+    setSuppliers((data || []).map((s) => ({ id: s.id, name: s.name })));
+  }, []);
+
   // ─── RESOLVE USER ASSIGNMENTS ────────────────────────────────
 
   useEffect(() => {
