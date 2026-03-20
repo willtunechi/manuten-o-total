@@ -466,7 +466,9 @@ export default function MachineDetail() {
     drafts[planId]?.[itemId] || {};
 
   const openEditor = (kind: "checklist" | "preventive", row: PlanItemRow) => {
-    const sourceDraft = (kind === "preventive" ? preventiveDrafts : checklistDrafts)[row.planId]?.[row.item.id] || {};
+    const draftsMap = kind === "preventive" ? preventiveDrafts : checklistDrafts;
+    const sourceDraft = draftsMap[row.planId]?.[row.item.id] || {};
+    console.log("[openEditor] sourceDraft for", row.planId, row.item.id, ":", JSON.stringify(sourceDraft));
     setEditorForm({
       result: sourceDraft.result,
       comment: sourceDraft.comment || "",
