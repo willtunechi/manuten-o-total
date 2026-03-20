@@ -16,7 +16,7 @@ interface PurchaseFormDialogProps {
 }
 
 export function PurchaseFormDialog({ open, onOpenChange, editData }: PurchaseFormDialogProps) {
-  const { parts, addPurchaseOrder, updatePurchaseOrder } = useData();
+  const { parts, suppliers, addPurchaseOrder, updatePurchaseOrder } = useData();
   const [partId, setPartId] = useState("");
   const [quantity, setQuantity] = useState(1);
   const [supplier, setSupplier] = useState("");
