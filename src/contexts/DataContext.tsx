@@ -669,6 +669,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     if (t.status !== undefined) update.status = t.status;
     if (t.comment !== undefined) update.comment = t.comment;
     if (t.photoUrl !== undefined) update.photo_url = t.photoUrl;
+    if (t.resolutionPhotoUrl !== undefined) update.resolution_photo_url = t.resolutionPhotoUrl;
     if (t.resolvedAt !== undefined) update.resolved_at = t.resolvedAt;
     if (t.reportedBy !== undefined) update.reported_by = t.reportedBy;
 
