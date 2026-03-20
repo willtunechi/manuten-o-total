@@ -135,18 +135,20 @@ export function MachineCard({ machine, onClick }: MachineCardProps) {
                         </div>
                     </div>
 
-                    {/* OS Aberta flashing banner */}
-                    {hasOpenOS && (
-                        <div
-                            className="rounded-md px-3 py-1.5 text-center text-xs font-bold uppercase tracking-wider animate-[blink-red-white_1s_ease-in-out_infinite] cursor-pointer hover:opacity-80"
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                navigate(isComponent ? `/components/${machine.id}` : `/machines/${machine.id}`);
-                            }}
-                        >
-                            ⚠ {openTicket?.code ? `OS-${String(openTicket.code).padStart(4, '0')}` : 'OS Aberta'}
-                        </div>
-                    )}
+                    {/* OS Aberta flashing banner — reserve space always for uniform height */}
+                    <div className="min-h-[30px]">
+                        {hasOpenOS && (
+                            <div
+                                className="rounded-md px-3 py-1.5 text-center text-xs font-bold uppercase tracking-wider animate-[blink-red-white_1s_ease-in-out_infinite] cursor-pointer hover:opacity-80"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    navigate(isComponent ? `/components/${machine.id}` : `/machines/${machine.id}`);
+                                }}
+                            >
+                                ⚠ {openTicket?.code ? `OS-${String(openTicket.code).padStart(4, '0')}` : 'OS Aberta'}
+                            </div>
+                        )}
+                    </div>
 
                     {/* Stats Grid */}
                     <div className="grid grid-cols-2 gap-2 pt-1 mt-auto">
