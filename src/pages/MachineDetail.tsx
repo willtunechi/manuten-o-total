@@ -200,6 +200,7 @@ export default function MachineDetail() {
   const [partSelection, setPartSelection] = useState<{ partId: string; quantity: number }>({ partId: "", quantity: 1 });
   const [ticketTypeFilter, setTicketTypeFilter] = useState<"all" | Ticket["type"]>("all");
   const [ticketPriorityFilter, setTicketPriorityFilter] = useState<"all" | Priority>("all");
+  const [ticketViewing, setTicketViewing] = useState<Ticket | null>(null);
   const [ticketModal, setTicketModal] = useState<Ticket | null>(null);
   const [historyModal, setHistoryModal] = useState<HistoryRow | null>(null);
   const [ticketDraft, setTicketDraft] = useState<TicketResolutionDraft>({
