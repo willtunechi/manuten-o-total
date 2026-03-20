@@ -40,8 +40,6 @@ const emptyMachineForm = {
   year: String(new Date().getFullYear()),
   horimeter: "0",
   status: "operating" as MachineStatus,
-  lineMode: "single" as "single" | "all",
-  line: "",
 };
 
 const emptyComponentForm = {
@@ -66,18 +64,10 @@ export default function Settings() {
     removeComponent,
   } = useData();
   const {
-    lines,
-    addLine,
-    updateLine,
-    removeLine,
     createMachineWithScope,
     createComponentWithScope,
     componentRules,
   } = useConfig();
-
-  const [newLineName, setNewLineName] = useState("");
-  const [editingLineId, setEditingLineId] = useState<string | null>(null);
-  const [editingLineName, setEditingLineName] = useState("");
 
   const [machineForm, setMachineForm] = useState(emptyMachineForm);
   const [editingMachineId, setEditingMachineId] = useState<string | null>(null);
@@ -150,17 +140,14 @@ export default function Settings() {
     () => [...machines].sort((left, right) => left.tag.localeCompare(right.tag)),
     [machines],
   );
-  const selectableLines = useMemo(() => lines.filter((line) => line.active).map((line) => line.name), [lines]);
+  
   const machinesByType = useMemo(
     () => machines.filter((machine) => machine.type === componentForm.machineType).sort((a, b) => a.tag.localeCompare(b.tag, 'pt-BR', { numeric: true })),
     [machines, componentForm.machineType],
   );
 
   const resetMachineForm = () => {
-    setMachineForm({
-      ...emptyMachineForm,
-      line: selectableLines.find((line) => line !== "Sem linha") || "Sem linha",
-    });
+    setMachineForm(emptyMachineForm);
     setEditingMachineId(null);
   };
 
@@ -184,7 +171,7 @@ export default function Settings() {
         year: Number(machineForm.year) || new Date().getFullYear(),
         horimeter: Number(machineForm.horimeter) || 0,
         status: machineForm.status,
-        sector: machineForm.line || "Sem linha",
+        sector: "",
       });
       setMachineDialogOpen(false);
       resetMachineForm();
@@ -199,8 +186,8 @@ export default function Settings() {
       year: Number(machineForm.year) || new Date().getFullYear(),
       horimeter: Number(machineForm.horimeter) || 0,
       status: machineForm.status,
-      lineMode: machineForm.lineMode,
-      line: machineForm.line || "Sem linha",
+      lineMode: "single",
+      line: "",
     });
     setMachineDialogOpen(false);
     resetMachineForm();
@@ -218,8 +205,6 @@ export default function Settings() {
       year: String(machine.year),
       horimeter: String(machine.horimeter),
       status: machine.status,
-      lineMode: "single",
-      line: machine.sector || "Sem linha",
     });
     setMachineDialogOpen(true);
   };
@@ -271,87 +256,16 @@ export default function Settings() {
       <div>
         <h1 className="text-2xl font-bold">Configurações</h1>
         <p className="text-sm text-muted-foreground">
-          Cadastro de linhas, máquinas e componentes com vínculo operacional.
+          Cadastro de máquinas e componentes.
         </p>
       </div>
 
-      <Tabs defaultValue="lines" className="space-y-4">
-        <TabsList className={`grid w-full md:w-[720px] ${canManageUsers ? "grid-cols-4" : "grid-cols-3"}`}>
-          <TabsTrigger value="lines">Linhas</TabsTrigger>
+      <Tabs defaultValue="machines" className="space-y-4">
+        <TabsList className={`grid w-full md:w-[720px] ${canManageUsers ? "grid-cols-3" : "grid-cols-2"}`}>
           <TabsTrigger value="machines">Máquinas</TabsTrigger>
           <TabsTrigger value="components">Componentes</TabsTrigger>
           {canManageUsers && <TabsTrigger value="users">Usuários</TabsTrigger>}
         </TabsList>
-
-        <TabsContent value="lines" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">Cadastrar linha</CardTitle>
-            </CardHeader>
-            <CardContent className="flex gap-2">
-              <Input value={newLineName} onChange={(event) => setNewLineName(event.target.value)} placeholder="Ex.: Linha 4" />
-              <Button
-                onClick={() => {
-                  addLine(newLineName);
-                  setNewLineName("");
-                }}
-              >
-                Adicionar
-              </Button>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">Linhas ativas</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              {lines.map((line) => (
-                <div key={line.id} className="flex flex-wrap items-center gap-2 border rounded-md p-2">
-                  {editingLineId === line.id ? (
-                    <>
-                      <Input value={editingLineName} onChange={(event) => setEditingLineName(event.target.value)} className="max-w-[260px]" />
-                      <Button
-                        size="sm"
-                        onClick={() => {
-                          updateLine(line.id, editingLineName);
-                          setEditingLineId(null);
-                          setEditingLineName("");
-                        }}
-                      >
-                        Salvar
-                      </Button>
-                      <Button size="sm" variant="outline" onClick={() => setEditingLineId(null)}>
-                        Cancelar
-                      </Button>
-                    </>
-                  ) : (
-                    <>
-                      <span className="font-medium">{line.name}</span>
-                      {line.isSystem && <Badge variant="secondary">Sistema</Badge>}
-                      <div className="ml-auto flex gap-2">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          disabled={line.isSystem}
-                          onClick={() => {
-                            setEditingLineId(line.id);
-                            setEditingLineName(line.name);
-                          }}
-                        >
-                          Editar
-                        </Button>
-                        <Button size="sm" variant="outline" className="text-destructive" disabled={line.isSystem} onClick={() => removeLine(line.id)}>
-                          Excluir
-                        </Button>
-                      </div>
-                    </>
-                  )}
-                </div>
-              ))}
-            </CardContent>
-          </Card>
-        </TabsContent>
 
         <TabsContent value="machines" className="space-y-4">
           <Card>
@@ -368,7 +282,7 @@ export default function Settings() {
                   <span className="font-mono font-semibold">{machine.tag}</span>
                   <Badge variant="outline">{MACHINE_TYPE_LABELS[machine.type]}</Badge>
                   <span className="text-sm text-muted-foreground">{machine.model}</span>
-                  <span className="text-sm text-muted-foreground">- {machine.sector || "Sem linha"}</span>
+                  <span className="text-sm text-muted-foreground">- {MACHINE_STATUS_LABELS[machine.status]}</span>
                   <span className="text-sm text-muted-foreground">- {MACHINE_STATUS_LABELS[machine.status]}</span>
                   <div className="ml-auto flex gap-2">
                     <Button size="sm" variant="outline" onClick={() => handleEditMachine(machine.id)}>
@@ -435,36 +349,6 @@ export default function Settings() {
                   <Label>Horímetro</Label>
                   <Input type="number" value={machineForm.horimeter} onChange={(event) => setMachineForm((prev) => ({ ...prev, horimeter: event.target.value }))} />
                 </div>
-
-                {!editingMachineId && (
-                  <>
-                    <div className="space-y-1">
-                      <Label>Escopo</Label>
-                      <Select value={machineForm.lineMode} onValueChange={(value: "single" | "all") => setMachineForm((prev) => ({ ...prev, lineMode: value }))}>
-                        <SelectTrigger><SelectValue /></SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="single">Uma linha</SelectItem>
-                          <SelectItem value="all">Todas as linhas</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    {machineForm.lineMode === "single" && (
-                      <div className="space-y-1">
-                        <Label>Linha</Label>
-                        <Select value={machineForm.line} onValueChange={(value) => setMachineForm((prev) => ({ ...prev, line: value }))}>
-                          <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
-                          <SelectContent>
-                            {selectableLines.map((lineName) => (
-                              <SelectItem key={lineName} value={lineName}>
-                                {lineName}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    )}
-                  </>
-                )}
               </div>
               <DialogFooter>
                 <Button
@@ -594,7 +478,7 @@ export default function Settings() {
                   <span className="font-mono font-semibold">{component.tag}</span>
                   <Badge variant="outline">{component.name}</Badge>
                   <span className="text-sm text-muted-foreground">{MACHINE_TYPE_LABELS[component.machineType]}</span>
-                  <span className="text-sm text-muted-foreground">• {component.sector || "Sem linha"}</span>
+                  <span className="text-sm text-muted-foreground">{MACHINE_TYPE_LABELS[component.machineType]}</span>
                   <div className="ml-auto flex gap-2">
                     <Button size="sm" variant="outline" onClick={() => handleEditComponent(component.id)}>
                       Editar

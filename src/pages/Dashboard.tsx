@@ -26,7 +26,6 @@ export default function Dashboard() {
   const now = useMemo(() => new Date(), []);
 
   const [periodDays, setPeriodDays] = useState<PeriodDays>(30);
-  const [lineFilter, setLineFilter] = useState<string>("all");
   const [machineTypeFilter, setMachineTypeFilter] = useState<"all" | MachineType>("all");
 
   const windowStart = useMemo(() => {
@@ -40,24 +39,15 @@ export default function Dashboard() {
       ...machines.map((machine) => ({
         id: machine.id,
         type: machine.type,
-        sector: machine.sector || "",
         tag: machine.tag,
       })),
       ...components.map((component) => ({
         id: component.id,
         type: component.machineType,
-        sector: component.sector || "",
         tag: component.tag,
       })),
     ],
     [components, machines],
-  );
-
-  const lineOptions = useMemo(
-    () =>
-      [...new Set(assets.map((asset) => asset.sector).filter(Boolean))]
-        .sort((a, b) => a.localeCompare(b)),
-    [assets],
   );
 
   const typeOptions = useMemo(
@@ -70,11 +60,10 @@ export default function Dashboard() {
   const filteredAssets = useMemo(
     () =>
       assets.filter((asset) => {
-        if (lineFilter !== "all" && asset.sector !== lineFilter) return false;
         if (machineTypeFilter !== "all" && asset.type !== machineTypeFilter) return false;
         return true;
       }),
-    [assets, lineFilter, machineTypeFilter],
+    [assets, machineTypeFilter],
   );
 
   const assetIdSet = useMemo(
@@ -281,14 +270,14 @@ export default function Dashboard() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold">Dashboard</h1>
-        <p className="text-muted-foreground text-sm">KPIs de manutenção com filtros por período, linha e tipo de máquina.</p>
+        <p className="text-muted-foreground text-sm">KPIs de manutenção com filtros por período e tipo de máquina.</p>
       </div>
 
       <Card>
         <CardHeader>
           <CardTitle className="text-base">Filtros</CardTitle>
         </CardHeader>
-        <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div className="space-y-1">
             <p className="text-xs text-muted-foreground">Período</p>
             <Select value={String(periodDays)} onValueChange={(value) => setPeriodDays(Number(value) as PeriodDays)}>
@@ -298,18 +287,6 @@ export default function Dashboard() {
                 <SelectItem value="30">Últimos 30 dias</SelectItem>
                 <SelectItem value="90">Últimos 90 dias</SelectItem>
                 <SelectItem value="180">Últimos 180 dias</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="space-y-1">
-            <p className="text-xs text-muted-foreground">Linha</p>
-            <Select value={lineFilter} onValueChange={setLineFilter}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todas</SelectItem>
-                {lineOptions.map((line) => (
-                  <SelectItem key={line} value={line}>{line}</SelectItem>
-                ))}
               </SelectContent>
             </Select>
           </div>
