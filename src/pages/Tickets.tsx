@@ -26,7 +26,7 @@ const ticketStatusColor: Record<TicketStatus, string> = {
 };
 
 export default function Tickets() {
-  const { tickets, machines, components, mechanics, parts, addTicket, updateTicket, removeTicket, stopMachine, stopComponent } = useData();
+  const { tickets, machines, components, mechanics, parts, addTicket, updateTicket, removeTicket, stopMachine, stopComponent, userAssignedMachineIds, userAssignedComponentIds } = useData();
   const { role, session } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
   const [formOpen, setFormOpen] = useState(false);
