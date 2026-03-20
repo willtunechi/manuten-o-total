@@ -27,7 +27,6 @@ export default function Dashboard() {
 
   const [periodDays, setPeriodDays] = useState<PeriodDays>(30);
   const [machineTypeFilter, setMachineTypeFilter] = useState<"all" | MachineType>("all");
-  const [machineTypeFilter, setMachineTypeFilter] = useState<"all" | MachineType>("all");
 
   const windowStart = useMemo(() => {
     const date = new Date(now);
