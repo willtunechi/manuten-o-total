@@ -64,18 +64,10 @@ export default function Settings() {
     removeComponent,
   } = useData();
   const {
-    lines,
-    addLine,
-    updateLine,
-    removeLine,
     createMachineWithScope,
     createComponentWithScope,
     componentRules,
   } = useConfig();
-
-  const [newLineName, setNewLineName] = useState("");
-  const [editingLineId, setEditingLineId] = useState<string | null>(null);
-  const [editingLineName, setEditingLineName] = useState("");
 
   const [machineForm, setMachineForm] = useState(emptyMachineForm);
   const [editingMachineId, setEditingMachineId] = useState<string | null>(null);
