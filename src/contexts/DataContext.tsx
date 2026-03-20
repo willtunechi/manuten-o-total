@@ -1115,10 +1115,28 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       comment: itemResult.comment || "", photo_url: itemResult.photoUrl || "",
     };
 
+    let resultId: string | undefined;
     if (existing) {
       await supabase.from("plan_item_results").update(resultData).eq("id", existing.id);
+      resultId = existing.id;
     } else {
-      await supabase.from("plan_item_results").insert(resultData);
+      const { data: inserted } = await supabase.from("plan_item_results")
+        .insert(resultData).select("id").maybeSingle();
+      resultId = inserted?.id;
+    }
+
+    // Persist parts used
+    if (resultId && itemResult.partsUsed) {
+      await supabase.from("plan_item_parts_used").delete().eq("plan_item_result_id", resultId);
+      if (itemResult.partsUsed.length > 0) {
+        await supabase.from("plan_item_parts_used").insert(
+          itemResult.partsUsed.map((pu) => ({
+            plan_item_result_id: resultId,
+            part_id: pu.partId,
+            quantity: pu.quantity,
+          }))
+        );
+      }
     }
   }, []);
 
