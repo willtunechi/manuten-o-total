@@ -83,7 +83,7 @@ export function TicketFormDialog({ open, onOpenChange, ticket, onSave }: Props) 
 
     const targetMachine = machines.find((m) => m.id === ticket?.machineId);
     const targetComponent = components.find((c) => c.id === ticket?.machineId);
-    const defaultMachineType = targetMachine?.type || targetComponent?.machineType || "";
+    const defaultMachineType = targetMachine?.type || targetComponent?.type || "";
 
     supabase.auth.getSession().then(({ data: { session } }) => {
       const userEmail = session?.user?.email || "";
