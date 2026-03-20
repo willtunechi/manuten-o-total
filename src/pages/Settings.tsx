@@ -40,8 +40,6 @@ const emptyMachineForm = {
   year: String(new Date().getFullYear()),
   horimeter: "0",
   status: "operating" as MachineStatus,
-  lineMode: "single" as "single" | "all",
-  line: "",
 };
 
 const emptyComponentForm = {

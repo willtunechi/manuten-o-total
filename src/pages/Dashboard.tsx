@@ -40,24 +40,15 @@ export default function Dashboard() {
       ...machines.map((machine) => ({
         id: machine.id,
         type: machine.type,
-        sector: machine.sector || "",
         tag: machine.tag,
       })),
       ...components.map((component) => ({
         id: component.id,
         type: component.machineType,
-        sector: component.sector || "",
         tag: component.tag,
       })),
     ],
     [components, machines],
-  );
-
-  const lineOptions = useMemo(
-    () =>
-      [...new Set(assets.map((asset) => asset.sector).filter(Boolean))]
-        .sort((a, b) => a.localeCompare(b)),
-    [assets],
   );
 
   const typeOptions = useMemo(
@@ -70,11 +61,10 @@ export default function Dashboard() {
   const filteredAssets = useMemo(
     () =>
       assets.filter((asset) => {
-        if (lineFilter !== "all" && asset.sector !== lineFilter) return false;
         if (machineTypeFilter !== "all" && asset.type !== machineTypeFilter) return false;
         return true;
       }),
-    [assets, lineFilter, machineTypeFilter],
+    [assets, machineTypeFilter],
   );
 
   const assetIdSet = useMemo(
