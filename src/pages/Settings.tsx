@@ -147,10 +147,7 @@ export default function Settings() {
   );
 
   const resetMachineForm = () => {
-    setMachineForm({
-      ...emptyMachineForm,
-      line: selectableLines.find((line) => line !== "Sem linha") || "Sem linha",
-    });
+    setMachineForm(emptyMachineForm);
     setEditingMachineId(null);
   };
 
