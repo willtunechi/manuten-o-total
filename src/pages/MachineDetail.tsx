@@ -161,6 +161,8 @@ function ResultSelector({
 export default function MachineDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const initialTab = searchParams.get("tab") || "checklist";
   const isMobile = useIsMobile();
   const { role, loading: authLoading } = useAuth();
   const isOperator = role === "operator";
