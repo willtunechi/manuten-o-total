@@ -349,36 +349,6 @@ export default function Settings() {
                   <Label>Horímetro</Label>
                   <Input type="number" value={machineForm.horimeter} onChange={(event) => setMachineForm((prev) => ({ ...prev, horimeter: event.target.value }))} />
                 </div>
-
-                {!editingMachineId && (
-                  <>
-                    <div className="space-y-1">
-                      <Label>Escopo</Label>
-                      <Select value={machineForm.lineMode} onValueChange={(value: "single" | "all") => setMachineForm((prev) => ({ ...prev, lineMode: value }))}>
-                        <SelectTrigger><SelectValue /></SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="single">Uma linha</SelectItem>
-                          <SelectItem value="all">Todas as linhas</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    {machineForm.lineMode === "single" && (
-                      <div className="space-y-1">
-                        <Label>Linha</Label>
-                        <Select value={machineForm.line} onValueChange={(value) => setMachineForm((prev) => ({ ...prev, line: value }))}>
-                          <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
-                          <SelectContent>
-                            {selectableLines.map((lineName) => (
-                              <SelectItem key={lineName} value={lineName}>
-                                {lineName}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    )}
-                  </>
-                )}
               </div>
               <DialogFooter>
                 <Button
