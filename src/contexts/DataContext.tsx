@@ -128,6 +128,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   const [workOrders, setWorkOrders] = useState<WorkOrder[]>([]);
   const [assetStopRecords, setAssetStopRecords] = useState<AssetStopRecord[]>([]);
   const [components, setComponents] = useState<MachineComponent[]>([]);
+  const [suppliers, setSuppliers] = useState<Supplier[]>([]);
   const [userAssignedMachineIds, setUserAssignedMachineIds] = useState<string[] | null>(null);
   const [userAssignedComponentIds, setUserAssignedComponentIds] = useState<string[] | null>(null);
 
