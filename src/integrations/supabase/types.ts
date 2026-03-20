@@ -855,15 +855,7 @@ export type Database = {
           symptom?: string
           type?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "tickets_machine_id_fkey"
-            columns: ["machine_id"]
-            isOneToOne: false
-            referencedRelation: "machines"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       user_roles: {
         Row: {
