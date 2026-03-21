@@ -3,6 +3,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { CalendarIcon } from "lucide-react";
+import { format, differenceInDays } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import { cn } from "@/lib/utils";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useData } from "@/contexts/DataContext";
 import { useConfig } from "@/contexts/ConfigContext";
@@ -28,7 +35,7 @@ import {
   Line,
 } from "recharts";
 
-type PeriodDays = 7 | 30 | 90 | 180 | 365;
+
 
 const CHART_COLORS = [
   "hsl(var(--primary))",
@@ -69,13 +76,11 @@ export default function Reports() {
   const { lubricationPlans } = useConfig();
 
   const now = useMemo(() => new Date(), []);
-  const [periodDays, setPeriodDays] = useState<PeriodDays>(30);
+  const defaultStart = useMemo(() => { const d = new Date(now); d.setDate(d.getDate() - 30); return d; }, [now]);
+  const [startDate, setStartDate] = useState<Date>(defaultStart);
+  const [endDate, setEndDate] = useState<Date>(now);
 
-  const windowStart = useMemo(() => {
-    const d = new Date(now);
-    d.setDate(d.getDate() - periodDays);
-    return d;
-  }, [now, periodDays]);
+  const windowStart = startDate;
 
   const allAssets = useMemo(
     () => [
@@ -223,7 +228,8 @@ export default function Reports() {
 
   // ─── 7. Chamados ao Longo do Tempo ───
   const ticketsTrend = useMemo(() => {
-    const bucketSize = periodDays <= 30 ? 1 : periodDays <= 90 ? 7 : 30;
+    const totalDays = Math.max(differenceInDays(endDate, startDate), 1);
+    const bucketSize = totalDays <= 30 ? 1 : totalDays <= 90 ? 7 : 30;
     const buckets: { date: string; abertos: number; resolvidos: number }[] = [];
     const start = windowStart.getTime();
     const end = now.getTime();
@@ -242,7 +248,7 @@ export default function Reports() {
       buckets.push({ date: formatDate(new Date(t)), abertos, resolvidos });
     }
     return buckets;
-  }, [tickets, windowStart, now, periodDays]);
+  }, [tickets, windowStart, now, startDate, endDate]);
 
   // ─── 8. Aderência Preventiva ───
   const preventiveCompliance = useMemo(() => {
@@ -299,20 +305,35 @@ export default function Reports() {
           <h1 className="text-2xl font-bold">Relatórios</h1>
           <p className="text-muted-foreground text-sm">Análises e indicadores de manutenção</p>
         </div>
-        <div className="w-full sm:max-w-[180px] space-y-1 sm:ml-auto">
-          <Label>Período</Label>
-          <Select value={String(periodDays)} onValueChange={(v) => setPeriodDays(Number(v) as PeriodDays)}>
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="7">Últimos 7 dias</SelectItem>
-              <SelectItem value="30">Últimos 30 dias</SelectItem>
-              <SelectItem value="90">Últimos 90 dias</SelectItem>
-              <SelectItem value="180">Últimos 6 meses</SelectItem>
-              <SelectItem value="365">Último ano</SelectItem>
-            </SelectContent>
-          </Select>
+        <div className="flex flex-wrap gap-3 sm:ml-auto">
+          <div className="space-y-1">
+            <Label>Data Início</Label>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="outline" className={cn("w-[150px] justify-start text-left font-normal")}>
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {format(startDate, "dd/MM/yyyy")}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar mode="single" selected={startDate} onSelect={(d) => d && setStartDate(d)} locale={ptBR} initialFocus className="p-3 pointer-events-auto" />
+              </PopoverContent>
+            </Popover>
+          </div>
+          <div className="space-y-1">
+            <Label>Data Fim</Label>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="outline" className={cn("w-[150px] justify-start text-left font-normal")}>
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {format(endDate, "dd/MM/yyyy")}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar mode="single" selected={endDate} onSelect={(d) => d && setEndDate(d)} locale={ptBR} initialFocus className="p-3 pointer-events-auto" />
+              </PopoverContent>
+            </Popover>
+          </div>
         </div>
       </div>
 

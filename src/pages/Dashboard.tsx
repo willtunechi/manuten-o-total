@@ -2,11 +2,16 @@ import { useMemo, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { CalendarIcon } from "lucide-react";
+import { format, differenceInDays } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import { cn } from "@/lib/utils";
 import { useData } from "@/contexts/DataContext";
 import { MACHINE_TYPE_LABELS } from "@/data/types";
 import type { MachineType } from "@/data/types";
-
-type PeriodDays = 7 | 30 | 90 | 180;
 
 function hoursBetween(start: string, end: string) {
   return (new Date(end).getTime() - new Date(start).getTime()) / (1000 * 60 * 60);
@@ -25,14 +30,14 @@ export default function Dashboard() {
   const { tickets, maintenancePlans, planExecutions, machines, components, parts, assetStopRecords } = useData();
   const now = useMemo(() => new Date(), []);
 
-  const [periodDays, setPeriodDays] = useState<PeriodDays>(30);
+  const defaultStart = useMemo(() => { const d = new Date(now); d.setDate(d.getDate() - 30); return d; }, [now]);
+  const [startDate, setStartDate] = useState<Date>(defaultStart);
+  const [endDate, setEndDate] = useState<Date>(now);
   const [machineTypeFilter, setMachineTypeFilter] = useState<"all" | MachineType>("all");
 
-  const windowStart = useMemo(() => {
-    const date = new Date(now);
-    date.setDate(date.getDate() - periodDays);
-    return date;
-  }, [now, periodDays]);
+  const windowStart = startDate;
+  const windowEnd = endDate;
+  const periodDays = Math.max(differenceInDays(windowEnd, windowStart), 1);
 
   const assets = useMemo(
     () => [
@@ -71,7 +76,11 @@ export default function Dashboard() {
     [filteredAssets],
   );
 
-  const inPeriod = (date?: string) => !!date && new Date(date).getTime() >= windowStart.getTime();
+  const inPeriod = (date?: string) => {
+    if (!date) return false;
+    const t = new Date(date).getTime();
+    return t >= windowStart.getTime() && t <= windowEnd.getTime();
+  };
 
   const planById = useMemo(
     () => new Map(maintenancePlans.map((plan) => [plan.id, plan])),
@@ -278,18 +287,34 @@ export default function Dashboard() {
         <CardHeader>
           <CardTitle className="text-base">Filtros</CardTitle>
         </CardHeader>
-        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-3">
           <div className="space-y-1">
-            <p className="text-xs text-muted-foreground">Período</p>
-            <Select value={String(periodDays)} onValueChange={(value) => setPeriodDays(Number(value) as PeriodDays)}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="7">Últimos 7 dias</SelectItem>
-                <SelectItem value="30">Últimos 30 dias</SelectItem>
-                <SelectItem value="90">Últimos 90 dias</SelectItem>
-                <SelectItem value="180">Últimos 180 dias</SelectItem>
-              </SelectContent>
-            </Select>
+            <p className="text-xs text-muted-foreground">Data Início</p>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="outline" className={cn("w-full justify-start text-left font-normal", !startDate && "text-muted-foreground")}>
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {format(startDate, "dd/MM/yyyy")}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar mode="single" selected={startDate} onSelect={(d) => d && setStartDate(d)} locale={ptBR} initialFocus className="p-3 pointer-events-auto" />
+              </PopoverContent>
+            </Popover>
+          </div>
+          <div className="space-y-1">
+            <p className="text-xs text-muted-foreground">Data Fim</p>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="outline" className={cn("w-full justify-start text-left font-normal", !endDate && "text-muted-foreground")}>
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {format(endDate, "dd/MM/yyyy")}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar mode="single" selected={endDate} onSelect={(d) => d && setEndDate(d)} locale={ptBR} initialFocus className="p-3 pointer-events-auto" />
+              </PopoverContent>
+            </Popover>
           </div>
           <div className="space-y-1">
             <p className="text-xs text-muted-foreground">Tipo de máquina</p>
