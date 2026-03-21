@@ -248,7 +248,7 @@ export default function Reports() {
       buckets.push({ date: formatDate(new Date(t)), abertos, resolvidos });
     }
     return buckets;
-  }, [tickets, windowStart, now, periodDays]);
+  }, [tickets, windowStart, now, startDate, endDate]);
 
   // ─── 8. Aderência Preventiva ───
   const preventiveCompliance = useMemo(() => {
