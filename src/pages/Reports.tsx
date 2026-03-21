@@ -228,7 +228,8 @@ export default function Reports() {
 
   // ─── 7. Chamados ao Longo do Tempo ───
   const ticketsTrend = useMemo(() => {
-    const bucketSize = periodDays <= 30 ? 1 : periodDays <= 90 ? 7 : 30;
+    const totalDays = Math.max(differenceInDays(endDate, startDate), 1);
+    const bucketSize = totalDays <= 30 ? 1 : totalDays <= 90 ? 7 : 30;
     const buckets: { date: string; abertos: number; resolvidos: number }[] = [];
     const start = windowStart.getTime();
     const end = now.getTime();
