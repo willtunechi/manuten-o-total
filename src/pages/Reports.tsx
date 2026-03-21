@@ -35,7 +35,7 @@ import {
   Line,
 } from "recharts";
 
-type PeriodDays = 7 | 30 | 90 | 180 | 365;
+
 
 const CHART_COLORS = [
   "hsl(var(--primary))",
