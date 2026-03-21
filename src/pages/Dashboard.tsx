@@ -63,7 +63,11 @@ import type { MachineType } from "@/data/types";
     [filteredAssets],
   );
 
-  const inPeriod = (date?: string) => !!date && new Date(date).getTime() >= windowStart.getTime();
+  const inPeriod = (date?: string) => {
+    if (!date) return false;
+    const t = new Date(date).getTime();
+    return t >= windowStart.getTime() && t <= windowEnd.getTime();
+  };
 
   const planById = useMemo(
     () => new Map(maintenancePlans.map((plan) => [plan.id, plan])),
