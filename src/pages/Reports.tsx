@@ -76,13 +76,11 @@ export default function Reports() {
   const { lubricationPlans } = useConfig();
 
   const now = useMemo(() => new Date(), []);
-  const [periodDays, setPeriodDays] = useState<PeriodDays>(30);
+  const defaultStart = useMemo(() => { const d = new Date(now); d.setDate(d.getDate() - 30); return d; }, [now]);
+  const [startDate, setStartDate] = useState<Date>(defaultStart);
+  const [endDate, setEndDate] = useState<Date>(now);
 
-  const windowStart = useMemo(() => {
-    const d = new Date(now);
-    d.setDate(d.getDate() - periodDays);
-    return d;
-  }, [now, periodDays]);
+  const windowStart = startDate;
 
   const allAssets = useMemo(
     () => [
