@@ -287,7 +287,7 @@ export default function Dashboard() {
         <CardHeader>
           <CardTitle className="text-base">Filtros</CardTitle>
         </CardHeader>
-        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-3">
           <div className="space-y-1">
             <p className="text-xs text-muted-foreground">Data Início</p>
             <Popover>
