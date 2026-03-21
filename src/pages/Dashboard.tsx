@@ -2,37 +2,29 @@ import { useMemo, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { CalendarIcon } from "lucide-react";
+import { format, differenceInDays } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import { cn } from "@/lib/utils";
 import { useData } from "@/contexts/DataContext";
 import { MACHINE_TYPE_LABELS } from "@/data/types";
 import type { MachineType } from "@/data/types";
-
-type PeriodDays = 7 | 30 | 90 | 180;
-
-function hoursBetween(start: string, end: string) {
-  return (new Date(end).getTime() - new Date(start).getTime()) / (1000 * 60 * 60);
-}
-
-function average(values: number[]) {
-  if (values.length === 0) return 0;
-  return values.reduce((sum, value) => sum + value, 0) / values.length;
-}
-
-function clamp(value: number, min: number, max: number) {
-  return Math.min(max, Math.max(min, value));
-}
 
 export default function Dashboard() {
   const { tickets, maintenancePlans, planExecutions, machines, components, parts, assetStopRecords } = useData();
   const now = useMemo(() => new Date(), []);
 
-  const [periodDays, setPeriodDays] = useState<PeriodDays>(30);
+  const defaultStart = useMemo(() => { const d = new Date(now); d.setDate(d.getDate() - 30); return d; }, [now]);
+  const [startDate, setStartDate] = useState<Date>(defaultStart);
+  const [endDate, setEndDate] = useState<Date>(now);
   const [machineTypeFilter, setMachineTypeFilter] = useState<"all" | MachineType>("all");
 
-  const windowStart = useMemo(() => {
-    const date = new Date(now);
-    date.setDate(date.getDate() - periodDays);
-    return date;
-  }, [now, periodDays]);
+  const windowStart = startDate;
+  const windowEnd = endDate;
+  const periodDays = Math.max(differenceInDays(windowEnd, windowStart), 1);
 
   const assets = useMemo(
     () => [
