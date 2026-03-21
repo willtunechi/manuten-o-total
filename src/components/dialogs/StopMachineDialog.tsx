@@ -70,7 +70,21 @@ export function StopMachineDialog({ open, onOpenChange, onConfirm, machineName, 
                                     <RadioGroupItem value="preventive" id="r-preventive" className={cn(reason === 'preventive' && "border-primary-foreground text-primary-foreground")} />
                                     <Label htmlFor="r-preventive" className="cursor-pointer flex-1">Preventiva</Label>
                                 </div>
-                                
+                                <div className={cn("flex items-center space-x-2 border p-2 rounded-md cursor-pointer transition-colors", reason === 'lubrication' ? "bg-primary text-primary-foreground border-primary" : "hover:bg-accent")}>
+                                    <RadioGroupItem value="lubrication" id="r-lubrication" className={cn(reason === 'lubrication' && "border-primary-foreground text-primary-foreground")} />
+                                    <Label htmlFor="r-lubrication" className="cursor-pointer flex-1">Lubrificação</Label>
+                                </div>
+                                <div className={cn("flex items-center space-x-2 border p-2 rounded-md cursor-pointer transition-colors", reason === 'no_production' ? "bg-primary text-primary-foreground border-primary" : "hover:bg-accent")}>
+                                    <RadioGroupItem value="no_production" id="r-no-production" className={cn(reason === 'no_production' && "border-primary-foreground text-primary-foreground")} />
+                                    <Label htmlFor="r-no-production" className="cursor-pointer flex-1">Sem Produção</Label>
+                                </div>
+                                <div className={cn("flex items-center space-x-2 border p-2 rounded-md cursor-pointer transition-colors", reason === 'other' ? "bg-primary text-primary-foreground border-primary" : "hover:bg-accent")}>
+                                    <RadioGroupItem value="other" id="r-other" className={cn(reason === 'other' && "border-primary-foreground text-primary-foreground")} />
+                                    <Label htmlFor="r-other" className="cursor-pointer flex-1">Outros</Label>
+                                </div>
+                            </div>
+                        </RadioGroup>
+                    </div>
 
                     <div className="space-y-2">
                         <Label>Observação</Label>
@@ -84,7 +98,7 @@ export function StopMachineDialog({ open, onOpenChange, onConfirm, machineName, 
                     </div>
 
                     {error && (
-                        <p className="text-sm text-red-600 font-medium animate-pulse">{error}</p>
+                        <p className="text-sm text-destructive font-medium animate-pulse">{error}</p>
                     )}
                 </div>
 

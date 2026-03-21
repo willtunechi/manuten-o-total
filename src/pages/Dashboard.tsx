@@ -13,7 +13,20 @@ import { useData } from "@/contexts/DataContext";
 import { MACHINE_TYPE_LABELS } from "@/data/types";
 import type { MachineType } from "@/data/types";
 
-/* moved above */
+function hoursBetween(start: string, end: string) {
+  return (new Date(end).getTime() - new Date(start).getTime()) / (1000 * 60 * 60);
+}
+
+function average(values: number[]) {
+  if (values.length === 0) return 0;
+  return values.reduce((sum, value) => sum + value, 0) / values.length;
+}
+
+function clamp(value: number, min: number, max: number) {
+  return Math.min(max, Math.max(min, value));
+}
+
+export default function Dashboard() {
   const { tickets, maintenancePlans, planExecutions, machines, components, parts, assetStopRecords } = useData();
   const now = useMemo(() => new Date(), []);
 
