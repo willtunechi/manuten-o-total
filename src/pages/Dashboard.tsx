@@ -13,7 +13,7 @@ import { useData } from "@/contexts/DataContext";
 import { MACHINE_TYPE_LABELS } from "@/data/types";
 import type { MachineType } from "@/data/types";
 
-export default function Dashboard() {
+/* moved above */
   const { tickets, maintenancePlans, planExecutions, machines, components, parts, assetStopRecords } = useData();
   const now = useMemo(() => new Date(), []);
 
