@@ -257,15 +257,9 @@ export function MaintenancePlanEditorDialog({
                   </div>
                 </div>
 
-                <div className="grid sm:grid-cols-2 gap-3">
-                  <div className="space-y-1">
-                    <Label>Tipo de Inspeção *</Label>
-                    <Input {...register(`items.${index}.inspectionType`)} disabled={readOnly} />
-                  </div>
-                  <div className="space-y-1">
-                    <Label>Critério de Aceitação *</Label>
-                    <Input {...register(`items.${index}.attentionPoints`)} disabled={readOnly} />
-                  </div>
+                <div className="space-y-1">
+                  <Label>Tipo de Inspeção *</Label>
+                  <Input {...register(`items.${index}.inspectionType`)} disabled={readOnly} />
                 </div>
 
                 <div className="space-y-1">
