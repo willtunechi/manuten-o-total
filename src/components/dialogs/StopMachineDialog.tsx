@@ -34,10 +34,6 @@ export function StopMachineDialog({ open, onOpenChange, onConfirm, machineName, 
     }, [open]);
 
     const handleConfirm = () => {
-        if (reason === 'corrective' && !maintenanceType) {
-            setError("Selecione o tipo de manutenção (Mecânica ou Elétrica).");
-            return;
-        }
         onConfirm(reason, description, maintenanceType);
         onOpenChange(false);
     };
