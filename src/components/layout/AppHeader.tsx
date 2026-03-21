@@ -40,7 +40,7 @@ export function AppHeader({ onMenuToggle }: AppHeaderProps) {
         <img src={watLogo} alt="WAT" className="h-7 w-7 object-contain md:hidden" />
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
           <Building2 className="h-4 w-4 hidden md:block" />
-          <span className="font-medium text-foreground">Plásticos ABC Ltda</span>
+          <span className="font-medium text-foreground">Aplicativo de Manutenção</span>
         </div>
       </div>
 
