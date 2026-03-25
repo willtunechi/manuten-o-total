@@ -192,6 +192,7 @@ export function ThemeProvider({ children, isAdmin = false }: { children: React.R
       .from("theme_settings")
       .update({
         theme_mode: mode,
+        background_color: colors.background,
         primary_color: colors.primary,
         secondary_color: colors.secondary,
         accent_color: colors.accent,
