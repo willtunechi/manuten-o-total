@@ -183,9 +183,9 @@ export default function Settings() {
   };
 
   const handleAddComponentType = () => {
-    if (!newTypeKey.trim() || !newTypeName.trim()) return;
-    addComponentType(newTypeKey, newTypeName);
-    setNewTypeKey("");
+    if (!newTypeName.trim()) return;
+    const autoKey = newTypeName.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, "");
+    addComponentType(autoKey, newTypeName);
     setNewTypeName("");
   };
 
