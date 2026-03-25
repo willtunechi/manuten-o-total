@@ -53,7 +53,6 @@ const emptyComponentForm = {
 };
 
 export default function Settings() {
-  const { isAdmin, canManageUsers, creatableRoles } = useAuth();
   const {
     machines,
     components,
