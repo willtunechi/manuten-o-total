@@ -134,6 +134,7 @@ export default function Machines() {
 
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [nameFilter, setNameFilter] = useState<string>("all");
+  const [typeFilter, setTypeFilter] = useState<string>("all");
 
   const allAssetOptions = useMemo(() => {
     const opts: { value: string; label: string }[] = [];
@@ -142,9 +143,12 @@ export default function Machines() {
     return opts.sort((a, b) => a.label.localeCompare(b.label, 'pt-BR', { numeric: true }));
   }, [machines, components]);
 
-  const byFilters = <T extends { id: string; status: keyof typeof MACHINE_STATUS_LABELS }>(item: T) =>
+  const getAssetType = (item: any) => item.type;
+
+  const byFilters = <T extends { id: string; status: keyof typeof MACHINE_STATUS_LABELS; type: string }>(item: T) =>
     (statusFilter === "all" || item.status === statusFilter) &&
-    (nameFilter === "all" || item.id === nameFilter);
+    (nameFilter === "all" || item.id === nameFilter) &&
+    (typeFilter === "all" || item.type === typeFilter);
 
   const sortByTag = <T extends { tag: string }>(arr: T[]) => [...arr].sort((a, b) => a.tag.localeCompare(b.tag, 'pt-BR', { numeric: true }));
 
@@ -154,7 +158,7 @@ export default function Machines() {
     trocador_calor: sortByTag(components.filter((c) => c.type === "trocador_calor" && byFilters(c))),
     bomba_vacuo: sortByTag(components.filter((c) => c.type === "bomba_vacuo" && byFilters(c))),
     tanque_agua: sortByTag(components.filter((c) => c.type === "tanque_agua" && byFilters(c))),
-  }), [machines, components, statusFilter, nameFilter]);
+  }), [machines, components, statusFilter, nameFilter, typeFilter]);
 
   const categories = [
     { key: "misturador", label: MACHINE_TYPE_LABELS.misturador },
@@ -203,6 +207,18 @@ export default function Machines() {
               <SelectItem value="all">Todos</SelectItem>
               {allAssetOptions.map((opt) => (
                 <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="w-full sm:max-w-xs space-y-1">
+          <Label>Tipo de ativo</Label>
+          <Select value={typeFilter} onValueChange={setTypeFilter}>
+            <SelectTrigger><SelectValue placeholder="Filtrar por tipo" /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todos</SelectItem>
+              {Object.entries(MACHINE_TYPE_LABELS).map(([value, label]) => (
+                <SelectItem key={value} value={value}>{label}</SelectItem>
               ))}
             </SelectContent>
           </Select>

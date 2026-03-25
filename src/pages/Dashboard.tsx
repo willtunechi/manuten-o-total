@@ -48,7 +48,7 @@ export default function Dashboard() {
       })),
       ...components.map((component) => ({
         id: component.id,
-        type: component.machineType,
+        type: component.type as MachineType,
         tag: component.tag,
       })),
     ],

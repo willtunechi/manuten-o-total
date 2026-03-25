@@ -79,13 +79,14 @@ export default function Reports() {
   const defaultStart = useMemo(() => { const d = new Date(now); d.setDate(d.getDate() - 30); return d; }, [now]);
   const [startDate, setStartDate] = useState<Date>(defaultStart);
   const [endDate, setEndDate] = useState<Date>(now);
+  const [machineTypeFilter, setMachineTypeFilter] = useState<"all" | MachineType>("all");
 
   const windowStart = startDate;
 
   const allAssets = useMemo(
     () => [
       ...machines.map((m) => ({ id: m.id, tag: m.tag, type: m.type, sector: m.sector, kind: "machine" as const })),
-      ...components.map((c) => ({ id: c.id, tag: c.tag, type: c.machineType, sector: c.sector || "", kind: "component" as const })),
+      ...components.map((c) => ({ id: c.id, tag: c.tag, type: c.type as MachineType, sector: c.sector || "", kind: "component" as const })),
     ],
     [machines, components],
   );
@@ -96,10 +97,16 @@ export default function Reports() {
     return map;
   }, [allAssets]);
 
+  const filteredAssetIds = useMemo(() => {
+    if (machineTypeFilter === "all") return new Set(allAssets.map((a) => a.id));
+    return new Set(allAssets.filter((a) => a.type === machineTypeFilter).map((a) => a.id));
+  }, [allAssets, machineTypeFilter]);
+
   // ─── 1. Ranking de Paradas por Ativo ───
   const downtimeByAsset = useMemo(() => {
     const map = new Map<string, number>();
     assetStopRecords.forEach((r) => {
+      if (!filteredAssetIds.has(r.assetId)) return;
       if (new Date(r.stoppedAt) < windowStart) return;
       if (r.reason === 'no_production') return; // Não conta nos indicadores
       const end = r.resumedAt ? r.resumedAt : now.toISOString();
@@ -124,6 +131,7 @@ export default function Reports() {
     };
     const map = new Map<string, number>();
     assetStopRecords.forEach((r) => {
+      if (!filteredAssetIds.has(r.assetId)) return;
       if (new Date(r.stoppedAt) < windowStart) return;
       const label = reasonLabels[r.reason || "other"] || "Outros";
       map.set(label, (map.get(label) || 0) + 1);
@@ -135,6 +143,7 @@ export default function Reports() {
   const mttrByAsset = useMemo(() => {
     const map = new Map<string, { total: number; count: number }>();
     tickets.forEach((t) => {
+      if (!filteredAssetIds.has(t.machineId)) return;
       if (t.status !== "resolved" || !t.resolvedAt) return;
       if (new Date(t.createdAt) < windowStart) return;
       const hours = hoursBetween(t.createdAt, t.resolvedAt);
@@ -157,6 +166,7 @@ export default function Reports() {
 
     // From tickets
     tickets.forEach((t) => {
+      if (!filteredAssetIds.has(t.machineId)) return;
       if (new Date(t.createdAt) < windowStart) return;
       (t.partsUsed || []).forEach((pu) => {
         const part = partMap.get(pu.partId);
@@ -167,6 +177,7 @@ export default function Reports() {
     // From plan executions
     planExecutions.forEach((ex) => {
       if (new Date(ex.startedAt) < windowStart || !ex.machineId) return;
+      if (!filteredAssetIds.has(ex.machineId)) return;
       (ex.itemResults || []).forEach((ir) => {
         (ir.partsUsed || []).forEach((pu) => {
           const part = partMap.get(pu.partId);
@@ -305,7 +316,19 @@ export default function Reports() {
           <h1 className="text-2xl font-bold">Relatórios</h1>
           <p className="text-muted-foreground text-sm">Análises e indicadores de manutenção</p>
         </div>
-        <div className="flex flex-wrap gap-3 sm:ml-auto">
+        <div className="flex flex-wrap gap-3 items-end sm:ml-auto">
+          <div className="space-y-1">
+            <Label>Tipo de ativo</Label>
+            <Select value={machineTypeFilter} onValueChange={(v: "all" | MachineType) => setMachineTypeFilter(v)}>
+              <SelectTrigger className="w-[160px]"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todos</SelectItem>
+                {Object.entries(MACHINE_TYPE_LABELS).map(([value, label]) => (
+                  <SelectItem key={value} value={value}>{label}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
           <div className="space-y-1">
             <Label>Data Início</Label>
             <Popover>
