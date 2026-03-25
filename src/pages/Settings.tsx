@@ -207,10 +207,11 @@ export default function Settings() {
       </div>
 
       <Tabs defaultValue="machines" className="space-y-4">
-        <TabsList className="grid w-full md:w-[720px] grid-cols-3">
+        <TabsList className="grid w-full md:w-[960px] grid-cols-4">
           <TabsTrigger value="machines">Máquinas</TabsTrigger>
           <TabsTrigger value="components">Componentes</TabsTrigger>
           <TabsTrigger value="component_types">Tipos de Componentes</TabsTrigger>
+          <TabsTrigger value="appearance">Aparência</TabsTrigger>
         </TabsList>
 
         <TabsContent value="machines" className="space-y-4">
