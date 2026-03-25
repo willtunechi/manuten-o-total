@@ -134,6 +134,7 @@ export default function Machines() {
 
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [nameFilter, setNameFilter] = useState<string>("all");
+  const [typeFilter, setTypeFilter] = useState<string>("all");
 
   const allAssetOptions = useMemo(() => {
     const opts: { value: string; label: string }[] = [];

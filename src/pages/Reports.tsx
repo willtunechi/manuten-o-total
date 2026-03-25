@@ -306,7 +306,19 @@ export default function Reports() {
           <h1 className="text-2xl font-bold">Relatórios</h1>
           <p className="text-muted-foreground text-sm">Análises e indicadores de manutenção</p>
         </div>
-        <div className="flex flex-wrap gap-3 sm:ml-auto">
+        <div className="flex flex-wrap gap-3 items-end sm:ml-auto">
+          <div className="space-y-1">
+            <Label>Tipo de ativo</Label>
+            <Select value={machineTypeFilter} onValueChange={(v: "all" | MachineType) => setMachineTypeFilter(v)}>
+              <SelectTrigger className="w-[160px]"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todos</SelectItem>
+                {Object.entries(MACHINE_TYPE_LABELS).map(([value, label]) => (
+                  <SelectItem key={value} value={value}>{label}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
           <div className="space-y-1">
             <Label>Data Início</Label>
             <Popover>
