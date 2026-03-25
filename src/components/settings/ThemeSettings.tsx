@@ -47,6 +47,7 @@ function hexToHsl(hex: string): string {
 }
 
 const COLOR_FIELDS: { key: keyof ThemeColors; label: string }[] = [
+  { key: "background", label: "Cor de Fundo" },
   { key: "primary", label: "Cor Primária" },
   { key: "secondary", label: "Cor Secundária" },
   { key: "accent", label: "Cor de Destaque" },
