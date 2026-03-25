@@ -86,7 +86,7 @@ export default function Reports() {
   const allAssets = useMemo(
     () => [
       ...machines.map((m) => ({ id: m.id, tag: m.tag, type: m.type, sector: m.sector, kind: "machine" as const })),
-      ...components.map((c) => ({ id: c.id, tag: c.tag, type: c.machineType, sector: c.sector || "", kind: "component" as const })),
+      ...components.map((c) => ({ id: c.id, tag: c.tag, type: c.type as MachineType, sector: c.sector || "", kind: "component" as const })),
     ],
     [machines, components],
   );
