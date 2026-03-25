@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AppLayout } from "./components/layout/AppLayout";
 import { DataProvider } from "./contexts/DataContext";
 import { ConfigProvider } from "./contexts/ConfigContext";
+import { ThemeProvider } from "./contexts/ThemeContext";
 import { useAuth } from "./hooks/useAuth";
 import Auth from "./pages/Auth";
 import ChangePassword from "./pages/ChangePassword";
@@ -57,10 +58,13 @@ function AppRoutes() {
     );
   }
 
+  const isAdmin = role === "admin";
+
   return (
-    <DataProvider>
-      <ConfigProvider>
-        <Routes>
+    <ThemeProvider isAdmin={isAdmin}>
+      <DataProvider>
+        <ConfigProvider>
+          <Routes>
           <Route element={<AppLayout />}>
             <Route path="/" element={canAccessRoute("/") ? <Dashboard /> : <Navigate to="/machines" replace />} />
             <Route path="/machines" element={<Machines />} />
@@ -82,9 +86,10 @@ function AppRoutes() {
           </Route>
           <Route path="/auth" element={<Navigate to="/" replace />} />
           <Route path="*" element={<NotFound />} />
-        </Routes>
-      </ConfigProvider>
-    </DataProvider>
+          </Routes>
+        </ConfigProvider>
+      </DataProvider>
+    </ThemeProvider>
   );
 }
 

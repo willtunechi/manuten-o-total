@@ -1,0 +1,204 @@
+import React, { createContext, useCallback, useContext, useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+
+export interface ThemeColors {
+  primary: string;
+  secondary: string;
+  accent: string;
+  sidebar: string;
+}
+
+export type ThemeMode = "light" | "dark";
+
+interface ThemeContextType {
+  mode: ThemeMode;
+  colors: ThemeColors;
+  setMode: (mode: ThemeMode) => void;
+  setColors: (colors: Partial<ThemeColors>) => void;
+  saveTheme: () => Promise<void>;
+  loading: boolean;
+  isAdmin: boolean;
+}
+
+const DEFAULT_COLORS: ThemeColors = {
+  primary: "0 0% 10%",
+  secondary: "0 0% 96%",
+  accent: "0 0% 92%",
+  sidebar: "0 0% 98%",
+};
+
+const DARK_BASE = {
+  background: "0 0% 7%",
+  foreground: "0 0% 95%",
+  card: "0 0% 10%",
+  cardForeground: "0 0% 95%",
+  popover: "0 0% 10%",
+  popoverForeground: "0 0% 95%",
+  primaryForeground: "0 0% 100%",
+  secondaryForeground: "0 0% 95%",
+  muted: "0 0% 15%",
+  mutedForeground: "0 0% 60%",
+  accentForeground: "0 0% 95%",
+  destructive: "0 62% 50%",
+  destructiveForeground: "0 0% 100%",
+  border: "0 0% 18%",
+  input: "0 0% 18%",
+  ring: "0 0% 80%",
+  sidebarForeground: "0 0% 90%",
+  sidebarPrimaryForeground: "0 0% 100%",
+  sidebarAccent: "0 0% 15%",
+  sidebarAccentForeground: "0 0% 95%",
+  sidebarBorder: "0 0% 20%",
+  sidebarRing: "0 0% 80%",
+};
+
+const LIGHT_BASE = {
+  background: "0 0% 100%",
+  foreground: "0 0% 5%",
+  card: "0 0% 100%",
+  cardForeground: "0 0% 5%",
+  popover: "0 0% 100%",
+  popoverForeground: "0 0% 5%",
+  primaryForeground: "0 0% 100%",
+  secondaryForeground: "0 0% 10%",
+  muted: "0 0% 95%",
+  mutedForeground: "0 0% 40%",
+  accentForeground: "0 0% 5%",
+  destructive: "0 72% 50%",
+  destructiveForeground: "0 0% 100%",
+  border: "0 0% 88%",
+  input: "0 0% 88%",
+  ring: "0 0% 10%",
+  sidebarForeground: "0 0% 10%",
+  sidebarPrimaryForeground: "0 0% 100%",
+  sidebarAccent: "0 0% 93%",
+  sidebarAccentForeground: "0 0% 5%",
+  sidebarBorder: "0 0% 86%",
+  sidebarRing: "0 0% 10%",
+};
+
+const ThemeContext = createContext<ThemeContextType | null>(null);
+
+function applyThemeToDOM(mode: ThemeMode, colors: ThemeColors) {
+  const root = document.documentElement;
+  const base = mode === "dark" ? DARK_BASE : LIGHT_BASE;
+
+  root.style.setProperty("--background", base.background);
+  root.style.setProperty("--foreground", base.foreground);
+  root.style.setProperty("--card", base.card);
+  root.style.setProperty("--card-foreground", base.cardForeground);
+  root.style.setProperty("--popover", base.popover);
+  root.style.setProperty("--popover-foreground", base.popoverForeground);
+  root.style.setProperty("--primary", colors.primary);
+  root.style.setProperty("--primary-foreground", base.primaryForeground);
+  root.style.setProperty("--secondary", colors.secondary);
+  root.style.setProperty("--secondary-foreground", base.secondaryForeground);
+  root.style.setProperty("--muted", base.muted);
+  root.style.setProperty("--muted-foreground", base.mutedForeground);
+  root.style.setProperty("--accent", colors.accent);
+  root.style.setProperty("--accent-foreground", base.accentForeground);
+  root.style.setProperty("--destructive", base.destructive);
+  root.style.setProperty("--destructive-foreground", base.destructiveForeground);
+  root.style.setProperty("--border", base.border);
+  root.style.setProperty("--input", base.input);
+  root.style.setProperty("--ring", base.ring);
+  root.style.setProperty("--sidebar-background", colors.sidebar);
+  root.style.setProperty("--sidebar-foreground", base.sidebarForeground);
+  root.style.setProperty("--sidebar-primary", colors.primary);
+  root.style.setProperty("--sidebar-primary-foreground", base.sidebarPrimaryForeground);
+  root.style.setProperty("--sidebar-accent", base.sidebarAccent);
+  root.style.setProperty("--sidebar-accent-foreground", base.sidebarAccentForeground);
+  root.style.setProperty("--sidebar-border", base.sidebarBorder);
+  root.style.setProperty("--sidebar-ring", base.sidebarRing);
+
+  if (mode === "dark") {
+    root.classList.add("dark");
+  } else {
+    root.classList.remove("dark");
+  }
+}
+
+export function ThemeProvider({ children, isAdmin = false }: { children: React.ReactNode; isAdmin?: boolean }) {
+  const [mode, setModeState] = useState<ThemeMode>("light");
+  const [colors, setColorsState] = useState<ThemeColors>(DEFAULT_COLORS);
+  const [loading, setLoading] = useState(true);
+  const [settingsId, setSettingsId] = useState<string | null>(null);
+
+  // Load theme from DB
+  useEffect(() => {
+    async function load() {
+      const { data, error } = await supabase
+        .from("theme_settings")
+        .select("*")
+        .limit(1)
+        .maybeSingle();
+
+      if (!error && data) {
+        const m = (data.theme_mode === "dark" ? "dark" : "light") as ThemeMode;
+        const c: ThemeColors = {
+          primary: data.primary_color || DEFAULT_COLORS.primary,
+          secondary: data.secondary_color || DEFAULT_COLORS.secondary,
+          accent: data.accent_color || DEFAULT_COLORS.accent,
+          sidebar: data.sidebar_color || DEFAULT_COLORS.sidebar,
+        };
+        setModeState(m);
+        setColorsState(c);
+        setSettingsId(data.id);
+        applyThemeToDOM(m, c);
+      }
+      setLoading(false);
+    }
+    load();
+  }, []);
+
+  const setMode = useCallback((m: ThemeMode) => {
+    setModeState(m);
+    setColorsState((prev) => {
+      applyThemeToDOM(m, prev);
+      return prev;
+    });
+  }, []);
+
+  const setColors = useCallback((partial: Partial<ThemeColors>) => {
+    setColorsState((prev) => {
+      const next = { ...prev, ...partial };
+      setModeState((m) => {
+        applyThemeToDOM(m, next);
+        return m;
+      });
+      return next;
+    });
+  }, []);
+
+  const saveTheme = useCallback(async () => {
+    if (!settingsId) return;
+    const { error } = await supabase
+      .from("theme_settings")
+      .update({
+        theme_mode: mode,
+        primary_color: colors.primary,
+        secondary_color: colors.secondary,
+        accent_color: colors.accent,
+        sidebar_color: colors.sidebar,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", settingsId);
+
+    if (error) {
+      console.error("Error saving theme:", error);
+      throw error;
+    }
+  }, [settingsId, mode, colors]);
+
+  return (
+    <ThemeContext.Provider value={{ mode, colors, setMode, setColors, saveTheme, loading, isAdmin }}>
+      {children}
+    </ThemeContext.Provider>
+  );
+}
+
+export function useTheme() {
+  const ctx = useContext(ThemeContext);
+  if (!ctx) throw new Error("useTheme must be used within ThemeProvider");
+  return ctx;
+}
