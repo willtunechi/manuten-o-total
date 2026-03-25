@@ -52,9 +52,16 @@ type NewManualLubricationPlan = {
   nextDueDate: string;
 };
 
+export type ComponentTypeConfig = {
+  id: string;
+  key: string;
+  name: string;
+};
+
 type ConfigContextType = {
   lines: Line[];
   componentRules: ComponentRule[];
+  componentTypes: ComponentTypeConfig[];
   lubricationPlans: LubricationPlan[];
   lubricationExecutions: LubricationExecution[];
   createMachineWithScope: (payload: NewMachinePayload) => void;
@@ -62,6 +69,9 @@ type ConfigContextType = {
   addLine: (name: string) => void;
   updateLine: (id: string, name: string) => void;
   removeLine: (id: string) => void;
+  addComponentType: (key: string, name: string) => void;
+  updateComponentType: (id: string, name: string) => void;
+  removeComponentType: (id: string) => void;
   addLubricationPlan: (payload: NewManualLubricationPlan) => void;
   updateLubricationPlan: (id: string, payload: Partial<Omit<LubricationPlan, "id" | "assetId" | "assetKind">>) => void;
   removeLubricationPlan: (id: string) => void;
