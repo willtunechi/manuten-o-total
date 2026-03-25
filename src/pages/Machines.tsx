@@ -211,6 +211,18 @@ export default function Machines() {
             </SelectContent>
           </Select>
         </div>
+        <div className="w-full sm:max-w-xs space-y-1">
+          <Label>Tipo de ativo</Label>
+          <Select value={typeFilter} onValueChange={setTypeFilter}>
+            <SelectTrigger><SelectValue placeholder="Filtrar por tipo" /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todos</SelectItem>
+              {Object.entries(MACHINE_TYPE_LABELS).map(([value, label]) => (
+                <SelectItem key={value} value={value}>{label}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       <div className="space-y-6">
