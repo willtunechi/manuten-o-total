@@ -56,24 +56,24 @@ const COLOR_FIELDS: { key: keyof ThemeColors; label: string }[] = [
 
 const PRESETS: { name: string; mode: "light" | "dark"; colors: ThemeColors }[] = [
   {
-    name: "Azul Moderno",
-    mode: "light",
-    colors: { background: "220 20% 97%", primary: "220 70% 50%", secondary: "220 25% 93%", accent: "220 15% 90%", sidebar: "220 25% 99%" },
+    name: "GC Padrão",
+    mode: "dark",
+    colors: { background: "220 40% 8%", primary: "165 80% 45%", secondary: "220 30% 14%", accent: "220 25% 18%", sidebar: "220 45% 6%" },
   },
   {
-    name: "Índigo Suave",
-    mode: "light",
-    colors: { background: "240 15% 97%", primary: "240 60% 55%", secondary: "240 20% 94%", accent: "240 12% 91%", sidebar: "240 15% 99%" },
+    name: "Azul Clássico",
+    mode: "dark",
+    colors: { background: "225 15% 8%", primary: "220 70% 55%", secondary: "225 12% 15%", accent: "225 10% 18%", sidebar: "225 15% 6%" },
   },
   {
     name: "Verde Natura",
-    mode: "light",
-    colors: { background: "150 15% 97%", primary: "160 55% 38%", secondary: "150 20% 93%", accent: "150 12% 90%", sidebar: "150 15% 99%" },
+    mode: "dark",
+    colors: { background: "160 20% 7%", primary: "160 55% 40%", secondary: "160 15% 13%", accent: "160 12% 17%", sidebar: "160 20% 5%" },
   },
   {
-    name: "Escuro Elegante",
-    mode: "dark",
-    colors: { background: "225 15% 8%", primary: "220 70% 55%", secondary: "225 12% 15%", accent: "225 10% 18%", sidebar: "225 15% 6%" },
+    name: "Claro Suave",
+    mode: "light",
+    colors: { background: "220 20% 97%", primary: "220 70% 50%", secondary: "220 25% 93%", accent: "220 15% 90%", sidebar: "220 25% 99%" },
   },
   {
     name: "Meia-noite",
