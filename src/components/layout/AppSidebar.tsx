@@ -16,7 +16,7 @@
   FileBarChart,
   BookOpen,
 } from "lucide-react";
-import watLogo from "@/assets/logo.png";
+
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
