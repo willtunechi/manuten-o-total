@@ -208,6 +208,9 @@ export default function Lubrication() {
         <Button size="sm" variant="outline" className="gap-1 h-7 text-xs text-destructive" onClick={() => removeLubricationPlan(plan.id)}>
           <Trash2 className="h-3 w-3" /> Excluir
         </Button>
+        <Button size="sm" variant="outline" className="gap-1 h-7 text-xs" onClick={() => setCopyPlan(plan)}>
+          <Copy className="h-3 w-3" /> Copiar
+        </Button>
       </div>
     </div>
   );
