@@ -90,16 +90,18 @@ function applyThemeToDOM(mode: ThemeMode, colors: ThemeColors) {
   const root = document.documentElement;
   const base = mode === "dark" ? DARK_BASE : LIGHT_BASE;
 
-  // Determine if sidebar bg is dark or light to set proper foreground colors
+  // Determine if background/sidebar are dark to auto-set foreground
+  const bgLightness = parseLightness(colors.background);
+  const bgIsDark = bgLightness < 45;
   const sidebarLightness = parseLightness(colors.sidebar);
   const sidebarIsDark = sidebarLightness < 45;
 
-  root.style.setProperty("--background", base.background);
-  root.style.setProperty("--foreground", base.foreground);
-  root.style.setProperty("--card", base.card);
-  root.style.setProperty("--card-foreground", base.cardForeground);
-  root.style.setProperty("--popover", base.popover);
-  root.style.setProperty("--popover-foreground", base.popoverForeground);
+  root.style.setProperty("--background", colors.background);
+  root.style.setProperty("--foreground", bgIsDark ? "0 0% 95%" : "0 0% 5%");
+  root.style.setProperty("--card", bgIsDark ? `${colors.background.split(' ')[0]} ${colors.background.split(' ')[1]} ${Math.min(parseLightness(colors.background) + 3, 100)}%` : colors.background);
+  root.style.setProperty("--card-foreground", bgIsDark ? "0 0% 95%" : "0 0% 5%");
+  root.style.setProperty("--popover", bgIsDark ? `${colors.background.split(' ')[0]} ${colors.background.split(' ')[1]} ${Math.min(parseLightness(colors.background) + 3, 100)}%` : colors.background);
+  root.style.setProperty("--popover-foreground", bgIsDark ? "0 0% 95%" : "0 0% 5%");
   root.style.setProperty("--primary", colors.primary);
   root.style.setProperty("--primary-foreground", base.primaryForeground);
   root.style.setProperty("--secondary", colors.secondary);
