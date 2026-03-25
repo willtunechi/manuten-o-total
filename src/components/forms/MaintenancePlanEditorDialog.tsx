@@ -17,7 +17,7 @@ const itemSchema = z.object({
   id: z.string(),
   description: z.string().min(1, "Descrição obrigatória"),
   inspectionType: z.string().min(1, "Tipo de inspeção obrigatório"),
-  attentionPoints: z.string().min(1, "Critério/atenção obrigatório"),
+  attentionPoints: z.string().optional().default(""),
   frequencyDays: z.coerce.number().min(1, "Frequência mínima de 1 dia"),
   observation: z.string().optional().default(""),
   responsible: z.enum(["operador", "manutencao"]),

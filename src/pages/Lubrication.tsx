@@ -11,6 +11,84 @@ import { useData } from "@/contexts/DataContext";
 import { useConfig } from "@/contexts/ConfigContext";
 import type { LubricationPlan } from "@/data/types";
 
+interface LubFormProps {
+  formAssetKind: "machine" | "component";
+  setFormAssetKind: (v: "machine" | "component") => void;
+  formAssetId: string;
+  setFormAssetId: (v: string) => void;
+  assetOptions: { id: string; label: string }[];
+  formWhat: string;
+  setFormWhat: (v: string) => void;
+  formLubricant: string;
+  setFormLubricant: (v: string) => void;
+  formAttention: string;
+  setFormAttention: (v: string) => void;
+  formFrequency: string;
+  setFormFrequency: (v: string) => void;
+  formDueDate: string;
+  setFormDueDate: (v: string) => void;
+  disableAsset?: boolean;
+  readOnly?: boolean;
+}
+
+function LubricationFormFields({
+  formAssetKind, setFormAssetKind,
+  formAssetId, setFormAssetId, assetOptions,
+  formWhat, setFormWhat,
+  formLubricant, setFormLubricant,
+  formAttention, setFormAttention,
+  formFrequency, setFormFrequency,
+  formDueDate, setFormDueDate,
+  disableAsset = false,
+  readOnly = false,
+}: LubFormProps) {
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+      <div className="space-y-1">
+        <Label>Tipo de ativo</Label>
+        <Select value={formAssetKind} onValueChange={(v: "machine" | "component") => setFormAssetKind(v)} disabled={readOnly || disableAsset}>
+          <SelectTrigger><SelectValue /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="machine">Máquina</SelectItem>
+            <SelectItem value="component">Componente</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+      <div className="space-y-1">
+        <Label>Ativo</Label>
+        <Select value={formAssetId} onValueChange={setFormAssetId} disabled={readOnly || disableAsset}>
+          <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
+          <SelectContent>
+            {assetOptions.map((o) => (
+              <SelectItem key={o.id} value={o.id}>{o.label}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+      <div className="space-y-1 md:col-span-2">
+        <Label>O que lubrificar/engraxar</Label>
+        <Input value={formWhat} onChange={(e) => setFormWhat(e.target.value)} readOnly={readOnly} />
+      </div>
+      <div className="space-y-1">
+        <Label>Tipo lubrificante</Label>
+        <Input value={formLubricant} onChange={(e) => setFormLubricant(e.target.value)} readOnly={readOnly} />
+      </div>
+      <div className="space-y-1">
+        <Label>Frequência (dias)</Label>
+        <Input type="number" min={1} value={formFrequency} onChange={(e) => setFormFrequency(e.target.value)} readOnly={readOnly} />
+      </div>
+      <div className="space-y-1 md:col-span-2">
+        <Label>Pontos de atenção</Label>
+        <Input value={formAttention} onChange={(e) => setFormAttention(e.target.value)} readOnly={readOnly} />
+      </div>
+      <div className="space-y-1">
+        <Label>Próxima data</Label>
+        <Input type="date" value={formDueDate} onChange={(e) => setFormDueDate(e.target.value)} readOnly={readOnly} />
+      </div>
+    </div>
+  );
+}
+
 export default function Lubrication() {
   const { machines, components } = useData();
   const { lubricationPlans, addLubricationPlan, updateLubricationPlan, removeLubricationPlan } = useConfig();
@@ -131,52 +209,6 @@ export default function Lubrication() {
     </div>
   );
 
-  const FormFields = ({ readOnly = false }: { readOnly?: boolean }) => (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-      <div className="space-y-1">
-        <Label>Tipo de ativo</Label>
-        <Select value={formAssetKind} onValueChange={(v: "machine" | "component") => setFormAssetKind(v)} disabled={readOnly || !!editPlan}>
-          <SelectTrigger><SelectValue /></SelectTrigger>
-          <SelectContent>
-            <SelectItem value="machine">Máquina</SelectItem>
-            <SelectItem value="component">Componente</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-      <div className="space-y-1">
-        <Label>Ativo</Label>
-        <Select value={formAssetId} onValueChange={setFormAssetId} disabled={readOnly || !!editPlan}>
-          <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
-          <SelectContent>
-            {assetOptions.map((o) => (
-              <SelectItem key={o.id} value={o.id}>{o.label}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-      <div className="space-y-1 md:col-span-2">
-        <Label>O que lubrificar/engraxar</Label>
-        <Input value={formWhat} onChange={(e) => setFormWhat(e.target.value)} readOnly={readOnly} />
-      </div>
-      <div className="space-y-1">
-        <Label>Tipo lubrificante</Label>
-        <Input value={formLubricant} onChange={(e) => setFormLubricant(e.target.value)} readOnly={readOnly} />
-      </div>
-      <div className="space-y-1">
-        <Label>Frequência (dias)</Label>
-        <Input type="number" min={1} value={formFrequency} onChange={(e) => setFormFrequency(e.target.value)} readOnly={readOnly} />
-      </div>
-      <div className="space-y-1 md:col-span-2">
-        <Label>Pontos de atenção</Label>
-        <Input value={formAttention} onChange={(e) => setFormAttention(e.target.value)} readOnly={readOnly} />
-      </div>
-      <div className="space-y-1">
-        <Label>Próxima data</Label>
-        <Input type="date" value={formDueDate} onChange={(e) => setFormDueDate(e.target.value)} readOnly={readOnly} />
-      </div>
-    </div>
-  );
-
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-3">
@@ -238,7 +270,17 @@ export default function Lubrication() {
       <Dialog open={newDialogOpen} onOpenChange={setNewDialogOpen}>
         <DialogContent className="max-w-lg">
           <DialogHeader><DialogTitle>Novo Plano de Lubrificação</DialogTitle></DialogHeader>
-          <FormFields />
+          <LubricationFormFields
+            formAssetKind={formAssetKind} setFormAssetKind={setFormAssetKind}
+            formAssetId={formAssetId} setFormAssetId={setFormAssetId}
+            assetOptions={assetOptions}
+            formWhat={formWhat} setFormWhat={setFormWhat}
+            formLubricant={formLubricant} setFormLubricant={setFormLubricant}
+            formAttention={formAttention} setFormAttention={setFormAttention}
+            formFrequency={formFrequency} setFormFrequency={setFormFrequency}
+            formDueDate={formDueDate} setFormDueDate={setFormDueDate}
+            disableAsset={false}
+          />
           <DialogFooter>
             <Button variant="outline" onClick={() => setNewDialogOpen(false)}>Cancelar</Button>
             <Button onClick={saveNew}>Salvar</Button>
@@ -250,7 +292,17 @@ export default function Lubrication() {
       <Dialog open={!!editPlan} onOpenChange={(open) => !open && setEditPlan(undefined)}>
         <DialogContent className="max-w-lg">
           <DialogHeader><DialogTitle>Editar Plano de Lubrificação</DialogTitle></DialogHeader>
-          <FormFields />
+          <LubricationFormFields
+            formAssetKind={formAssetKind} setFormAssetKind={setFormAssetKind}
+            formAssetId={formAssetId} setFormAssetId={setFormAssetId}
+            assetOptions={assetOptions}
+            formWhat={formWhat} setFormWhat={setFormWhat}
+            formLubricant={formLubricant} setFormLubricant={setFormLubricant}
+            formAttention={formAttention} setFormAttention={setFormAttention}
+            formFrequency={formFrequency} setFormFrequency={setFormFrequency}
+            formDueDate={formDueDate} setFormDueDate={setFormDueDate}
+            disableAsset
+          />
           <DialogFooter>
             <Button variant="outline" onClick={() => setEditPlan(undefined)}>Cancelar</Button>
             <Button onClick={saveEdit}>Salvar</Button>
@@ -262,7 +314,18 @@ export default function Lubrication() {
       <Dialog open={!!viewPlan} onOpenChange={(open) => { if (!open) { setViewPlan(undefined); } else if (viewPlan) { setFormAssetKind(viewPlan.assetKind as "machine" | "component"); setFormAssetId(viewPlan.assetId); setFormWhat(viewPlan.whatToLubricate); setFormLubricant(viewPlan.lubricantType); setFormAttention(viewPlan.attentionPoints); setFormFrequency(String(viewPlan.frequencyDays)); setFormDueDate(viewPlan.nextDueDate); } }}>
         <DialogContent className="max-w-lg">
           <DialogHeader><DialogTitle>Consultar Plano de Lubrificação</DialogTitle></DialogHeader>
-          <FormFields readOnly />
+          <LubricationFormFields
+            formAssetKind={formAssetKind} setFormAssetKind={setFormAssetKind}
+            formAssetId={formAssetId} setFormAssetId={setFormAssetId}
+            assetOptions={assetOptions}
+            formWhat={formWhat} setFormWhat={setFormWhat}
+            formLubricant={formLubricant} setFormLubricant={setFormLubricant}
+            formAttention={formAttention} setFormAttention={setFormAttention}
+            formFrequency={formFrequency} setFormFrequency={setFormFrequency}
+            formDueDate={formDueDate} setFormDueDate={setFormDueDate}
+            disableAsset
+            readOnly
+          />
           <DialogFooter>
             <Button variant="outline" onClick={() => setViewPlan(undefined)}>Fechar</Button>
           </DialogFooter>
