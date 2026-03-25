@@ -833,6 +833,7 @@ export type Database = {
       theme_settings: {
         Row: {
           accent_color: string
+          background_color: string
           id: string
           primary_color: string
           secondary_color: string
@@ -842,6 +843,7 @@ export type Database = {
         }
         Insert: {
           accent_color?: string
+          background_color?: string
           id?: string
           primary_color?: string
           secondary_color?: string
@@ -851,6 +853,7 @@ export type Database = {
         }
         Update: {
           accent_color?: string
+          background_color?: string
           id?: string
           primary_color?: string
           secondary_color?: string
