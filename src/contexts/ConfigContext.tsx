@@ -224,13 +224,24 @@ export function ConfigProvider({ children }: { children: React.ReactNode }) {
     );
   }, []);
 
+  // ---- Load component types from DB ----
+  const loadComponentTypes = useCallback(async () => {
+    const { data, error } = await supabase.from("component_types").select("*");
+    if (error) {
+      console.error("Error loading component types:", error);
+      return;
+    }
+    setComponentTypes((data || []).map((row: any) => ({ id: row.id, key: row.key, name: row.name })));
+  }, []);
+
   // ---- Initial load ----
   useEffect(() => {
     loadLines();
     loadComponentRules();
     loadLubricationPlans();
     loadLubricationExecutions();
-  }, [loadLines, loadComponentRules, loadLubricationPlans, loadLubricationExecutions]);
+    loadComponentTypes();
+  }, [loadLines, loadComponentRules, loadLubricationPlans, loadLubricationExecutions, loadComponentTypes]);
 
   // ---- Auto-apply current_and_future component rules ----
   useEffect(() => {
