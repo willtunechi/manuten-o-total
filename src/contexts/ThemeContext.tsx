@@ -22,6 +22,7 @@ interface ThemeContextType {
 }
 
 const DEFAULT_COLORS: ThemeColors = {
+  background: "0 0% 100%",
   primary: "0 0% 10%",
   secondary: "0 0% 96%",
   accent: "0 0% 92%",
