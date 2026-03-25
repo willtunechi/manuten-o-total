@@ -532,7 +532,13 @@ export default function Settings() {
             </CardContent>
           </Card>
         </TabsContent>
+
+        <TabsContent value="appearance" className="space-y-4">
+          <ThemeSettings />
+        </TabsContent>
       </Tabs>
     </div>
+  );
+}
   );
 }
