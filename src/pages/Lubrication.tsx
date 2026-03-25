@@ -10,6 +10,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useData } from "@/contexts/DataContext";
 import { useConfig } from "@/contexts/ConfigContext";
 import type { LubricationPlan } from "@/data/types";
+import { CopyPlanDialog } from "@/components/forms/CopyPlanDialog";
+import { toast } from "@/hooks/use-toast";
 
 interface LubFormProps {
   formAssetKind: "machine" | "component";
