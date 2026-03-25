@@ -166,6 +166,7 @@ export default function Reports() {
 
     // From tickets
     tickets.forEach((t) => {
+      if (!filteredAssetIds.has(t.machineId)) return;
       if (new Date(t.createdAt) < windowStart) return;
       (t.partsUsed || []).forEach((pu) => {
         const part = partMap.get(pu.partId);
