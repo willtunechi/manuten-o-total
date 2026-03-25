@@ -106,6 +106,7 @@ export function ConfigProvider({ children }: { children: React.ReactNode }) {
   const [componentRules, setComponentRules] = useState<ComponentRule[]>([]);
   const [lubricationPlans, setLubricationPlans] = useState<LubricationPlan[]>([]);
   const [lubricationExecutions, setLubricationExecutions] = useState<LubricationExecution[]>([]);
+  const [componentTypes, setComponentTypes] = useState<ComponentTypeConfig[]>([]);
 
   const allTags = useMemo(
     () => new Set<string>([...machines.map((machine) => machine.tag.toLowerCase()), ...components.map((component) => component.tag.toLowerCase())]),
