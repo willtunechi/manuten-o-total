@@ -158,7 +158,7 @@ export default function Machines() {
     trocador_calor: sortByTag(components.filter((c) => c.type === "trocador_calor" && byFilters(c))),
     bomba_vacuo: sortByTag(components.filter((c) => c.type === "bomba_vacuo" && byFilters(c))),
     tanque_agua: sortByTag(components.filter((c) => c.type === "tanque_agua" && byFilters(c))),
-  }), [machines, components, statusFilter, nameFilter]);
+  }), [machines, components, statusFilter, nameFilter, typeFilter]);
 
   const categories = [
     { key: "misturador", label: MACHINE_TYPE_LABELS.misturador },
