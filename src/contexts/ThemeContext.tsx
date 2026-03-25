@@ -79,9 +79,18 @@ const LIGHT_BASE = {
 
 const ThemeContext = createContext<ThemeContextType | null>(null);
 
+function parseLightness(hsl: string): number {
+  const parts = hsl.trim().split(/\s+/);
+  return parseFloat(parts[2]) || 50;
+}
+
 function applyThemeToDOM(mode: ThemeMode, colors: ThemeColors) {
   const root = document.documentElement;
   const base = mode === "dark" ? DARK_BASE : LIGHT_BASE;
+
+  // Determine if sidebar bg is dark or light to set proper foreground colors
+  const sidebarLightness = parseLightness(colors.sidebar);
+  const sidebarIsDark = sidebarLightness < 45;
 
   root.style.setProperty("--background", base.background);
   root.style.setProperty("--foreground", base.foreground);
@@ -102,14 +111,16 @@ function applyThemeToDOM(mode: ThemeMode, colors: ThemeColors) {
   root.style.setProperty("--border", base.border);
   root.style.setProperty("--input", base.input);
   root.style.setProperty("--ring", base.ring);
+
+  // Sidebar - adapt foreground based on sidebar background lightness
   root.style.setProperty("--sidebar-background", colors.sidebar);
-  root.style.setProperty("--sidebar-foreground", base.sidebarForeground);
+  root.style.setProperty("--sidebar-foreground", sidebarIsDark ? "0 0% 90%" : "0 0% 10%");
   root.style.setProperty("--sidebar-primary", colors.primary);
-  root.style.setProperty("--sidebar-primary-foreground", base.sidebarPrimaryForeground);
-  root.style.setProperty("--sidebar-accent", base.sidebarAccent);
-  root.style.setProperty("--sidebar-accent-foreground", base.sidebarAccentForeground);
-  root.style.setProperty("--sidebar-border", base.sidebarBorder);
-  root.style.setProperty("--sidebar-ring", base.sidebarRing);
+  root.style.setProperty("--sidebar-primary-foreground", sidebarIsDark ? "0 0% 100%" : "0 0% 100%");
+  root.style.setProperty("--sidebar-accent", sidebarIsDark ? "0 0% 18%" : "0 0% 93%");
+  root.style.setProperty("--sidebar-accent-foreground", sidebarIsDark ? "0 0% 95%" : "0 0% 5%");
+  root.style.setProperty("--sidebar-border", sidebarIsDark ? "0 0% 22%" : "0 0% 86%");
+  root.style.setProperty("--sidebar-ring", sidebarIsDark ? "0 0% 80%" : "0 0% 10%");
 
   if (mode === "dark") {
     root.classList.add("dark");
