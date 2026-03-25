@@ -86,9 +86,10 @@ function AppRoutes() {
           </Route>
           <Route path="/auth" element={<Navigate to="/" replace />} />
           <Route path="*" element={<NotFound />} />
-        </Routes>
-      </ConfigProvider>
-    </DataProvider>
+          </Routes>
+        </ConfigProvider>
+      </DataProvider>
+    </ThemeProvider>
   );
 }
 
