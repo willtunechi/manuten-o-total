@@ -347,6 +347,37 @@ export function ConfigProvider({ children }: { children: React.ReactNode }) {
     [lines, machines, components, updateMachine, updateComponent, loadLines, loadLubricationPlans],
   );
 
+  // ---- Component Types CRUD ----
+  const addComponentType = useCallback(async (key: string, name: string) => {
+    const { error } = await supabase.from("component_types").insert({ key: key.trim(), name: name.trim() });
+    if (error) {
+      toast({ title: "Erro", description: error.message, variant: "destructive" });
+      return;
+    }
+    await loadComponentTypes();
+    toast({ title: "Tipo adicionado" });
+  }, [loadComponentTypes]);
+
+  const updateComponentType = useCallback(async (id: string, name: string) => {
+    const { error } = await supabase.from("component_types").update({ name: name.trim() }).eq("id", id);
+    if (error) {
+      toast({ title: "Erro", description: error.message, variant: "destructive" });
+      return;
+    }
+    await loadComponentTypes();
+    toast({ title: "Tipo atualizado" });
+  }, [loadComponentTypes]);
+
+  const removeComponentType = useCallback(async (id: string) => {
+    const { error } = await supabase.from("component_types").delete().eq("id", id);
+    if (error) {
+      toast({ title: "Erro", description: error.message, variant: "destructive" });
+      return;
+    }
+    await loadComponentTypes();
+    toast({ title: "Tipo removido" });
+  }, [loadComponentTypes]);
+
   // ---- Machine / Component creation with scope ----
   const createMachineWithScope = useCallback(
     (payload: NewMachinePayload) => {
