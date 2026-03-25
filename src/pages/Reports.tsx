@@ -79,6 +79,7 @@ export default function Reports() {
   const defaultStart = useMemo(() => { const d = new Date(now); d.setDate(d.getDate() - 30); return d; }, [now]);
   const [startDate, setStartDate] = useState<Date>(defaultStart);
   const [endDate, setEndDate] = useState<Date>(now);
+  const [machineTypeFilter, setMachineTypeFilter] = useState<"all" | MachineType>("all");
 
   const windowStart = startDate;
 
