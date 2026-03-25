@@ -1,0 +1,1 @@
+ALTER TABLE public.theme_settings ADD COLUMN background_color text NOT NULL DEFAULT '0 0% 100%';

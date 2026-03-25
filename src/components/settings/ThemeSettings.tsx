@@ -47,6 +47,7 @@ function hexToHsl(hex: string): string {
 }
 
 const COLOR_FIELDS: { key: keyof ThemeColors; label: string }[] = [
+  { key: "background", label: "Cor de Fundo" },
   { key: "primary", label: "Cor Primária" },
   { key: "secondary", label: "Cor Secundária" },
   { key: "accent", label: "Cor de Destaque" },
@@ -57,27 +58,27 @@ const PRESETS: { name: string; mode: "light" | "dark"; colors: ThemeColors }[] =
   {
     name: "Padrão Claro",
     mode: "light",
-    colors: { primary: "0 0% 10%", secondary: "0 0% 96%", accent: "0 0% 92%", sidebar: "0 0% 98%" },
+    colors: { background: "0 0% 100%", primary: "0 0% 10%", secondary: "0 0% 96%", accent: "0 0% 92%", sidebar: "0 0% 98%" },
   },
   {
     name: "Azul Profissional",
     mode: "light",
-    colors: { primary: "215 70% 45%", secondary: "215 30% 95%", accent: "215 20% 90%", sidebar: "215 30% 97%" },
+    colors: { background: "210 20% 98%", primary: "215 70% 45%", secondary: "215 30% 95%", accent: "215 20% 90%", sidebar: "215 30% 97%" },
   },
   {
     name: "Verde Industrial",
     mode: "light",
-    colors: { primary: "142 50% 35%", secondary: "142 20% 95%", accent: "142 15% 90%", sidebar: "142 15% 97%" },
+    colors: { background: "140 15% 98%", primary: "142 50% 35%", secondary: "142 20% 95%", accent: "142 15% 90%", sidebar: "142 15% 97%" },
   },
   {
     name: "Escuro Moderno",
     mode: "dark",
-    colors: { primary: "215 70% 55%", secondary: "215 15% 18%", accent: "215 10% 22%", sidebar: "215 15% 10%" },
+    colors: { background: "215 15% 8%", primary: "215 70% 55%", secondary: "215 15% 18%", accent: "215 10% 22%", sidebar: "215 15% 10%" },
   },
   {
     name: "Escuro Verde",
     mode: "dark",
-    colors: { primary: "142 60% 45%", secondary: "142 10% 18%", accent: "142 8% 22%", sidebar: "142 10% 10%" },
+    colors: { background: "142 10% 8%", primary: "142 60% 45%", secondary: "142 10% 18%", accent: "142 8% 22%", sidebar: "142 10% 10%" },
   },
 ];
 
