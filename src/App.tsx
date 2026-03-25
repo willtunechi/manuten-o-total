@@ -58,10 +58,13 @@ function AppRoutes() {
     );
   }
 
+  const isAdmin = role === "admin";
+
   return (
-    <DataProvider>
-      <ConfigProvider>
-        <Routes>
+    <ThemeProvider isAdmin={isAdmin}>
+      <DataProvider>
+        <ConfigProvider>
+          <Routes>
           <Route element={<AppLayout />}>
             <Route path="/" element={canAccessRoute("/") ? <Dashboard /> : <Navigate to="/machines" replace />} />
             <Route path="/machines" element={<Machines />} />
