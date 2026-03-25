@@ -98,6 +98,7 @@ export default function Lubrication() {
   const [newDialogOpen, setNewDialogOpen] = useState(false);
   const [viewPlan, setViewPlan] = useState<LubricationPlan | undefined>();
   const [editPlan, setEditPlan] = useState<LubricationPlan | undefined>();
+  const [copyPlan, setCopyPlan] = useState<LubricationPlan | undefined>();
 
   // Form state for new/edit
   const [formAssetKind, setFormAssetKind] = useState<"machine" | "component">("machine");
