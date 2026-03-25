@@ -97,6 +97,11 @@ export default function Reports() {
     return map;
   }, [allAssets]);
 
+  const filteredAssetIds = useMemo(() => {
+    if (machineTypeFilter === "all") return new Set(allAssets.map((a) => a.id));
+    return new Set(allAssets.filter((a) => a.type === machineTypeFilter).map((a) => a.id));
+  }, [allAssets, machineTypeFilter]);
+
   // ─── 1. Ranking de Paradas por Ativo ───
   const downtimeByAsset = useMemo(() => {
     const map = new Map<string, number>();
