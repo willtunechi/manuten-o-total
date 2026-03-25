@@ -66,14 +66,6 @@ export default function Mechanics() {
         </Button>
       </div>
 
-      <Card className="border-primary/30 bg-primary/5">
-        <CardContent className="p-4 text-sm">
-          <p className="font-medium">Regra atual</p>
-          <p className="text-muted-foreground">
-            Checklists e preventivas já cadastrados continuam sob responsabilidade da equipe de manutenção.
-          </p>
-        </CardContent>
-      </Card>
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {visibleMechanics.map((m) => {
