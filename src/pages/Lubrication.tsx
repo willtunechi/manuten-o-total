@@ -192,7 +192,17 @@ export default function Lubrication() {
       <Dialog open={newDialogOpen} onOpenChange={setNewDialogOpen}>
         <DialogContent className="max-w-lg">
           <DialogHeader><DialogTitle>Novo Plano de Lubrificação</DialogTitle></DialogHeader>
-          <FormFields />
+          <LubricationFormFields
+            formAssetKind={formAssetKind} setFormAssetKind={setFormAssetKind}
+            formAssetId={formAssetId} setFormAssetId={setFormAssetId}
+            assetOptions={assetOptions}
+            formWhat={formWhat} setFormWhat={setFormWhat}
+            formLubricant={formLubricant} setFormLubricant={setFormLubricant}
+            formAttention={formAttention} setFormAttention={setFormAttention}
+            formFrequency={formFrequency} setFormFrequency={setFormFrequency}
+            formDueDate={formDueDate} setFormDueDate={setFormDueDate}
+            disableAsset={false}
+          />
           <DialogFooter>
             <Button variant="outline" onClick={() => setNewDialogOpen(false)}>Cancelar</Button>
             <Button onClick={saveNew}>Salvar</Button>
@@ -204,7 +214,17 @@ export default function Lubrication() {
       <Dialog open={!!editPlan} onOpenChange={(open) => !open && setEditPlan(undefined)}>
         <DialogContent className="max-w-lg">
           <DialogHeader><DialogTitle>Editar Plano de Lubrificação</DialogTitle></DialogHeader>
-          <FormFields />
+          <LubricationFormFields
+            formAssetKind={formAssetKind} setFormAssetKind={setFormAssetKind}
+            formAssetId={formAssetId} setFormAssetId={setFormAssetId}
+            assetOptions={assetOptions}
+            formWhat={formWhat} setFormWhat={setFormWhat}
+            formLubricant={formLubricant} setFormLubricant={setFormLubricant}
+            formAttention={formAttention} setFormAttention={setFormAttention}
+            formFrequency={formFrequency} setFormFrequency={setFormFrequency}
+            formDueDate={formDueDate} setFormDueDate={setFormDueDate}
+            disableAsset
+          />
           <DialogFooter>
             <Button variant="outline" onClick={() => setEditPlan(undefined)}>Cancelar</Button>
             <Button onClick={saveEdit}>Salvar</Button>
@@ -216,7 +236,18 @@ export default function Lubrication() {
       <Dialog open={!!viewPlan} onOpenChange={(open) => { if (!open) { setViewPlan(undefined); } else if (viewPlan) { setFormAssetKind(viewPlan.assetKind as "machine" | "component"); setFormAssetId(viewPlan.assetId); setFormWhat(viewPlan.whatToLubricate); setFormLubricant(viewPlan.lubricantType); setFormAttention(viewPlan.attentionPoints); setFormFrequency(String(viewPlan.frequencyDays)); setFormDueDate(viewPlan.nextDueDate); } }}>
         <DialogContent className="max-w-lg">
           <DialogHeader><DialogTitle>Consultar Plano de Lubrificação</DialogTitle></DialogHeader>
-          <FormFields readOnly />
+          <LubricationFormFields
+            formAssetKind={formAssetKind} setFormAssetKind={setFormAssetKind}
+            formAssetId={formAssetId} setFormAssetId={setFormAssetId}
+            assetOptions={assetOptions}
+            formWhat={formWhat} setFormWhat={setFormWhat}
+            formLubricant={formLubricant} setFormLubricant={setFormLubricant}
+            formAttention={formAttention} setFormAttention={setFormAttention}
+            formFrequency={formFrequency} setFormFrequency={setFormFrequency}
+            formDueDate={formDueDate} setFormDueDate={setFormDueDate}
+            disableAsset
+            readOnly
+          />
           <DialogFooter>
             <Button variant="outline" onClick={() => setViewPlan(undefined)}>Fechar</Button>
           </DialogFooter>
