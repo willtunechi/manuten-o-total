@@ -12,7 +12,6 @@ import { useData } from "@/contexts/DataContext";
 import { useConfig } from "@/contexts/ConfigContext";
 import { COMPONENT_TYPE_LABELS, MACHINE_STATUS_LABELS, MACHINE_TYPE_LABELS } from "@/data/types";
 import type { ComponentType, MachineStatus, MachineType } from "@/data/types";
-import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 
