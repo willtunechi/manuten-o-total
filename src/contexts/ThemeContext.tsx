@@ -2,6 +2,7 @@ import React, { createContext, useCallback, useContext, useEffect, useState } fr
 import { supabase } from "@/integrations/supabase/client";
 
 export interface ThemeColors {
+  background: string;
   primary: string;
   secondary: string;
   accent: string;
