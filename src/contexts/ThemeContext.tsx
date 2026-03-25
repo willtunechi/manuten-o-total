@@ -22,11 +22,11 @@ interface ThemeContextType {
 }
 
 const DEFAULT_COLORS: ThemeColors = {
-  background: "0 0% 100%",
-  primary: "0 0% 10%",
-  secondary: "0 0% 96%",
-  accent: "0 0% 92%",
-  sidebar: "0 0% 98%",
+  background: "220 20% 97%",
+  primary: "220 70% 50%",
+  secondary: "220 25% 93%",
+  accent: "220 15% 90%",
+  sidebar: "220 25% 99%",
 };
 
 const DARK_BASE = {

@@ -56,29 +56,29 @@ const COLOR_FIELDS: { key: keyof ThemeColors; label: string }[] = [
 
 const PRESETS: { name: string; mode: "light" | "dark"; colors: ThemeColors }[] = [
   {
-    name: "Padrão Claro",
+    name: "Azul Moderno",
     mode: "light",
-    colors: { background: "0 0% 100%", primary: "0 0% 10%", secondary: "0 0% 96%", accent: "0 0% 92%", sidebar: "0 0% 98%" },
+    colors: { background: "220 20% 97%", primary: "220 70% 50%", secondary: "220 25% 93%", accent: "220 15% 90%", sidebar: "220 25% 99%" },
   },
   {
-    name: "Azul Profissional",
+    name: "Índigo Suave",
     mode: "light",
-    colors: { background: "210 20% 98%", primary: "215 70% 45%", secondary: "215 30% 95%", accent: "215 20% 90%", sidebar: "215 30% 97%" },
+    colors: { background: "240 15% 97%", primary: "240 60% 55%", secondary: "240 20% 94%", accent: "240 12% 91%", sidebar: "240 15% 99%" },
   },
   {
-    name: "Verde Industrial",
+    name: "Verde Natura",
     mode: "light",
-    colors: { background: "140 15% 98%", primary: "142 50% 35%", secondary: "142 20% 95%", accent: "142 15% 90%", sidebar: "142 15% 97%" },
+    colors: { background: "150 15% 97%", primary: "160 55% 38%", secondary: "150 20% 93%", accent: "150 12% 90%", sidebar: "150 15% 99%" },
   },
   {
-    name: "Escuro Moderno",
+    name: "Escuro Elegante",
     mode: "dark",
-    colors: { background: "215 15% 8%", primary: "215 70% 55%", secondary: "215 15% 18%", accent: "215 10% 22%", sidebar: "215 15% 10%" },
+    colors: { background: "225 15% 8%", primary: "220 70% 55%", secondary: "225 12% 15%", accent: "225 10% 18%", sidebar: "225 15% 6%" },
   },
   {
-    name: "Escuro Verde",
+    name: "Meia-noite",
     mode: "dark",
-    colors: { background: "142 10% 8%", primary: "142 60% 45%", secondary: "142 10% 18%", accent: "142 8% 22%", sidebar: "142 10% 10%" },
+    colors: { background: "230 20% 6%", primary: "250 65% 60%", secondary: "230 15% 14%", accent: "230 12% 18%", sidebar: "230 20% 4%" },
   },
 ];
 
