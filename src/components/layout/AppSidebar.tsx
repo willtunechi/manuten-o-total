@@ -16,7 +16,7 @@
   FileBarChart,
   BookOpen,
 } from "lucide-react";
-import watLogo from "@/assets/logo.png";
+
 import { NavLink } from "@/components/NavLink";
 import { useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
@@ -71,8 +71,7 @@ export function AppSidebar({ collapsed, onToggle, mobileOpen, onMobileClose }: A
           )}
         >
           <div className="flex items-center gap-2 px-3 h-14 border-b border-border">
-            <img src={watLogo} alt="WAT" className="h-8 w-8 shrink-0 object-contain" />
-            <span className="font-bold text-lg text-primary tracking-tight truncate">WAT</span>
+            <span className="font-bold text-lg text-primary tracking-tight truncate">Manutenção</span>
             <Button
               variant="ghost"
               size="icon"
@@ -119,9 +118,8 @@ export function AppSidebar({ collapsed, onToggle, mobileOpen, onMobileClose }: A
       )}
     >
       <div className="flex items-center gap-2 px-3 h-14 border-b border-border">
-        <img src={watLogo} alt="WAT" className="h-8 w-8 shrink-0 object-contain" />
         {!collapsed && (
-          <span className="font-bold text-lg text-primary tracking-tight truncate">WAT</span>
+          <span className="font-bold text-lg text-primary tracking-tight truncate">Manutenção</span>
         )}
         <Button
           variant="ghost"
