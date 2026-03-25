@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AppLayout } from "./components/layout/AppLayout";
 import { DataProvider } from "./contexts/DataContext";
 import { ConfigProvider } from "./contexts/ConfigContext";
+import { ThemeProvider } from "./contexts/ThemeContext";
 import { useAuth } from "./hooks/useAuth";
 import Auth from "./pages/Auth";
 import ChangePassword from "./pages/ChangePassword";
