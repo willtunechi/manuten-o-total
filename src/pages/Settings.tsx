@@ -493,7 +493,6 @@ export default function Settings() {
                   <div key={ct.id} className="border rounded-md p-3 flex items-center gap-3">
                     {editingTypeId === ct.id ? (
                       <>
-                        <Badge variant="outline" className="font-mono">{ct.key}</Badge>
                         <Input
                           className="flex-1 max-w-xs"
                           value={editingTypeName}
@@ -505,7 +504,6 @@ export default function Settings() {
                       </>
                     ) : (
                       <>
-                        <Badge variant="outline" className="font-mono">{ct.key}</Badge>
                         <span className="font-medium">{ct.name}</span>
                         <div className="ml-auto flex gap-2">
                           <Button
