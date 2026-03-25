@@ -143,9 +143,12 @@ export default function Machines() {
     return opts.sort((a, b) => a.label.localeCompare(b.label, 'pt-BR', { numeric: true }));
   }, [machines, components]);
 
-  const byFilters = <T extends { id: string; status: keyof typeof MACHINE_STATUS_LABELS }>(item: T) =>
+  const getAssetType = (item: any) => item.type;
+
+  const byFilters = <T extends { id: string; status: keyof typeof MACHINE_STATUS_LABELS; type: string }>(item: T) =>
     (statusFilter === "all" || item.status === statusFilter) &&
-    (nameFilter === "all" || item.id === nameFilter);
+    (nameFilter === "all" || item.id === nameFilter) &&
+    (typeFilter === "all" || item.type === typeFilter);
 
   const sortByTag = <T extends { tag: string }>(arr: T[]) => [...arr].sort((a, b) => a.tag.localeCompare(b.tag, 'pt-BR', { numeric: true }));
 
