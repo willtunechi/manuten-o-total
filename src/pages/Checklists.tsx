@@ -14,6 +14,7 @@ export default function Checklists() {
   const [createOpen, setCreateOpen] = useState(false);
   const [viewPlan, setViewPlan] = useState<MaintenancePlan | undefined>();
   const [editPlan, setEditPlan] = useState<MaintenancePlan | undefined>();
+  const [copyPlan, setCopyPlan] = useState<MaintenancePlan | undefined>();
 
   const checklists = maintenancePlans.filter((plan) => plan.planType === "checklist");
 

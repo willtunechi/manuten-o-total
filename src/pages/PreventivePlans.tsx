@@ -14,6 +14,7 @@ export default function PreventivePlans() {
   const [createOpen, setCreateOpen] = useState(false);
   const [viewPlan, setViewPlan] = useState<MaintenancePlan | undefined>();
   const [editPlan, setEditPlan] = useState<MaintenancePlan | undefined>();
+  const [copyPlan, setCopyPlan] = useState<MaintenancePlan | undefined>();
 
   const preventivePlans = maintenancePlans.filter((p) => p.planType === "preventive");
 
