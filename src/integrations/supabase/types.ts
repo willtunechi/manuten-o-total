@@ -830,6 +830,36 @@ export type Database = {
         }
         Relationships: []
       }
+      theme_settings: {
+        Row: {
+          accent_color: string
+          id: string
+          primary_color: string
+          secondary_color: string
+          sidebar_color: string
+          theme_mode: string
+          updated_at: string
+        }
+        Insert: {
+          accent_color?: string
+          id?: string
+          primary_color?: string
+          secondary_color?: string
+          sidebar_color?: string
+          theme_mode?: string
+          updated_at?: string
+        }
+        Update: {
+          accent_color?: string
+          id?: string
+          primary_color?: string
+          secondary_color?: string
+          sidebar_color?: string
+          theme_mode?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       ticket_parts_used: {
         Row: {
           id: string
