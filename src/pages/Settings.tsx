@@ -8,6 +8,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Plus, Pencil, Trash2 } from "lucide-react";
+import { ThemeSettings } from "@/components/settings/ThemeSettings";
+import { useTheme } from "@/contexts/ThemeContext";
 import { useData } from "@/contexts/DataContext";
 import { useConfig } from "@/contexts/ConfigContext";
 import { COMPONENT_TYPE_LABELS, MACHINE_STATUS_LABELS, MACHINE_TYPE_LABELS } from "@/data/types";
