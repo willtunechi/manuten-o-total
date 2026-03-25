@@ -131,6 +131,7 @@ export default function Reports() {
     };
     const map = new Map<string, number>();
     assetStopRecords.forEach((r) => {
+      if (!filteredAssetIds.has(r.assetId)) return;
       if (new Date(r.stoppedAt) < windowStart) return;
       const label = reasonLabels[r.reason || "other"] || "Outros";
       map.set(label, (map.get(label) || 0) + 1);
