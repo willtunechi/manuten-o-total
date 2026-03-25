@@ -80,6 +80,27 @@ export type Database = {
         }
         Relationships: []
       }
+      component_types: {
+        Row: {
+          created_at: string
+          id: string
+          key: string
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          key: string
+          name: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          key?: string
+          name?: string
+        }
+        Relationships: []
+      }
       components: {
         Row: {
           id: string
