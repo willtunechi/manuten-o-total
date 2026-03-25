@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/hooks/useAuth";
 import { ChangePasswordDialog } from "@/components/dialogs/ChangePasswordDialog";
-import watLogo from "@/assets/logo.png";
+
 
 const ROLE_LABELS: Record<string, string> = {
   admin: "Administrador",
