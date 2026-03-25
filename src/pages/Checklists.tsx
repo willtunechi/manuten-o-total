@@ -206,6 +206,26 @@ export default function Checklists() {
         title="Consultar Checklist"
         onSave={() => {}}
       />
+
+      <CopyPlanDialog
+        open={!!copyPlan}
+        onOpenChange={(open) => !open && setCopyPlan(undefined)}
+        title="Copiar Checklist para outra máquina"
+        availableMachines={machines.filter((m) => copyPlan && m.type === copyPlan.machineType)}
+        excludeMachineIds={copyPlan?.machineIds ?? (copyPlan?.machineId ? [copyPlan.machineId] : [])}
+        onConfirm={(ids) => {
+          if (!copyPlan) return;
+          ids.forEach((machineId) => {
+            addMaintenancePlan({
+              ...copyPlan,
+              machineIds: [machineId],
+              machineId: machineId,
+            });
+          });
+          toast({ title: "Checklist copiado", description: `Copiado para ${ids.length} máquina${ids.length > 1 ? "s" : ""}` });
+          setCopyPlan(undefined);
+        }}
+      />
     </div>
   );
 }
