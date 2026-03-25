@@ -598,6 +598,7 @@ export function ConfigProvider({ children }: { children: React.ReactNode }) {
       value={{
         lines,
         componentRules,
+        componentTypes,
         lubricationPlans,
         lubricationExecutions,
         createMachineWithScope,
