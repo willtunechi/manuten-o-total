@@ -464,23 +464,16 @@ export default function Settings() {
             <CardContent>
               <div className="flex flex-col sm:flex-row gap-3">
                 <div className="space-y-1 flex-1">
-                  <Label>Chave (identificador)</Label>
-                  <Input
-                    value={newTypeKey}
-                    onChange={(e) => setNewTypeKey(e.target.value)}
-                    placeholder="ex: motor_eletrico"
-                  />
-                </div>
-                <div className="space-y-1 flex-1">
-                  <Label>Nome de exibição</Label>
+                  <Label>Nome do tipo</Label>
                   <Input
                     value={newTypeName}
                     onChange={(e) => setNewTypeName(e.target.value)}
                     placeholder="ex: Motor Elétrico"
+                    onKeyDown={(e) => e.key === "Enter" && handleAddComponentType()}
                   />
                 </div>
                 <div className="flex items-end">
-                  <Button onClick={handleAddComponentType} disabled={!newTypeKey.trim() || !newTypeName.trim()}>
+                  <Button onClick={handleAddComponentType} disabled={!newTypeName.trim()}>
                     <Plus className="h-4 w-4 mr-1" /> Adicionar
                   </Button>
                 </div>
