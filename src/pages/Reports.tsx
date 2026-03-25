@@ -177,6 +177,7 @@ export default function Reports() {
     // From plan executions
     planExecutions.forEach((ex) => {
       if (new Date(ex.startedAt) < windowStart || !ex.machineId) return;
+      if (!filteredAssetIds.has(ex.machineId)) return;
       (ex.itemResults || []).forEach((ir) => {
         (ir.partsUsed || []).forEach((pu) => {
           const part = partMap.get(pu.partId);
