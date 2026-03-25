@@ -106,6 +106,7 @@ export default function Reports() {
   const downtimeByAsset = useMemo(() => {
     const map = new Map<string, number>();
     assetStopRecords.forEach((r) => {
+      if (!filteredAssetIds.has(r.assetId)) return;
       if (new Date(r.stoppedAt) < windowStart) return;
       if (r.reason === 'no_production') return; // Não conta nos indicadores
       const end = r.resumedAt ? r.resumedAt : now.toISOString();
