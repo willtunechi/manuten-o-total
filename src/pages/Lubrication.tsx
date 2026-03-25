@@ -337,6 +337,37 @@ export default function Lubrication() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <CopyPlanDialog
+        open={!!copyPlan}
+        onOpenChange={(open) => !open && setCopyPlan(undefined)}
+        title="Copiar Plano de Lubrificação para outra máquina"
+        availableMachines={machines.filter((m) => {
+          if (!copyPlan) return false;
+          const sourceAsset = machines.find((x) => x.id === copyPlan.assetId) || components.find((x) => x.id === copyPlan.assetId);
+          if (!sourceAsset) return false;
+          return m.type === ('machineType' in sourceAsset ? sourceAsset.machineType : sourceAsset.type);
+        })}
+        excludeMachineIds={copyPlan ? [copyPlan.assetId] : []}
+        onConfirm={(ids) => {
+          if (!copyPlan) return;
+          ids.forEach((machineId) => {
+            const targetMachine = machines.find((m) => m.id === machineId);
+            if (!targetMachine) return;
+            addLubricationPlan({
+              assetId: machineId,
+              assetKind: "machine",
+              whatToLubricate: copyPlan.whatToLubricate,
+              lubricantType: copyPlan.lubricantType,
+              attentionPoints: copyPlan.attentionPoints,
+              frequencyDays: copyPlan.frequencyDays,
+              nextDueDate: copyPlan.nextDueDate,
+            });
+          });
+          toast({ title: "Plano copiado", description: `Copiado para ${ids.length} máquina${ids.length > 1 ? "s" : ""}` });
+          setCopyPlan(undefined);
+        }}
+      />
     </div>
   );
 }
