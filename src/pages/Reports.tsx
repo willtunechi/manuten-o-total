@@ -143,6 +143,7 @@ export default function Reports() {
   const mttrByAsset = useMemo(() => {
     const map = new Map<string, { total: number; count: number }>();
     tickets.forEach((t) => {
+      if (!filteredAssetIds.has(t.machineId)) return;
       if (t.status !== "resolved" || !t.resolvedAt) return;
       if (new Date(t.createdAt) < windowStart) return;
       const hours = hoursBetween(t.createdAt, t.resolvedAt);
