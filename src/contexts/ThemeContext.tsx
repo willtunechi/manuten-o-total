@@ -105,16 +105,16 @@ function applyThemeToDOM(mode: ThemeMode, colors: ThemeColors) {
   root.style.setProperty("--primary", colors.primary);
   root.style.setProperty("--primary-foreground", base.primaryForeground);
   root.style.setProperty("--secondary", colors.secondary);
-  root.style.setProperty("--secondary-foreground", base.secondaryForeground);
-  root.style.setProperty("--muted", base.muted);
-  root.style.setProperty("--muted-foreground", base.mutedForeground);
+  root.style.setProperty("--secondary-foreground", bgIsDark ? "0 0% 95%" : "0 0% 10%");
+  root.style.setProperty("--muted", bgIsDark ? `${colors.background.split(' ')[0]} ${colors.background.split(' ')[1]} ${Math.min(parseLightness(colors.background) + 8, 100)}%` : base.muted);
+  root.style.setProperty("--muted-foreground", bgIsDark ? "0 0% 60%" : "0 0% 40%");
   root.style.setProperty("--accent", colors.accent);
-  root.style.setProperty("--accent-foreground", base.accentForeground);
+  root.style.setProperty("--accent-foreground", bgIsDark ? "0 0% 95%" : "0 0% 5%");
   root.style.setProperty("--destructive", base.destructive);
   root.style.setProperty("--destructive-foreground", base.destructiveForeground);
-  root.style.setProperty("--border", base.border);
-  root.style.setProperty("--input", base.input);
-  root.style.setProperty("--ring", base.ring);
+  root.style.setProperty("--border", bgIsDark ? "0 0% 18%" : "0 0% 88%");
+  root.style.setProperty("--input", bgIsDark ? "0 0% 18%" : "0 0% 88%");
+  root.style.setProperty("--ring", bgIsDark ? "0 0% 80%" : "0 0% 10%");
 
   // Sidebar - adapt foreground based on sidebar background lightness
   root.style.setProperty("--sidebar-background", colors.sidebar);
