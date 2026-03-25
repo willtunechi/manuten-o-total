@@ -131,52 +131,6 @@ export default function Lubrication() {
     </div>
   );
 
-  const FormFields = ({ readOnly = false }: { readOnly?: boolean }) => (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-      <div className="space-y-1">
-        <Label>Tipo de ativo</Label>
-        <Select value={formAssetKind} onValueChange={(v: "machine" | "component") => setFormAssetKind(v)} disabled={readOnly || !!editPlan}>
-          <SelectTrigger><SelectValue /></SelectTrigger>
-          <SelectContent>
-            <SelectItem value="machine">Máquina</SelectItem>
-            <SelectItem value="component">Componente</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-      <div className="space-y-1">
-        <Label>Ativo</Label>
-        <Select value={formAssetId} onValueChange={setFormAssetId} disabled={readOnly || !!editPlan}>
-          <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
-          <SelectContent>
-            {assetOptions.map((o) => (
-              <SelectItem key={o.id} value={o.id}>{o.label}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-      <div className="space-y-1 md:col-span-2">
-        <Label>O que lubrificar/engraxar</Label>
-        <Input value={formWhat} onChange={(e) => setFormWhat(e.target.value)} readOnly={readOnly} />
-      </div>
-      <div className="space-y-1">
-        <Label>Tipo lubrificante</Label>
-        <Input value={formLubricant} onChange={(e) => setFormLubricant(e.target.value)} readOnly={readOnly} />
-      </div>
-      <div className="space-y-1">
-        <Label>Frequência (dias)</Label>
-        <Input type="number" min={1} value={formFrequency} onChange={(e) => setFormFrequency(e.target.value)} readOnly={readOnly} />
-      </div>
-      <div className="space-y-1 md:col-span-2">
-        <Label>Pontos de atenção</Label>
-        <Input value={formAttention} onChange={(e) => setFormAttention(e.target.value)} readOnly={readOnly} />
-      </div>
-      <div className="space-y-1">
-        <Label>Próxima data</Label>
-        <Input type="date" value={formDueDate} onChange={(e) => setFormDueDate(e.target.value)} readOnly={readOnly} />
-      </div>
-    </div>
-  );
-
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-3">
