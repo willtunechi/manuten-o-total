@@ -52,9 +52,16 @@ type NewManualLubricationPlan = {
   nextDueDate: string;
 };
 
+export type ComponentTypeConfig = {
+  id: string;
+  key: string;
+  name: string;
+};
+
 type ConfigContextType = {
   lines: Line[];
   componentRules: ComponentRule[];
+  componentTypes: ComponentTypeConfig[];
   lubricationPlans: LubricationPlan[];
   lubricationExecutions: LubricationExecution[];
   createMachineWithScope: (payload: NewMachinePayload) => void;
@@ -62,6 +69,9 @@ type ConfigContextType = {
   addLine: (name: string) => void;
   updateLine: (id: string, name: string) => void;
   removeLine: (id: string) => void;
+  addComponentType: (key: string, name: string) => void;
+  updateComponentType: (id: string, name: string) => void;
+  removeComponentType: (id: string) => void;
   addLubricationPlan: (payload: NewManualLubricationPlan) => void;
   updateLubricationPlan: (id: string, payload: Partial<Omit<LubricationPlan, "id" | "assetId" | "assetKind">>) => void;
   removeLubricationPlan: (id: string) => void;
@@ -96,6 +106,7 @@ export function ConfigProvider({ children }: { children: React.ReactNode }) {
   const [componentRules, setComponentRules] = useState<ComponentRule[]>([]);
   const [lubricationPlans, setLubricationPlans] = useState<LubricationPlan[]>([]);
   const [lubricationExecutions, setLubricationExecutions] = useState<LubricationExecution[]>([]);
+  const [componentTypes, setComponentTypes] = useState<ComponentTypeConfig[]>([]);
 
   const allTags = useMemo(
     () => new Set<string>([...machines.map((machine) => machine.tag.toLowerCase()), ...components.map((component) => component.tag.toLowerCase())]),
@@ -213,13 +224,24 @@ export function ConfigProvider({ children }: { children: React.ReactNode }) {
     );
   }, []);
 
+  // ---- Load component types from DB ----
+  const loadComponentTypes = useCallback(async () => {
+    const { data, error } = await supabase.from("component_types").select("*");
+    if (error) {
+      console.error("Error loading component types:", error);
+      return;
+    }
+    setComponentTypes((data || []).map((row: any) => ({ id: row.id, key: row.key, name: row.name })));
+  }, []);
+
   // ---- Initial load ----
   useEffect(() => {
     loadLines();
     loadComponentRules();
     loadLubricationPlans();
     loadLubricationExecutions();
-  }, [loadLines, loadComponentRules, loadLubricationPlans, loadLubricationExecutions]);
+    loadComponentTypes();
+  }, [loadLines, loadComponentRules, loadLubricationPlans, loadLubricationExecutions, loadComponentTypes]);
 
   // ---- Auto-apply current_and_future component rules ----
   useEffect(() => {
@@ -324,6 +346,37 @@ export function ConfigProvider({ children }: { children: React.ReactNode }) {
     },
     [lines, machines, components, updateMachine, updateComponent, loadLines, loadLubricationPlans],
   );
+
+  // ---- Component Types CRUD ----
+  const addComponentType = useCallback(async (key: string, name: string) => {
+    const { error } = await supabase.from("component_types").insert({ key: key.trim(), name: name.trim() });
+    if (error) {
+      toast({ title: "Erro", description: error.message, variant: "destructive" });
+      return;
+    }
+    await loadComponentTypes();
+    toast({ title: "Tipo adicionado" });
+  }, [loadComponentTypes]);
+
+  const updateComponentType = useCallback(async (id: string, name: string) => {
+    const { error } = await supabase.from("component_types").update({ name: name.trim() }).eq("id", id);
+    if (error) {
+      toast({ title: "Erro", description: error.message, variant: "destructive" });
+      return;
+    }
+    await loadComponentTypes();
+    toast({ title: "Tipo atualizado" });
+  }, [loadComponentTypes]);
+
+  const removeComponentType = useCallback(async (id: string) => {
+    const { error } = await supabase.from("component_types").delete().eq("id", id);
+    if (error) {
+      toast({ title: "Erro", description: error.message, variant: "destructive" });
+      return;
+    }
+    await loadComponentTypes();
+    toast({ title: "Tipo removido" });
+  }, [loadComponentTypes]);
 
   // ---- Machine / Component creation with scope ----
   const createMachineWithScope = useCallback(
@@ -545,6 +598,7 @@ export function ConfigProvider({ children }: { children: React.ReactNode }) {
       value={{
         lines,
         componentRules,
+        componentTypes,
         lubricationPlans,
         lubricationExecutions,
         createMachineWithScope,
@@ -552,6 +606,9 @@ export function ConfigProvider({ children }: { children: React.ReactNode }) {
         addLine,
         updateLine,
         removeLine,
+        addComponentType,
+        updateComponentType,
+        removeComponentType,
         addLubricationPlan,
         updateLubricationPlan,
         removeLubricationPlan,

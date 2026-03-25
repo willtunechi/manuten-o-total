@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -7,30 +7,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Plus, RotateCcw } from "lucide-react";
+import { Plus, Pencil, Trash2 } from "lucide-react";
 import { useData } from "@/contexts/DataContext";
 import { useConfig } from "@/contexts/ConfigContext";
 import { COMPONENT_TYPE_LABELS, MACHINE_STATUS_LABELS, MACHINE_TYPE_LABELS } from "@/data/types";
 import type { ComponentType, MachineStatus, MachineType } from "@/data/types";
-import { useAuth } from "@/hooks/useAuth";
-import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
-
-const ROLE_LABELS: Record<string, string> = {
-  admin: "Administrador",
-  mechanic: "Mecânico",
-  operator: "Operador",
-  planejador: "Planejador",
-  supervisor_manutencao: "Supervisor Manutenção",
-  supervisor_operacoes: "Supervisor Operações",
-};
-
-interface ManagedUser {
-  id: string;
-  email: string;
-  role: string;
-  must_change_password: boolean;
-}
 
 const emptyMachineForm = {
   baseTag: "",
@@ -54,7 +36,6 @@ const emptyComponentForm = {
 };
 
 export default function Settings() {
-  const { isAdmin, canManageUsers, creatableRoles } = useAuth();
   const {
     machines,
     components,
@@ -67,6 +48,10 @@ export default function Settings() {
     createMachineWithScope,
     createComponentWithScope,
     componentRules,
+    componentTypes,
+    addComponentType,
+    updateComponentType,
+    removeComponentType,
   } = useConfig();
 
   const [machineForm, setMachineForm] = useState(emptyMachineForm);
@@ -76,71 +61,17 @@ export default function Settings() {
   const [componentForm, setComponentForm] = useState(emptyComponentForm);
   const [editingComponentId, setEditingComponentId] = useState<string | null>(null);
 
-  // User management state
-  const [managedUsers, setManagedUsers] = useState<ManagedUser[]>([]);
-  const [usersLoading, setUsersLoading] = useState(false);
-  const [newUserEmail, setNewUserEmail] = useState("");
-  const [newUserRole, setNewUserRole] = useState("operator");
-  const [userDialogOpen, setUserDialogOpen] = useState(false);
-  const [creatingUser, setCreatingUser] = useState(false);
-
-  const loadUsers = useCallback(async () => {
-    setUsersLoading(true);
-    try {
-      const { data, error } = await supabase.functions.invoke("create-user", {
-        body: { action: "list" },
-      });
-      if (error) throw error;
-      setManagedUsers(data.users || []);
-    } catch {
-      // silently fail if not admin
-    } finally {
-      setUsersLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (canManageUsers) loadUsers();
-  }, [canManageUsers, loadUsers]);
-
-  const handleCreateUser = async () => {
-    if (!newUserEmail) return;
-    setCreatingUser(true);
-    try {
-      const { data, error } = await supabase.functions.invoke("create-user", {
-        body: { action: "create", email: newUserEmail, role: newUserRole },
-      });
-      if (error) throw error;
-      toast({ title: "Usuário criado", description: `${newUserEmail} com senha watbrazil123` });
-      setNewUserEmail("");
-      setNewUserRole("operator");
-      setUserDialogOpen(false);
-      loadUsers();
-    } catch (err: any) {
-      toast({ title: "Erro", description: err.message, variant: "destructive" });
-    } finally {
-      setCreatingUser(false);
-    }
-  };
-
-  const handleResetPassword = async (userId: string, email: string) => {
-    try {
-      const { error } = await supabase.functions.invoke("create-user", {
-        body: { action: "reset-password", userId },
-      });
-      if (error) throw error;
-      toast({ title: "Senha resetada", description: `${email} → watbrazil123` });
-      loadUsers();
-    } catch (err: any) {
-      toast({ title: "Erro", description: err.message, variant: "destructive" });
-    }
-  };
+  // Component types state
+  const [newTypeName, setNewTypeName] = useState("");
+  const [newTypeKey, setNewTypeKey] = useState("");
+  const [editingTypeId, setEditingTypeId] = useState<string | null>(null);
+  const [editingTypeName, setEditingTypeName] = useState("");
 
   const allMachines = useMemo(
     () => [...machines].sort((left, right) => left.tag.localeCompare(right.tag)),
     [machines],
   );
-  
+
   const machinesByType = useMemo(
     () => machines.filter((machine) => machine.type === componentForm.machineType).sort((a, b) => a.tag.localeCompare(b.tag, 'pt-BR', { numeric: true })),
     [machines, componentForm.machineType],
@@ -251,20 +182,34 @@ export default function Settings() {
     });
   };
 
+  const handleAddComponentType = () => {
+    if (!newTypeKey.trim() || !newTypeName.trim()) return;
+    addComponentType(newTypeKey, newTypeName);
+    setNewTypeKey("");
+    setNewTypeName("");
+  };
+
+  const handleSaveEditType = () => {
+    if (!editingTypeId || !editingTypeName.trim()) return;
+    updateComponentType(editingTypeId, editingTypeName);
+    setEditingTypeId(null);
+    setEditingTypeName("");
+  };
+
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold">Configurações</h1>
         <p className="text-sm text-muted-foreground">
-          Cadastro de máquinas e componentes.
+          Cadastro de máquinas, componentes e tipos.
         </p>
       </div>
 
       <Tabs defaultValue="machines" className="space-y-4">
-        <TabsList className={`grid w-full md:w-[720px] ${canManageUsers ? "grid-cols-3" : "grid-cols-2"}`}>
+        <TabsList className="grid w-full md:w-[720px] grid-cols-3">
           <TabsTrigger value="machines">Máquinas</TabsTrigger>
           <TabsTrigger value="components">Componentes</TabsTrigger>
-          {canManageUsers && <TabsTrigger value="users">Usuários</TabsTrigger>}
+          <TabsTrigger value="component_types">Tipos de Componentes</TabsTrigger>
         </TabsList>
 
         <TabsContent value="machines" className="space-y-4">
@@ -282,7 +227,6 @@ export default function Settings() {
                   <span className="font-mono font-semibold">{machine.tag}</span>
                   <Badge variant="outline">{MACHINE_TYPE_LABELS[machine.type]}</Badge>
                   <span className="text-sm text-muted-foreground">{machine.model}</span>
-                  <span className="text-sm text-muted-foreground">- {MACHINE_STATUS_LABELS[machine.status]}</span>
                   <span className="text-sm text-muted-foreground">- {MACHINE_STATUS_LABELS[machine.status]}</span>
                   <div className="ml-auto flex gap-2">
                     <Button size="sm" variant="outline" onClick={() => handleEditMachine(machine.id)}>
@@ -354,8 +298,8 @@ export default function Settings() {
                 <Button
                   variant="outline"
                   onClick={() => {
-                    setMachineDialogOpen(false)
-                    resetMachineForm()
+                    setMachineDialogOpen(false);
+                    resetMachineForm();
                   }}
                 >
                   Cancelar
@@ -387,11 +331,14 @@ export default function Settings() {
                 <Select value={componentForm.type} onValueChange={(value: ComponentType) => setComponentForm((prev) => ({ ...prev, type: value }))}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    {Object.entries(COMPONENT_TYPE_LABELS).map(([value, label]) => (
-                      <SelectItem key={value} value={value}>
-                        {label}
-                      </SelectItem>
-                    ))}
+                    {componentTypes.length > 0
+                      ? componentTypes.map((ct) => (
+                          <SelectItem key={ct.key} value={ct.key}>{ct.name}</SelectItem>
+                        ))
+                      : Object.entries(COMPONENT_TYPE_LABELS).map(([value, label]) => (
+                          <SelectItem key={value} value={value}>{label}</SelectItem>
+                        ))
+                    }
                   </SelectContent>
                 </Select>
               </div>
@@ -478,7 +425,6 @@ export default function Settings() {
                   <span className="font-mono font-semibold">{component.tag}</span>
                   <Badge variant="outline">{component.name}</Badge>
                   <span className="text-sm text-muted-foreground">{MACHINE_TYPE_LABELS[component.machineType]}</span>
-                  <span className="text-sm text-muted-foreground">{MACHINE_TYPE_LABELS[component.machineType]}</span>
                   <div className="ml-auto flex gap-2">
                     <Button size="sm" variant="outline" onClick={() => handleEditComponent(component.id)}>
                       Editar
@@ -510,89 +456,89 @@ export default function Settings() {
           )}
         </TabsContent>
 
-        {canManageUsers && (
-          <TabsContent value="users" className="space-y-4">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between gap-3">
-                <CardTitle className="text-base">Usuários do sistema</CardTitle>
-                <Button size="sm" className="gap-1" onClick={() => setUserDialogOpen(true)}>
-                  <Plus className="h-4 w-4" />
-                  Adicionar usuário
-                </Button>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                {usersLoading ? (
-                  <p className="text-sm text-muted-foreground">Carregando...</p>
-                ) : managedUsers.length === 0 ? (
-                  <p className="text-sm text-muted-foreground">Nenhum usuário cadastrado.</p>
-                ) : (
-                  managedUsers.map((user) => (
-                    <div key={user.id} className="border rounded-md p-3 flex flex-wrap items-center gap-2">
-                      <span className="font-medium text-sm">{user.email}</span>
-                      <Badge variant="secondary">{ROLE_LABELS[user.role] || user.role}</Badge>
-                      {user.must_change_password && (
-                        <Badge variant="outline" className="text-orange-600 border-orange-300">
-                          Senha pendente
-                        </Badge>
-                      )}
-                      <div className="ml-auto">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          className="gap-1"
-                          onClick={() => handleResetPassword(user.id, user.email)}
-                        >
-                          <RotateCcw className="h-3 w-3" />
-                          Resetar senha
-                        </Button>
-                      </div>
-                    </div>
-                  ))
-                )}
-              </CardContent>
-            </Card>
-
-            <Dialog open={userDialogOpen} onOpenChange={setUserDialogOpen}>
-              <DialogContent className="max-w-md">
-                <DialogHeader>
-                  <DialogTitle>Adicionar usuário</DialogTitle>
-                </DialogHeader>
-                <div className="space-y-3">
-                  <div className="space-y-1">
-                    <Label>Email</Label>
-                    <Input
-                      type="email"
-                      value={newUserEmail}
-                      onChange={(e) => setNewUserEmail(e.target.value)}
-                      placeholder="usuario@empresa.com"
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <Label>Cargo</Label>
-                    <Select value={newUserRole} onValueChange={setNewUserRole}>
-                      <SelectTrigger><SelectValue /></SelectTrigger>
-                      <SelectContent>
-                        {creatableRoles.map((r) => (
-                          <SelectItem key={r.value} value={r.value}>{r.label}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    Senha padrão: <code className="font-mono bg-muted px-1 rounded">watbrazil123</code>
-                    <br />O usuário será obrigado a trocar no primeiro acesso.
-                  </p>
+        <TabsContent value="component_types" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">Adicionar tipo de componente</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <div className="space-y-1 flex-1">
+                  <Label>Chave (identificador)</Label>
+                  <Input
+                    value={newTypeKey}
+                    onChange={(e) => setNewTypeKey(e.target.value)}
+                    placeholder="ex: motor_eletrico"
+                  />
                 </div>
-                <DialogFooter>
-                  <Button variant="outline" onClick={() => setUserDialogOpen(false)}>Cancelar</Button>
-                  <Button onClick={handleCreateUser} disabled={creatingUser || !newUserEmail}>
-                    {creatingUser ? "Criando..." : "Criar usuário"}
+                <div className="space-y-1 flex-1">
+                  <Label>Nome de exibição</Label>
+                  <Input
+                    value={newTypeName}
+                    onChange={(e) => setNewTypeName(e.target.value)}
+                    placeholder="ex: Motor Elétrico"
+                  />
+                </div>
+                <div className="flex items-end">
+                  <Button onClick={handleAddComponentType} disabled={!newTypeKey.trim() || !newTypeName.trim()}>
+                    <Plus className="h-4 w-4 mr-1" /> Adicionar
                   </Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
-          </TabsContent>
-        )}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">Tipos cadastrados</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              {componentTypes.length === 0 ? (
+                <p className="text-sm text-muted-foreground">Nenhum tipo cadastrado.</p>
+              ) : (
+                componentTypes.map((ct) => (
+                  <div key={ct.id} className="border rounded-md p-3 flex items-center gap-3">
+                    {editingTypeId === ct.id ? (
+                      <>
+                        <Badge variant="outline" className="font-mono">{ct.key}</Badge>
+                        <Input
+                          className="flex-1 max-w-xs"
+                          value={editingTypeName}
+                          onChange={(e) => setEditingTypeName(e.target.value)}
+                          onKeyDown={(e) => e.key === "Enter" && handleSaveEditType()}
+                        />
+                        <Button size="sm" onClick={handleSaveEditType}>Salvar</Button>
+                        <Button size="sm" variant="outline" onClick={() => setEditingTypeId(null)}>Cancelar</Button>
+                      </>
+                    ) : (
+                      <>
+                        <Badge variant="outline" className="font-mono">{ct.key}</Badge>
+                        <span className="font-medium">{ct.name}</span>
+                        <div className="ml-auto flex gap-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => { setEditingTypeId(ct.id); setEditingTypeName(ct.name); }}
+                          >
+                            <Pencil className="h-3 w-3" />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="text-destructive"
+                            onClick={() => removeComponentType(ct.id)}
+                          >
+                            <Trash2 className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                ))
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
       </Tabs>
     </div>
   );
