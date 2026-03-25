@@ -2,16 +2,19 @@ import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ClipboardList, CheckCircle2, Calendar, Plus, Pencil, Eye, Tag } from "lucide-react";
+import { ClipboardList, CheckCircle2, Calendar, Plus, Pencil, Eye, Tag, Copy } from "lucide-react";
 import { useData } from "@/contexts/DataContext";
 import type { MaintenancePlan } from "@/data/types";
 import { MaintenancePlanEditorDialog } from "@/components/forms/MaintenancePlanEditorDialog";
+import { CopyPlanDialog } from "@/components/forms/CopyPlanDialog";
+import { toast } from "@/hooks/use-toast";
 
 export default function Checklists() {
   const { maintenancePlans, planExecutions, mechanics, machines, addMaintenancePlan, updateMaintenancePlan } = useData();
   const [createOpen, setCreateOpen] = useState(false);
   const [viewPlan, setViewPlan] = useState<MaintenancePlan | undefined>();
   const [editPlan, setEditPlan] = useState<MaintenancePlan | undefined>();
+  const [copyPlan, setCopyPlan] = useState<MaintenancePlan | undefined>();
 
   const checklists = maintenancePlans.filter((plan) => plan.planType === "checklist");
 
@@ -79,6 +82,9 @@ export default function Checklists() {
             }
           >
             <Plus className="h-3 w-3" /> Adicionar item
+          </Button>
+          <Button size="sm" variant="outline" className="gap-1 h-7 text-xs" onClick={() => setCopyPlan(plan)}>
+            <Copy className="h-3 w-3" /> Copiar
           </Button>
         </div>
 
@@ -199,6 +205,26 @@ export default function Checklists() {
         readOnly
         title="Consultar Checklist"
         onSave={() => {}}
+      />
+
+      <CopyPlanDialog
+        open={!!copyPlan}
+        onOpenChange={(open) => !open && setCopyPlan(undefined)}
+        title="Copiar Checklist para outra máquina"
+        availableMachines={machines.filter((m) => copyPlan && m.type === copyPlan.machineType)}
+        excludeMachineIds={copyPlan?.machineIds ?? (copyPlan?.machineId ? [copyPlan.machineId] : [])}
+        onConfirm={(ids) => {
+          if (!copyPlan) return;
+          ids.forEach((machineId) => {
+            addMaintenancePlan({
+              ...copyPlan,
+              machineIds: [machineId],
+              machineId: machineId,
+            });
+          });
+          toast({ title: "Checklist copiado", description: `Copiado para ${ids.length} máquina${ids.length > 1 ? "s" : ""}` });
+          setCopyPlan(undefined);
+        }}
       />
     </div>
   );

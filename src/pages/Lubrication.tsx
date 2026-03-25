@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Droplets, Plus, Pencil, Eye, Tag, Trash2, Calendar } from "lucide-react";
+import { Droplets, Plus, Pencil, Eye, Tag, Trash2, Calendar, Copy } from "lucide-react";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,6 +10,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useData } from "@/contexts/DataContext";
 import { useConfig } from "@/contexts/ConfigContext";
 import type { LubricationPlan } from "@/data/types";
+import { CopyPlanDialog } from "@/components/forms/CopyPlanDialog";
+import { toast } from "@/hooks/use-toast";
 
 interface LubFormProps {
   formAssetKind: "machine" | "component";
@@ -96,6 +98,7 @@ export default function Lubrication() {
   const [newDialogOpen, setNewDialogOpen] = useState(false);
   const [viewPlan, setViewPlan] = useState<LubricationPlan | undefined>();
   const [editPlan, setEditPlan] = useState<LubricationPlan | undefined>();
+  const [copyPlan, setCopyPlan] = useState<LubricationPlan | undefined>();
 
   // Form state for new/edit
   const [formAssetKind, setFormAssetKind] = useState<"machine" | "component">("machine");
@@ -204,6 +207,9 @@ export default function Lubrication() {
         </Button>
         <Button size="sm" variant="outline" className="gap-1 h-7 text-xs text-destructive" onClick={() => removeLubricationPlan(plan.id)}>
           <Trash2 className="h-3 w-3" /> Excluir
+        </Button>
+        <Button size="sm" variant="outline" className="gap-1 h-7 text-xs" onClick={() => setCopyPlan(plan)}>
+          <Copy className="h-3 w-3" /> Copiar
         </Button>
       </div>
     </div>
@@ -331,6 +337,35 @@ export default function Lubrication() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <CopyPlanDialog
+        open={!!copyPlan}
+        onOpenChange={(open) => !open && setCopyPlan(undefined)}
+        title="Copiar Plano de Lubrificação para outra máquina"
+        availableMachines={machines.filter((m) => {
+          if (!copyPlan) return false;
+          return m.type === copyPlan.machineType;
+        })}
+        excludeMachineIds={copyPlan ? [copyPlan.assetId] : []}
+        onConfirm={(ids) => {
+          if (!copyPlan) return;
+          ids.forEach((machineId) => {
+            const targetMachine = machines.find((m) => m.id === machineId);
+            if (!targetMachine) return;
+            addLubricationPlan({
+              assetId: machineId,
+              assetKind: "machine",
+              whatToLubricate: copyPlan.whatToLubricate,
+              lubricantType: copyPlan.lubricantType,
+              attentionPoints: copyPlan.attentionPoints,
+              frequencyDays: copyPlan.frequencyDays,
+              nextDueDate: copyPlan.nextDueDate,
+            });
+          });
+          toast({ title: "Plano copiado", description: `Copiado para ${ids.length} máquina${ids.length > 1 ? "s" : ""}` });
+          setCopyPlan(undefined);
+        }}
+      />
     </div>
   );
 }

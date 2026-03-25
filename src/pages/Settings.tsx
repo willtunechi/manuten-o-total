@@ -63,7 +63,6 @@ export default function Settings() {
 
   // Component types state
   const [newTypeName, setNewTypeName] = useState("");
-  const [newTypeKey, setNewTypeKey] = useState("");
   const [editingTypeId, setEditingTypeId] = useState<string | null>(null);
   const [editingTypeName, setEditingTypeName] = useState("");
 
@@ -183,9 +182,9 @@ export default function Settings() {
   };
 
   const handleAddComponentType = () => {
-    if (!newTypeKey.trim() || !newTypeName.trim()) return;
-    addComponentType(newTypeKey, newTypeName);
-    setNewTypeKey("");
+    if (!newTypeName.trim()) return;
+    const autoKey = newTypeName.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, "");
+    addComponentType(autoKey, newTypeName);
     setNewTypeName("");
   };
 
@@ -464,23 +463,16 @@ export default function Settings() {
             <CardContent>
               <div className="flex flex-col sm:flex-row gap-3">
                 <div className="space-y-1 flex-1">
-                  <Label>Chave (identificador)</Label>
-                  <Input
-                    value={newTypeKey}
-                    onChange={(e) => setNewTypeKey(e.target.value)}
-                    placeholder="ex: motor_eletrico"
-                  />
-                </div>
-                <div className="space-y-1 flex-1">
-                  <Label>Nome de exibição</Label>
+                  <Label>Nome do tipo</Label>
                   <Input
                     value={newTypeName}
                     onChange={(e) => setNewTypeName(e.target.value)}
                     placeholder="ex: Motor Elétrico"
+                    onKeyDown={(e) => e.key === "Enter" && handleAddComponentType()}
                   />
                 </div>
                 <div className="flex items-end">
-                  <Button onClick={handleAddComponentType} disabled={!newTypeKey.trim() || !newTypeName.trim()}>
+                  <Button onClick={handleAddComponentType} disabled={!newTypeName.trim()}>
                     <Plus className="h-4 w-4 mr-1" /> Adicionar
                   </Button>
                 </div>
@@ -500,7 +492,6 @@ export default function Settings() {
                   <div key={ct.id} className="border rounded-md p-3 flex items-center gap-3">
                     {editingTypeId === ct.id ? (
                       <>
-                        <Badge variant="outline" className="font-mono">{ct.key}</Badge>
                         <Input
                           className="flex-1 max-w-xs"
                           value={editingTypeName}
@@ -512,7 +503,6 @@ export default function Settings() {
                       </>
                     ) : (
                       <>
-                        <Badge variant="outline" className="font-mono">{ct.key}</Badge>
                         <span className="font-medium">{ct.name}</span>
                         <div className="ml-auto flex gap-2">
                           <Button
