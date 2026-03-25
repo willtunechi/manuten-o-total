@@ -71,6 +71,11 @@ const PRESETS: { name: string; mode: "light" | "dark"; colors: ThemeColors }[] =
     colors: { background: "160 20% 7%", primary: "160 55% 40%", secondary: "160 15% 13%", accent: "160 12% 17%", sidebar: "160 20% 5%" },
   },
   {
+    name: "Cinza Moderno",
+    mode: "light",
+    colors: { background: "220 10% 94%", primary: "220 70% 50%", secondary: "220 12% 88%", accent: "220 8% 85%", sidebar: "220 10% 97%" },
+  },
+  {
     name: "Claro Suave",
     mode: "light",
     colors: { background: "220 20% 97%", primary: "220 70% 50%", secondary: "220 25% 93%", accent: "220 15% 90%", sidebar: "220 25% 99%" },
