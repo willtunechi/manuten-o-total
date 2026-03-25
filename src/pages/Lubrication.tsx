@@ -344,9 +344,7 @@ export default function Lubrication() {
         title="Copiar Plano de Lubrificação para outra máquina"
         availableMachines={machines.filter((m) => {
           if (!copyPlan) return false;
-          const sourceAsset = machines.find((x) => x.id === copyPlan.assetId) || components.find((x) => x.id === copyPlan.assetId);
-          if (!sourceAsset) return false;
-          return m.type === ('machineType' in sourceAsset ? sourceAsset.machineType : sourceAsset.type);
+          return m.type === copyPlan.machineType;
         })}
         excludeMachineIds={copyPlan ? [copyPlan.assetId] : []}
         onConfirm={(ids) => {
