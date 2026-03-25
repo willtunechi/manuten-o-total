@@ -63,7 +63,6 @@ export default function Settings() {
 
   // Component types state
   const [newTypeName, setNewTypeName] = useState("");
-  const [newTypeKey, setNewTypeKey] = useState("");
   const [editingTypeId, setEditingTypeId] = useState<string | null>(null);
   const [editingTypeName, setEditingTypeName] = useState("");
 
