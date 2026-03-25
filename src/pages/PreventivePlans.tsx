@@ -2,10 +2,12 @@ import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ShieldCheck, CheckCircle2, Calendar, Plus, Pencil, Eye, Tag } from "lucide-react";
+import { ShieldCheck, CheckCircle2, Calendar, Plus, Pencil, Eye, Tag, Copy } from "lucide-react";
 import { useData } from "@/contexts/DataContext";
 import type { MaintenancePlan } from "@/data/types";
 import { MaintenancePlanEditorDialog } from "@/components/forms/MaintenancePlanEditorDialog";
+import { CopyPlanDialog } from "@/components/forms/CopyPlanDialog";
+import { toast } from "@/hooks/use-toast";
 
 export default function PreventivePlans() {
   const { maintenancePlans, planExecutions, mechanics, machines, addMaintenancePlan, updateMaintenancePlan } = useData();
