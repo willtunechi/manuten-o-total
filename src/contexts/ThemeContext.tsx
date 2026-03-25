@@ -151,6 +151,7 @@ export function ThemeProvider({ children, isAdmin = false }: { children: React.R
       if (!error && data) {
         const m = (data.theme_mode === "dark" ? "dark" : "light") as ThemeMode;
         const c: ThemeColors = {
+          background: data.background_color || DEFAULT_COLORS.background,
           primary: data.primary_color || DEFAULT_COLORS.primary,
           secondary: data.secondary_color || DEFAULT_COLORS.secondary,
           accent: data.accent_color || DEFAULT_COLORS.accent,
