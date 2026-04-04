@@ -151,6 +151,7 @@ export interface Part {
   supplier?: string;
   unitCost?: number;
   cost?: number; // Compatibility
+  photoUrl?: string;
 }
 
 export interface StockMovement {
