@@ -409,6 +409,11 @@ export default function Settings() {
                 </>
               )}
 
+              <div className="space-y-1 md:col-span-3">
+                <Label>Foto</Label>
+                <PhotoUpload value={componentPhoto} onChange={setComponentPhoto} folder="components" />
+              </div>
+
               <div className="md:col-span-3 flex gap-2">
                 <Button onClick={handleCreateOrUpdateComponent}>
                   {editingComponentId ? "Salvar alterações" : "Cadastrar componente"}
