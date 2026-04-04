@@ -200,6 +200,7 @@ export function ConfigProvider({ children }: { children: React.ReactNode }) {
         nextDueDate: row.next_due_date ? row.next_due_date.slice(0, 10) : undefined,
         lastExecutionAt: row.last_execution_at ? row.last_execution_at.slice(0, 10) : undefined,
         active: row.active,
+        photoUrl: (row as any).photo_url || undefined,
       })),
     );
   }, []);
