@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Plus, Pencil, Trash2 } from "lucide-react";
 import { ThemeSettings } from "@/components/settings/ThemeSettings";
+import { PhotoUpload } from "@/components/forms/PhotoUpload";
 
 import { useData } from "@/contexts/DataContext";
 import { useConfig } from "@/contexts/ConfigContext";
