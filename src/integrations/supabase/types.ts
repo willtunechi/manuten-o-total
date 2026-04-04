@@ -263,6 +263,7 @@ export type Database = {
       }
       lubrication_executions: {
         Row: {
+          actual_hours: number | null
           executed_at: string
           id: string
           manually_adjusted: boolean
@@ -272,6 +273,7 @@ export type Database = {
           previous_due_date: string | null
         }
         Insert: {
+          actual_hours?: number | null
           executed_at?: string
           id?: string
           manually_adjusted?: boolean
@@ -281,6 +283,7 @@ export type Database = {
           previous_due_date?: string | null
         }
         Update: {
+          actual_hours?: number | null
           executed_at?: string
           id?: string
           manually_adjusted?: boolean
@@ -606,6 +609,7 @@ export type Database = {
       }
       plan_executions: {
         Row: {
+          actual_hours: number | null
           completed_at: string | null
           id: string
           machine_id: string | null
@@ -614,6 +618,7 @@ export type Database = {
           status: string
         }
         Insert: {
+          actual_hours?: number | null
           completed_at?: string | null
           id?: string
           machine_id?: string | null
@@ -622,6 +627,7 @@ export type Database = {
           status?: string
         }
         Update: {
+          actual_hours?: number | null
           completed_at?: string | null
           id?: string
           machine_id?: string | null
@@ -916,6 +922,7 @@ export type Database = {
       }
       tickets: {
         Row: {
+          actual_hours: number | null
           code: number
           comment: string | null
           created_at: string
@@ -932,6 +939,7 @@ export type Database = {
           type: string
         }
         Insert: {
+          actual_hours?: number | null
           code?: number
           comment?: string | null
           created_at?: string
@@ -948,6 +956,7 @@ export type Database = {
           type?: string
         }
         Update: {
+          actual_hours?: number | null
           code?: number
           comment?: string | null
           created_at?: string
