@@ -227,6 +227,7 @@ export default function MachineDetail() {
   const [lubeExecutedAt, setLubeExecutedAt] = useState<string>(() => new Date().toISOString().slice(0, 10));
   const [lubeExecutionNotes, setLubeExecutionNotes] = useState("");
   const [lubeOverrideDueDate, setLubeOverrideDueDate] = useState("");
+  const [lubeExecutionHours, setLubeExecutionHours] = useState("");
 
   const machine = machines.find((m) => m.id === id);
   const component = components.find((c) => c.id === id);
