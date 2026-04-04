@@ -652,6 +652,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     if (p.minStock !== undefined) update.min_stock = p.minStock;
     if (p.supplier !== undefined) update.supplier = p.supplier;
     if (p.unitCost !== undefined) update.unit_cost = p.unitCost;
+    if (p.photoUrl !== undefined) update.photo_url = p.photoUrl || null;
     if (Object.keys(update).length > 0) {
       const { error } = await supabase.from("parts").update(update).eq("id", id);
       if (error) { toast({ title: "Erro ao atualizar peça", description: error.message, variant: "destructive" }); return; }
