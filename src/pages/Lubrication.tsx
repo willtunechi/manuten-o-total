@@ -317,6 +317,10 @@ export default function Lubrication() {
             formDueDate={formDueDate} setFormDueDate={setFormDueDate}
             disableAsset
           />
+          <div className="space-y-1">
+            <Label>Foto</Label>
+            <PhotoUpload value={formPhoto} onChange={setFormPhoto} folder="lubrication" />
+          </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setEditPlan(undefined)}>Cancelar</Button>
             <Button onClick={saveEdit}>Salvar</Button>
