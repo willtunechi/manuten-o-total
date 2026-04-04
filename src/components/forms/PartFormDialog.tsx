@@ -37,7 +37,6 @@ export function PartFormDialog({ open, onOpenChange, part, onSave }: Props) {
   const [locations, setLocations] = useState<string[]>([]);
   const [suppliers, setSuppliers] = useState<string[]>([]);
   const [photoUrl, setPhotoUrl] = useState<string | undefined>();
-  const [suppliers, setSuppliers] = useState<string[]>([]);
 
   useEffect(() => {
     if (open) {
