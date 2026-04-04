@@ -528,6 +528,7 @@ export function ConfigProvider({ children }: { children: React.ReactNode }) {
       if (payload.nextDueDate !== undefined) updateData.next_due_date = payload.nextDueDate;
       if (payload.active !== undefined) updateData.active = payload.active;
       if (payload.line !== undefined) updateData.line = payload.line;
+      if (payload.photoUrl !== undefined) updateData.photo_url = payload.photoUrl || null;
 
       const { error } = await supabase.from("lubrication_plans").update(updateData).eq("id", id);
       if (error) {
