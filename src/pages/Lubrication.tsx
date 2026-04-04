@@ -178,6 +178,7 @@ export default function Lubrication() {
       frequencyDays: Math.max(1, Number(formFrequency) || 90),
       nextDueDate: formDueDate,
       active: editPlan.active,
+      photoUrl: formPhoto,
     });
     setEditPlan(undefined);
   };
