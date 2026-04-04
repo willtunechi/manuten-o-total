@@ -1588,6 +1588,18 @@ export default function MachineDetail() {
                 )}
 
                 <div className="space-y-1">
+                  <p className="text-xs text-muted-foreground">Horas trabalhadas</p>
+                  <Input
+                    type="number"
+                    min={0}
+                    step={0.5}
+                    placeholder="Ex: 2.5"
+                    value={ticketDraft.actualHours}
+                    onChange={(e) => setTicketDraft((prev) => ({ ...prev, actualHours: e.target.value }))}
+                  />
+                </div>
+
+                <div className="space-y-1">
                   <p className="text-xs text-muted-foreground">Comentário</p>
                   <Textarea
                     rows={3}
