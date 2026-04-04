@@ -41,6 +41,7 @@ export function MachineFormDialog({ open, onOpenChange, machine, onSave }: Props
 
   useEffect(() => {
     if (open) {
+      setPhotoUrl(machine?.photoUrl);
       reset(machine
         ? { tag: machine.tag, type: machine.type, model: machine.model, manufacturer: machine.manufacturer, year: machine.year, status: machine.status, horimeter: machine.horimeter }
         : { tag: "", type: "", model: "", manufacturer: "", year: new Date().getFullYear(), status: "operating", horimeter: 0 }
