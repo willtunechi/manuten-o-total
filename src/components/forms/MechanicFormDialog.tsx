@@ -194,6 +194,7 @@ export function MechanicFormDialog({ open, onOpenChange, mechanic, onSave }: Pro
       componentIds: data.componentIds,
       canExecuteChecklist: isMaintenance,
       canExecutePreventive: isMaintenance,
+      hourlyCost: data.hourlyCost,
     });
     reset();
     onOpenChange(false);
