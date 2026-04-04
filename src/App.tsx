@@ -84,6 +84,7 @@ function AppRoutes() {
             <Route path="/lubrication" element={<Lubrication />} />
             <Route path="/reports" element={<Reports />} />
             <Route path="/registrations" element={<Registrations />} />
+            <Route path="/management" element={<Management />} />
           </Route>
           <Route path="/auth" element={<Navigate to="/" replace />} />
           <Route path="*" element={<NotFound />} />

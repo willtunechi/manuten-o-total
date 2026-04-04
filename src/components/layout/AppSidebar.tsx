@@ -27,6 +27,7 @@ import { useAuth } from "@/hooks/useAuth";
 
 const allMenuItems = [
   { title: "Dashboard", url: "/", icon: LayoutDashboard },
+  { title: "Gerenciamento", url: "/management", icon: BarChart3 },
   { title: "Relatórios", url: "/reports", icon: FileBarChart },
   { title: "Máquinas", url: "/machines", icon: Factory },
   { title: "Chamados", url: "/tickets", icon: ClipboardList },
