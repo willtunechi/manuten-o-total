@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
+import { PhotoUpload } from "@/components/forms/PhotoUpload";
 import type { Part } from "@/data/types";
 
 const schema = z.object({
