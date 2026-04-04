@@ -702,6 +702,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     if (t.resolutionPhotoUrl !== undefined) update.resolution_photo_url = t.resolutionPhotoUrl;
     if (t.resolvedAt !== undefined) update.resolved_at = t.resolvedAt;
     if (t.reportedBy !== undefined) update.reported_by = t.reportedBy;
+    if (t.actualHours !== undefined) update.actual_hours = t.actualHours;
 
     if (Object.keys(update).length > 0) {
       const { error } = await supabase.from("tickets").update(update).eq("id", id);
