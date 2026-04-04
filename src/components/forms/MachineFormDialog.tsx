@@ -122,6 +122,10 @@ export function MachineFormDialog({ open, onOpenChange, machine, onSave }: Props
               </SelectContent>
             </Select>
           </div>
+          <div className="space-y-1">
+            <Label>Foto</Label>
+            <PhotoUpload value={photoUrl} onChange={setPhotoUrl} folder="machines" />
+          </div>
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>
             <Button type="submit">{machine ? "Salvar" : "Cadastrar"}</Button>
