@@ -103,6 +103,7 @@ export interface Mechanic {
   componentIds?: string[];
   canExecuteChecklist?: boolean;
   canExecutePreventive?: boolean;
+  hourlyCost?: number;
   assignedTo?: string; // Compatibility
 }
 

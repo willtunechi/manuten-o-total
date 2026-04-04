@@ -574,6 +574,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     if (m.available !== undefined) updateData.available = m.available;
     if (m.canExecuteChecklist !== undefined) updateData.can_execute_checklist = m.canExecuteChecklist;
     if (m.canExecutePreventive !== undefined) updateData.can_execute_preventive = m.canExecutePreventive;
+    if (m.hourlyCost !== undefined) updateData.hourly_cost = m.hourlyCost;
     if (Object.keys(updateData).length > 0) {
       const { error } = await supabase.from("mechanics").update(updateData).eq("id", id);
       if (error) { toast({ title: "Erro ao atualizar colaborador", description: error.message, variant: "destructive" }); return; }
