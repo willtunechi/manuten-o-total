@@ -182,6 +182,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       available: m.available,
       canExecuteChecklist: m.can_execute_checklist,
       canExecutePreventive: m.can_execute_preventive,
+      hourlyCost: (m as any).hourly_cost ?? 0,
       machineIds: (machAssoc || []).filter((a) => a.mechanic_id === m.id).map((a) => a.machine_id),
       componentIds: (compAssoc || []).filter((a) => a.mechanic_id === m.id).map((a) => a.component_id),
     })));
