@@ -523,6 +523,7 @@ export type Database = {
           can_execute_checklist: boolean
           can_execute_preventive: boolean
           email: string | null
+          hourly_cost: number
           id: string
           level: string
           name: string
@@ -534,6 +535,7 @@ export type Database = {
           can_execute_checklist?: boolean
           can_execute_preventive?: boolean
           email?: string | null
+          hourly_cost?: number
           id?: string
           level?: string
           name: string
@@ -545,6 +547,7 @@ export type Database = {
           can_execute_checklist?: boolean
           can_execute_preventive?: boolean
           email?: string | null
+          hourly_cost?: number
           id?: string
           level?: string
           name?: string
