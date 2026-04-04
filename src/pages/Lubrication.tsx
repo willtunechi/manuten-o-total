@@ -164,6 +164,7 @@ export default function Lubrication() {
       attentionPoints: formAttention.trim() || "RUIDOS - VAZAMENTOS",
       frequencyDays: Math.max(1, Number(formFrequency) || 90),
       nextDueDate: formDueDate,
+      photoUrl: formPhoto,
     });
     setNewDialogOpen(false);
   };
