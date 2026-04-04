@@ -108,6 +108,7 @@ export type Database = {
           machine_type: string
           model: string | null
           name: string
+          photo_url: string | null
           rule_id: string | null
           sector: string | null
           status: string
@@ -120,6 +121,7 @@ export type Database = {
           machine_type?: string
           model?: string | null
           name: string
+          photo_url?: string | null
           rule_id?: string | null
           sector?: string | null
           status?: string
@@ -132,6 +134,7 @@ export type Database = {
           machine_type?: string
           model?: string | null
           name?: string
+          photo_url?: string | null
           rule_id?: string | null
           sector?: string | null
           status?: string
@@ -311,6 +314,7 @@ export type Database = {
           lubricant_type: string
           machine_type: string
           next_due_date: string | null
+          photo_url: string | null
           what_to_lubricate: string
         }
         Insert: {
@@ -327,6 +331,7 @@ export type Database = {
           lubricant_type?: string
           machine_type?: string
           next_due_date?: string | null
+          photo_url?: string | null
           what_to_lubricate?: string
         }
         Update: {
@@ -343,6 +348,7 @@ export type Database = {
           lubricant_type?: string
           machine_type?: string
           next_due_date?: string | null
+          photo_url?: string | null
           what_to_lubricate?: string
         }
         Relationships: []
@@ -353,6 +359,7 @@ export type Database = {
           id: string
           manufacturer: string
           model: string
+          photo_url: string | null
           sector: string
           status: string
           tag: string
@@ -364,6 +371,7 @@ export type Database = {
           id?: string
           manufacturer?: string
           model?: string
+          photo_url?: string | null
           sector?: string
           status?: string
           tag: string
@@ -375,6 +383,7 @@ export type Database = {
           id?: string
           manufacturer?: string
           model?: string
+          photo_url?: string | null
           sector?: string
           status?: string
           tag?: string
@@ -562,6 +571,7 @@ export type Database = {
           id: string
           location: string
           min_stock: number
+          photo_url: string | null
           quantity: number
           sku: string | null
           supplier: string | null
@@ -573,6 +583,7 @@ export type Database = {
           id?: string
           location?: string
           min_stock?: number
+          photo_url?: string | null
           quantity?: number
           sku?: string | null
           supplier?: string | null
@@ -584,6 +595,7 @@ export type Database = {
           id?: string
           location?: string
           min_stock?: number
+          photo_url?: string | null
           quantity?: number
           sku?: string | null
           supplier?: string | null

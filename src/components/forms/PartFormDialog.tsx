@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
+import { PhotoUpload } from "@/components/forms/PhotoUpload";
 import type { Part } from "@/data/types";
 
 const schema = z.object({
@@ -35,6 +36,7 @@ const units = ["un", "kg", "m", "L", "balde"];
 export function PartFormDialog({ open, onOpenChange, part, onSave }: Props) {
   const [locations, setLocations] = useState<string[]>([]);
   const [suppliers, setSuppliers] = useState<string[]>([]);
+  const [photoUrl, setPhotoUrl] = useState<string | undefined>();
 
   useEffect(() => {
     if (open) {
@@ -56,6 +58,7 @@ export function PartFormDialog({ open, onOpenChange, part, onSave }: Props) {
 
   useEffect(() => {
     if (open) {
+      setPhotoUrl(part?.photoUrl);
       reset(part
         ? { sku: part.sku, description: part.description, unit: part.unit, location: part.location, quantity: part.quantity, minStock: part.minStock, supplier: part.supplier, unitCost: part.unitCost }
         : { sku: "", description: "", unit: "un", location: "", quantity: 0, minStock: 0, supplier: "", unitCost: 0 }
@@ -64,7 +67,7 @@ export function PartFormDialog({ open, onOpenChange, part, onSave }: Props) {
   }, [part, open, reset]);
 
   const onSubmit = (data: FormData) => {
-    onSave({ sku: data.sku!, description: data.description!, unit: data.unit!, location: data.location!, quantity: data.quantity!, minStock: data.minStock!, supplier: data.supplier!, unitCost: data.unitCost! });
+    onSave({ sku: data.sku!, description: data.description!, unit: data.unit!, location: data.location!, quantity: data.quantity!, minStock: data.minStock!, supplier: data.supplier!, unitCost: data.unitCost!, photoUrl });
     reset();
     onOpenChange(false);
   };
@@ -135,6 +138,10 @@ export function PartFormDialog({ open, onOpenChange, part, onSave }: Props) {
               <Input type="number" step="0.01" {...register("unitCost")} />
               {errors.unitCost && <p className="text-xs text-destructive">{errors.unitCost.message}</p>}
             </div>
+          </div>
+          <div className="space-y-1">
+            <Label>Foto</Label>
+            <PhotoUpload value={photoUrl} onChange={setPhotoUrl} folder="parts" />
           </div>
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>

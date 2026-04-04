@@ -11,6 +11,7 @@ import { useData } from "@/contexts/DataContext";
 import { useConfig } from "@/contexts/ConfigContext";
 import type { LubricationPlan } from "@/data/types";
 import { CopyPlanDialog } from "@/components/forms/CopyPlanDialog";
+import { PhotoUpload } from "@/components/forms/PhotoUpload";
 import { toast } from "@/hooks/use-toast";
 
 interface LubFormProps {
@@ -108,6 +109,7 @@ export default function Lubrication() {
   const [formAttention, setFormAttention] = useState("RUIDOS - VAZAMENTOS");
   const [formFrequency, setFormFrequency] = useState("90");
   const [formDueDate, setFormDueDate] = useState(() => new Date().toISOString().slice(0, 10));
+  const [formPhoto, setFormPhoto] = useState<string | undefined>();
 
   const machineOptions = machines.map((m) => ({ id: m.id, label: `${m.tag} - ${m.model}` })).sort((a, b) => a.label.localeCompare(b.label, 'pt-BR', { numeric: true }));
   const componentOptions = components.map((c) => ({ id: c.id, label: `${c.tag} - ${c.name}` })).sort((a, b) => a.label.localeCompare(b.label, 'pt-BR', { numeric: true }));
@@ -132,6 +134,7 @@ export default function Lubrication() {
     setFormAttention("RUIDOS - VAZAMENTOS");
     setFormFrequency("90");
     setFormDueDate(new Date().toISOString().slice(0, 10));
+    setFormPhoto(undefined);
   };
 
   const openNew = () => {
@@ -147,6 +150,7 @@ export default function Lubrication() {
     setFormAttention(plan.attentionPoints);
     setFormFrequency(String(plan.frequencyDays));
     setFormDueDate(plan.nextDueDate);
+    setFormPhoto(plan.photoUrl);
     setEditPlan(plan);
   };
 
@@ -160,6 +164,7 @@ export default function Lubrication() {
       attentionPoints: formAttention.trim() || "RUIDOS - VAZAMENTOS",
       frequencyDays: Math.max(1, Number(formFrequency) || 90),
       nextDueDate: formDueDate,
+      photoUrl: formPhoto,
     });
     setNewDialogOpen(false);
   };
@@ -173,6 +178,7 @@ export default function Lubrication() {
       frequencyDays: Math.max(1, Number(formFrequency) || 90),
       nextDueDate: formDueDate,
       active: editPlan.active,
+      photoUrl: formPhoto,
     });
     setEditPlan(undefined);
   };
@@ -287,6 +293,10 @@ export default function Lubrication() {
             formDueDate={formDueDate} setFormDueDate={setFormDueDate}
             disableAsset={false}
           />
+          <div className="space-y-1">
+            <Label>Foto</Label>
+            <PhotoUpload value={formPhoto} onChange={setFormPhoto} folder="lubrication" />
+          </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setNewDialogOpen(false)}>Cancelar</Button>
             <Button onClick={saveNew}>Salvar</Button>
@@ -309,6 +319,10 @@ export default function Lubrication() {
             formDueDate={formDueDate} setFormDueDate={setFormDueDate}
             disableAsset
           />
+          <div className="space-y-1">
+            <Label>Foto</Label>
+            <PhotoUpload value={formPhoto} onChange={setFormPhoto} folder="lubrication" />
+          </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setEditPlan(undefined)}>Cancelar</Button>
             <Button onClick={saveEdit}>Salvar</Button>

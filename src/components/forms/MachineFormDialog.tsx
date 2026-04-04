@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { PhotoUpload } from "@/components/forms/PhotoUpload";
 import type { Machine, MachineStatus, MachineType } from "@/data/types";
 import { MACHINE_STATUS_LABELS, MACHINE_TYPE_LABELS } from "@/data/types";
 
@@ -30,6 +31,7 @@ interface Props {
 }
 
 export function MachineFormDialog({ open, onOpenChange, machine, onSave }: Props) {
+  const [photoUrl, setPhotoUrl] = useState<string | undefined>();
   const { register, handleSubmit, setValue, watch, formState: { errors }, reset } = useForm<FormData>({
     resolver: zodResolver(schema),
     defaultValues: machine
@@ -39,6 +41,7 @@ export function MachineFormDialog({ open, onOpenChange, machine, onSave }: Props
 
   useEffect(() => {
     if (open) {
+      setPhotoUrl(machine?.photoUrl);
       reset(machine
         ? { tag: machine.tag, type: machine.type, model: machine.model, manufacturer: machine.manufacturer, year: machine.year, status: machine.status, horimeter: machine.horimeter }
         : { tag: "", type: "", model: "", manufacturer: "", year: new Date().getFullYear(), status: "operating", horimeter: 0 }
@@ -56,6 +59,7 @@ export function MachineFormDialog({ open, onOpenChange, machine, onSave }: Props
       sector: "",
       horimeter: data.horimeter,
       status: data.status as MachineStatus,
+      photoUrl,
     });
     reset();
     onOpenChange(false);
@@ -117,6 +121,10 @@ export function MachineFormDialog({ open, onOpenChange, machine, onSave }: Props
                 ))}
               </SelectContent>
             </Select>
+          </div>
+          <div className="space-y-1">
+            <Label>Foto</Label>
+            <PhotoUpload value={photoUrl} onChange={setPhotoUrl} folder="machines" />
           </div>
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>

@@ -147,6 +147,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       sector: m.sector,
       status: m.status as Machine["status"],
       horimeter: Number(m.horimeter),
+      photoUrl: (m as any).photo_url || undefined,
     })));
   }, []);
 
@@ -164,6 +165,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       status: c.status as MachineComponent["status"],
       model: c.model || undefined,
       sector: c.sector || undefined,
+      photoUrl: (c as any).photo_url || undefined,
     })));
   }, []);
 
@@ -201,6 +203,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       minStock: Number(p.min_stock),
       supplier: p.supplier || undefined,
       unitCost: Number(p.unit_cost),
+      photoUrl: (p as any).photo_url || undefined,
     })));
   }, []);
 
@@ -474,7 +477,8 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     const { error } = await supabase.from("machines").insert({
       tag: m.tag, type: m.type, model: m.model, manufacturer: m.manufacturer,
       year: m.year, sector: m.sector, status: m.status, horimeter: m.horimeter,
-    });
+      photo_url: m.photoUrl || null,
+    } as any);
     if (error) { toast({ title: "Erro ao cadastrar máquina", description: error.message, variant: "destructive" }); return; }
     await loadMachines();
     toast({ title: "Máquina cadastrada com sucesso" });
@@ -490,6 +494,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     if (m.sector !== undefined) update.sector = m.sector;
     if (m.status !== undefined) update.status = m.status;
     if (m.horimeter !== undefined) update.horimeter = m.horimeter;
+    if (m.photoUrl !== undefined) update.photo_url = m.photoUrl || null;
     if (Object.keys(update).length > 0) {
       const { error } = await supabase.from("machines").update(update).eq("id", id);
       if (error) { toast({ title: "Erro ao atualizar máquina", description: error.message, variant: "destructive" }); return; }
@@ -512,7 +517,8 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       name: c.name, tag: c.tag, type: c.type, machine_type: c.machineType,
       machine_id: c.machineId || null, rule_id: c.ruleId || null,
       status: c.status || "operating", model: c.model || "", sector: c.sector || "",
-    });
+      photo_url: c.photoUrl || null,
+    } as any);
     if (error) { toast({ title: "Erro ao cadastrar componente", description: error.message, variant: "destructive" }); return; }
     await loadComponents();
     toast({ title: "Componente cadastrado" });
@@ -529,6 +535,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     if (c.status !== undefined) update.status = c.status;
     if (c.model !== undefined) update.model = c.model;
     if (c.sector !== undefined) update.sector = c.sector;
+    if (c.photoUrl !== undefined) update.photo_url = c.photoUrl || null;
     if (Object.keys(update).length > 0) {
       const { error } = await supabase.from("components").update(update).eq("id", id);
       if (error) { toast({ title: "Erro ao atualizar componente", description: error.message, variant: "destructive" }); return; }
@@ -611,7 +618,8 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       unit: p.unit || "un", location: p.location || "",
       quantity: p.quantity ?? p.stock ?? 0, min_stock: p.minStock || 0,
       supplier: p.supplier || "", unit_cost: p.unitCost ?? p.cost ?? 0,
-    });
+      photo_url: p.photoUrl || null,
+    } as any);
     if (error) { toast({ title: "Erro ao cadastrar peça", description: error.message, variant: "destructive" }); return; }
     await loadParts();
     toast({ title: "Peça cadastrada com sucesso" });
@@ -644,6 +652,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     if (p.minStock !== undefined) update.min_stock = p.minStock;
     if (p.supplier !== undefined) update.supplier = p.supplier;
     if (p.unitCost !== undefined) update.unit_cost = p.unitCost;
+    if (p.photoUrl !== undefined) update.photo_url = p.photoUrl || null;
     if (Object.keys(update).length > 0) {
       const { error } = await supabase.from("parts").update(update).eq("id", id);
       if (error) { toast({ title: "Erro ao atualizar peça", description: error.message, variant: "destructive" }); return; }

@@ -21,6 +21,7 @@ export interface Machine {
   sector: string;
   status: MachineStatus;
   horimeter: number;
+  photoUrl?: string;
   dailyChecklistTotal?: number;
   dailyChecklistCompleted?: number;
   preventiveOverdue?: number;
@@ -31,14 +32,15 @@ export interface Machine {
 export interface MachineComponent {
   id: string;
   name: string;
-  tag: string; // Added for compatibility with MachineCard
+  tag: string;
   type: ComponentType;
   machineType: MachineType;
   machineId?: string;
   ruleId?: string;
-  status: MachineStatus; // Added
-  model?: string; // Added
-  sector?: string; // Added
+  status: MachineStatus;
+  model?: string;
+  sector?: string;
+  photoUrl?: string;
   dailyChecklistTotal?: number;
   dailyChecklistCompleted?: number;
   preventiveOverdue?: number;
@@ -79,6 +81,7 @@ export interface LubricationPlan {
   nextDueDate: string;
   lastExecutionAt?: string;
   active: boolean;
+  photoUrl?: string;
 }
 
 export interface LubricationExecution {
@@ -148,6 +151,7 @@ export interface Part {
   supplier?: string;
   unitCost?: number;
   cost?: number; // Compatibility
+  photoUrl?: string;
 }
 
 export interface StockMovement {

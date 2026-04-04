@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Plus, Pencil, Trash2 } from "lucide-react";
 import { ThemeSettings } from "@/components/settings/ThemeSettings";
+import { PhotoUpload } from "@/components/forms/PhotoUpload";
 
 import { useData } from "@/contexts/DataContext";
 import { useConfig } from "@/contexts/ConfigContext";
@@ -62,6 +63,7 @@ export default function Settings() {
 
   const [componentForm, setComponentForm] = useState(emptyComponentForm);
   const [editingComponentId, setEditingComponentId] = useState<string | null>(null);
+  const [componentPhoto, setComponentPhoto] = useState<string | undefined>();
 
   // Component types state
   const [newTypeName, setNewTypeName] = useState("");
@@ -91,6 +93,7 @@ export default function Settings() {
   const resetComponentForm = () => {
     setComponentForm(emptyComponentForm);
     setEditingComponentId(null);
+    setComponentPhoto(undefined);
   };
 
   const handleCreateOrUpdateMachine = () => {
@@ -149,6 +152,7 @@ export default function Settings() {
         type: componentForm.type,
         machineType: componentForm.machineType,
         model: componentForm.model.trim() || undefined,
+        photoUrl: componentPhoto,
       });
       resetComponentForm();
       return;
@@ -181,6 +185,7 @@ export default function Settings() {
       machineId: component.machineId || "",
       applyMode: "current",
     });
+    setComponentPhoto(component.photoUrl);
   };
 
   const handleAddComponentType = () => {
@@ -403,6 +408,11 @@ export default function Settings() {
                   )}
                 </>
               )}
+
+              <div className="space-y-1 md:col-span-3">
+                <Label>Foto</Label>
+                <PhotoUpload value={componentPhoto} onChange={setComponentPhoto} folder="components" />
+              </div>
 
               <div className="md:col-span-3 flex gap-2">
                 <Button onClick={handleCreateOrUpdateComponent}>

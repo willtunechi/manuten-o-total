@@ -50,6 +50,7 @@ type NewManualLubricationPlan = {
   attentionPoints: string;
   frequencyDays: number;
   nextDueDate: string;
+  photoUrl?: string;
 };
 
 export type ComponentTypeConfig = {
@@ -200,6 +201,7 @@ export function ConfigProvider({ children }: { children: React.ReactNode }) {
         nextDueDate: row.next_due_date ? row.next_due_date.slice(0, 10) : undefined,
         lastExecutionAt: row.last_execution_at ? row.last_execution_at.slice(0, 10) : undefined,
         active: row.active,
+        photoUrl: (row as any).photo_url || undefined,
       })),
     );
   }, []);
@@ -507,7 +509,8 @@ export function ConfigProvider({ children }: { children: React.ReactNode }) {
         frequency_days: Math.max(1, payload.frequencyDays),
         next_due_date: payload.nextDueDate,
         active: true,
-      });
+        photo_url: payload.photoUrl || null,
+      } as any);
       if (error) {
         console.error("Error adding lubrication plan:", error);
         return;
@@ -527,6 +530,7 @@ export function ConfigProvider({ children }: { children: React.ReactNode }) {
       if (payload.nextDueDate !== undefined) updateData.next_due_date = payload.nextDueDate;
       if (payload.active !== undefined) updateData.active = payload.active;
       if (payload.line !== undefined) updateData.line = payload.line;
+      if (payload.photoUrl !== undefined) updateData.photo_url = payload.photoUrl || null;
 
       const { error } = await supabase.from("lubrication_plans").update(updateData).eq("id", id);
       if (error) {
