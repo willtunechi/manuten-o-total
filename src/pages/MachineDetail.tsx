@@ -490,6 +490,7 @@ export default function MachineDetail() {
       resolutionPhotoUrl: ticket.resolutionPhotoUrl || "",
       machineReturned: null,
       partsUsed: ticket.partsUsed || [],
+      actualHours: ticket.actualHours != null ? String(ticket.actualHours) : "",
     });
     setTicketPartSelection({ partId: "", quantity: 1 });
   };
