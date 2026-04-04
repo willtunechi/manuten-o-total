@@ -31,6 +31,7 @@ interface Props {
 }
 
 export function MachineFormDialog({ open, onOpenChange, machine, onSave }: Props) {
+  const [photoUrl, setPhotoUrl] = useState<string | undefined>();
   const { register, handleSubmit, setValue, watch, formState: { errors }, reset } = useForm<FormData>({
     resolver: zodResolver(schema),
     defaultValues: machine
