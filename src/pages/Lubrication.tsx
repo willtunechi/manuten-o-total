@@ -11,6 +11,7 @@ import { useData } from "@/contexts/DataContext";
 import { useConfig } from "@/contexts/ConfigContext";
 import type { LubricationPlan } from "@/data/types";
 import { CopyPlanDialog } from "@/components/forms/CopyPlanDialog";
+import { PhotoUpload } from "@/components/forms/PhotoUpload";
 import { toast } from "@/hooks/use-toast";
 
 interface LubFormProps {
