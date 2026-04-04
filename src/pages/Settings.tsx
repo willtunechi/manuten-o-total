@@ -152,6 +152,7 @@ export default function Settings() {
         type: componentForm.type,
         machineType: componentForm.machineType,
         model: componentForm.model.trim() || undefined,
+        photoUrl: componentPhoto,
       });
       resetComponentForm();
       return;
