@@ -80,7 +80,7 @@ interface DataContextType {
   removeMaintenancePlan: (id: string) => void;
   startPlanExecution: (planId: string, machineId?: string) => Promise<string>;
   updatePlanItemResult: (executionId: string, itemResult: PlanItemResult) => Promise<void>;
-  completePlanExecution: (executionId: string) => Promise<void>;
+  completePlanExecution: (executionId: string, actualHours?: number) => Promise<void>;
   stopMachineForExecution: (executionId: string) => void;
   resumeMachineForExecution: (executionId: string) => void;
   addWorkOrder: (w: {
