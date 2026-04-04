@@ -618,7 +618,8 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       unit: p.unit || "un", location: p.location || "",
       quantity: p.quantity ?? p.stock ?? 0, min_stock: p.minStock || 0,
       supplier: p.supplier || "", unit_cost: p.unitCost ?? p.cost ?? 0,
-    });
+      photo_url: p.photoUrl || null,
+    } as any);
     if (error) { toast({ title: "Erro ao cadastrar peça", description: error.message, variant: "destructive" }); return; }
     await loadParts();
     toast({ title: "Peça cadastrada com sucesso" });
