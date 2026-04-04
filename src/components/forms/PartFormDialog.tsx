@@ -59,6 +59,7 @@ export function PartFormDialog({ open, onOpenChange, part, onSave }: Props) {
 
   useEffect(() => {
     if (open) {
+      setPhotoUrl(part?.photoUrl);
       reset(part
         ? { sku: part.sku, description: part.description, unit: part.unit, location: part.location, quantity: part.quantity, minStock: part.minStock, supplier: part.supplier, unitCost: part.unitCost }
         : { sku: "", description: "", unit: "un", location: "", quantity: 0, minStock: 0, supplier: "", unitCost: 0 }
