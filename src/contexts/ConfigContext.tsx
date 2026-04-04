@@ -76,7 +76,7 @@ type ConfigContextType = {
   addLubricationPlan: (payload: NewManualLubricationPlan) => void;
   updateLubricationPlan: (id: string, payload: Partial<Omit<LubricationPlan, "id" | "assetId" | "assetKind">>) => void;
   removeLubricationPlan: (id: string) => void;
-  executeLubricationPlan: (id: string, payload: { executedAt: string; notes?: string; nextDueDate?: string }) => void;
+  executeLubricationPlan: (id: string, payload: { executedAt: string; notes?: string; nextDueDate?: string; actualHours?: number }) => void;
   adjustLubricationNextDueDate: (id: string, nextDueDate: string) => void;
 };
 
