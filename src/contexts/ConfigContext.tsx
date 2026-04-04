@@ -50,6 +50,7 @@ type NewManualLubricationPlan = {
   attentionPoints: string;
   frequencyDays: number;
   nextDueDate: string;
+  photoUrl?: string;
 };
 
 export type ComponentTypeConfig = {
