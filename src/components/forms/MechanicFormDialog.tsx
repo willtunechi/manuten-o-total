@@ -25,6 +25,7 @@ const schema = z.object({
   available: z.boolean(),
   machineIds: z.array(z.string()).default([]),
   componentIds: z.array(z.string()).default([]),
+  hourlyCost: z.coerce.number().min(0).default(0),
 });
 
 type FormData = z.infer<typeof schema>;
