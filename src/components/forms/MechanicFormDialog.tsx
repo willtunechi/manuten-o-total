@@ -25,6 +25,7 @@ const schema = z.object({
   available: z.boolean(),
   machineIds: z.array(z.string()).default([]),
   componentIds: z.array(z.string()).default([]),
+  hourlyCost: z.coerce.number().min(0).default(0),
 });
 
 type FormData = z.infer<typeof schema>;
@@ -71,6 +72,7 @@ export function MechanicFormDialog({ open, onOpenChange, mechanic, onSave }: Pro
           available: mechanic.available,
           machineIds: mechanic.machineIds || [],
           componentIds: mechanic.componentIds || [],
+          hourlyCost: mechanic.hourlyCost ?? 0,
         }
       : {
           name: "",
@@ -81,6 +83,7 @@ export function MechanicFormDialog({ open, onOpenChange, mechanic, onSave }: Pro
           available: true,
           machineIds: [],
           componentIds: [],
+          hourlyCost: 0,
         },
   });
 
@@ -97,6 +100,7 @@ export function MechanicFormDialog({ open, onOpenChange, mechanic, onSave }: Pro
             available: mechanic.available,
             machineIds: mechanic.machineIds || [],
             componentIds: mechanic.componentIds || [],
+            hourlyCost: mechanic.hourlyCost ?? 0,
           }
         : {
             name: "",
@@ -107,6 +111,7 @@ export function MechanicFormDialog({ open, onOpenChange, mechanic, onSave }: Pro
             available: true,
             machineIds: [],
             componentIds: [],
+            hourlyCost: 0,
           },
     );
   }, [mechanic, open, reset]);
@@ -189,6 +194,7 @@ export function MechanicFormDialog({ open, onOpenChange, mechanic, onSave }: Pro
       componentIds: data.componentIds,
       canExecuteChecklist: isMaintenance,
       canExecutePreventive: isMaintenance,
+      hourlyCost: data.hourlyCost,
     });
     reset();
     onOpenChange(false);
@@ -250,6 +256,13 @@ export function MechanicFormDialog({ open, onOpenChange, mechanic, onSave }: Pro
                 </Select>
               </div>
             )}
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-1">
+              <Label>Custo por Hora (R$)</Label>
+              <Input {...register("hourlyCost")} type="number" step="0.01" min="0" placeholder="0.00" />
+            </div>
           </div>
 
           {isSupervisorRole ? (

@@ -1,0 +1,1 @@
+ALTER TABLE public.mechanics ADD COLUMN hourly_cost numeric NOT NULL DEFAULT 0;

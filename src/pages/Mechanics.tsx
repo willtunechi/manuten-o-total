@@ -100,6 +100,9 @@ export default function Mechanics() {
                   <Badge variant={isMaintenance ? "default" : "secondary"}>
                     {isMaintenance ? "Manutenção" : "Operação"}
                   </Badge>
+                  {(m.hourlyCost ?? 0) > 0 && (
+                    <Badge variant="outline">R$ {Number(m.hourlyCost).toFixed(2)}/h</Badge>
+                  )}
                 </div>
 
                 <div className="space-y-1">

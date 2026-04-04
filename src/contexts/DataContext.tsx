@@ -182,6 +182,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       available: m.available,
       canExecuteChecklist: m.can_execute_checklist,
       canExecutePreventive: m.can_execute_preventive,
+      hourlyCost: (m as any).hourly_cost ?? 0,
       machineIds: (machAssoc || []).filter((a) => a.mechanic_id === m.id).map((a) => a.machine_id),
       componentIds: (compAssoc || []).filter((a) => a.mechanic_id === m.id).map((a) => a.component_id),
     })));
@@ -551,6 +552,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       level: m.level, available: m.available,
       can_execute_checklist: m.canExecuteChecklist ?? false,
       can_execute_preventive: m.canExecutePreventive ?? false,
+      hourly_cost: m.hourlyCost ?? 0,
     }).select().single();
     if (error) { toast({ title: "Erro ao cadastrar colaborador", description: error.message, variant: "destructive" }); return; }
     if (m.machineIds?.length) {
@@ -573,6 +575,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     if (m.available !== undefined) updateData.available = m.available;
     if (m.canExecuteChecklist !== undefined) updateData.can_execute_checklist = m.canExecuteChecklist;
     if (m.canExecutePreventive !== undefined) updateData.can_execute_preventive = m.canExecutePreventive;
+    if (m.hourlyCost !== undefined) updateData.hourly_cost = m.hourlyCost;
     if (Object.keys(updateData).length > 0) {
       const { error } = await supabase.from("mechanics").update(updateData).eq("id", id);
       if (error) { toast({ title: "Erro ao atualizar colaborador", description: error.message, variant: "destructive" }); return; }
