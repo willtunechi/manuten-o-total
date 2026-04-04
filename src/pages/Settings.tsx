@@ -63,6 +63,7 @@ export default function Settings() {
 
   const [componentForm, setComponentForm] = useState(emptyComponentForm);
   const [editingComponentId, setEditingComponentId] = useState<string | null>(null);
+  const [componentPhoto, setComponentPhoto] = useState<string | undefined>();
 
   // Component types state
   const [newTypeName, setNewTypeName] = useState("");
