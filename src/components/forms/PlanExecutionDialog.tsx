@@ -420,10 +420,22 @@ export function PlanExecutionDialog({ open, onOpenChange, plan, execution, onSta
               </div>
             )}
 
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Horas trabalhadas</label>
+              <Input
+                type="number"
+                min={0}
+                step={0.5}
+                placeholder="Ex: 2.5"
+                value={completionHours}
+                onChange={(e) => setCompletionHours(e.target.value)}
+              />
+            </div>
+
             <DialogFooter>
               <Button variant="outline" onClick={() => onOpenChange(false)}>Fechar (progresso salvo)</Button>
               {allDone && (
-                <Button onClick={() => { onComplete(currentExecution.id); onOpenChange(false); }}>
+                <Button onClick={() => { onComplete(currentExecution.id, completionHours ? Number(completionHours) : undefined); onOpenChange(false); }}>
                   Finalizar Execução
                 </Button>
               )}
