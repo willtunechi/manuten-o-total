@@ -28,6 +28,7 @@ import Lubrication from "./pages/Lubrication";
 import Reports from "./pages/Reports";
 import Registrations from "./pages/Registrations";
 import Management from "./pages/Management";
+import MachineHistory from "./pages/MachineHistory";
 const queryClient = new QueryClient();
 
 function AppRoutes() {
@@ -69,6 +70,7 @@ function AppRoutes() {
           <Route element={<AppLayout />}>
             <Route path="/" element={canAccessRoute("/") ? <Dashboard /> : <Navigate to="/machines" replace />} />
             <Route path="/machines" element={<Machines />} />
+            <Route path="/machine-history" element={<MachineHistory />} />
             <Route path="/components/:id" element={<ComponentDetail />} />
             <Route path="/machines/:id" element={<MachineDetail />} />
             <Route path="/tickets" element={<Tickets />} />
