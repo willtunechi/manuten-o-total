@@ -27,6 +27,7 @@ import ComponentDetail from "./pages/ComponentDetail";
 import Lubrication from "./pages/Lubrication";
 import Reports from "./pages/Reports";
 import Registrations from "./pages/Registrations";
+import Management from "./pages/Management";
 const queryClient = new QueryClient();
 
 function AppRoutes() {
@@ -83,6 +84,7 @@ function AppRoutes() {
             <Route path="/lubrication" element={<Lubrication />} />
             <Route path="/reports" element={<Reports />} />
             <Route path="/registrations" element={<Registrations />} />
+            <Route path="/management" element={<Management />} />
           </Route>
           <Route path="/auth" element={<Navigate to="/" replace />} />
           <Route path="*" element={<NotFound />} />
