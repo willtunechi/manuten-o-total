@@ -92,6 +92,7 @@ export interface LubricationExecution {
   previousDueDate: string;
   nextDueDateAfterExecution: string;
   manuallyAdjusted: boolean;
+  actualHours?: number;
 }
 
 export interface Mechanic {
