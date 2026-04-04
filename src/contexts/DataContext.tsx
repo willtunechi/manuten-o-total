@@ -517,7 +517,8 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       name: c.name, tag: c.tag, type: c.type, machine_type: c.machineType,
       machine_id: c.machineId || null, rule_id: c.ruleId || null,
       status: c.status || "operating", model: c.model || "", sector: c.sector || "",
-    });
+      photo_url: c.photoUrl || null,
+    } as any);
     if (error) { toast({ title: "Erro ao cadastrar componente", description: error.message, variant: "destructive" }); return; }
     await loadComponents();
     toast({ title: "Componente cadastrado" });
