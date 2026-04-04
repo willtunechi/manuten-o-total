@@ -109,6 +109,7 @@ export default function Lubrication() {
   const [formAttention, setFormAttention] = useState("RUIDOS - VAZAMENTOS");
   const [formFrequency, setFormFrequency] = useState("90");
   const [formDueDate, setFormDueDate] = useState(() => new Date().toISOString().slice(0, 10));
+  const [formPhoto, setFormPhoto] = useState<string | undefined>();
 
   const machineOptions = machines.map((m) => ({ id: m.id, label: `${m.tag} - ${m.model}` })).sort((a, b) => a.label.localeCompare(b.label, 'pt-BR', { numeric: true }));
   const componentOptions = components.map((c) => ({ id: c.id, label: `${c.tag} - ${c.name}` })).sort((a, b) => a.label.localeCompare(b.label, 'pt-BR', { numeric: true }));
