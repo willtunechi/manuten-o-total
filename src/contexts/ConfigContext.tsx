@@ -509,7 +509,8 @@ export function ConfigProvider({ children }: { children: React.ReactNode }) {
         frequency_days: Math.max(1, payload.frequencyDays),
         next_due_date: payload.nextDueDate,
         active: true,
-      });
+        photo_url: payload.photoUrl || null,
+      } as any);
       if (error) {
         console.error("Error adding lubrication plan:", error);
         return;
