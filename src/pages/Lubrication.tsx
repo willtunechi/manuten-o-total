@@ -134,6 +134,7 @@ export default function Lubrication() {
     setFormAttention("RUIDOS - VAZAMENTOS");
     setFormFrequency("90");
     setFormDueDate(new Date().toISOString().slice(0, 10));
+    setFormPhoto(undefined);
   };
 
   const openNew = () => {
