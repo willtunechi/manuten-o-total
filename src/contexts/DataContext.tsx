@@ -203,6 +203,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       minStock: Number(p.min_stock),
       supplier: p.supplier || undefined,
       unitCost: Number(p.unit_cost),
+      photoUrl: (p as any).photo_url || undefined,
     })));
   }, []);
 
