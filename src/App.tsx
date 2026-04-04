@@ -28,6 +28,7 @@ import Lubrication from "./pages/Lubrication";
 import Reports from "./pages/Reports";
 import Registrations from "./pages/Registrations";
 import Management from "./pages/Management";
+import MachineHistory from "./pages/MachineHistory";
 const queryClient = new QueryClient();
 
 function AppRoutes() {
