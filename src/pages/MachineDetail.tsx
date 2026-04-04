@@ -703,6 +703,7 @@ export default function MachineDetail() {
       executedAt: lubeExecutedAt,
       notes: lubeExecutionNotes.trim() || undefined,
       nextDueDate: lubeOverrideDueDate || undefined,
+      actualHours: lubeExecutionHours ? Number(lubeExecutionHours) : undefined,
     });
     setLubeExecuteDialogOpen(false);
   };
