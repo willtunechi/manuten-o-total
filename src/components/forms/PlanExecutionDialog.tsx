@@ -18,7 +18,7 @@ interface Props {
   execution: PlanExecution | null;
   onStartExecution: (planId: string, machineId?: string) => void;
   onUpdateItem: (executionId: string, itemResult: PlanItemResult) => void;
-  onComplete: (executionId: string) => void;
+  onComplete: (executionId: string, actualHours?: number) => void;
   machineId?: string;
   machineStatus?: MachineStatus;
   onStopMachine?: (executionId: string) => void;
