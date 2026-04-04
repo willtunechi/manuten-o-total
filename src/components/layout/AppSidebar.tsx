@@ -16,6 +16,7 @@
   FileBarChart,
   BookOpen,
   BarChart3,
+  History,
 } from "lucide-react";
 
 import { NavLink } from "@/components/NavLink";
