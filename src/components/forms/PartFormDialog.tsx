@@ -140,6 +140,10 @@ export function PartFormDialog({ open, onOpenChange, part, onSave }: Props) {
               {errors.unitCost && <p className="text-xs text-destructive">{errors.unitCost.message}</p>}
             </div>
           </div>
+          <div className="space-y-1">
+            <Label>Foto</Label>
+            <PhotoUpload value={photoUrl} onChange={setPhotoUrl} folder="parts" />
+          </div>
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>
             <Button type="submit">{part ? "Salvar" : "Cadastrar"}</Button>
