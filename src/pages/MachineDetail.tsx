@@ -693,6 +693,7 @@ export default function MachineDetail() {
     setLubeExecutedAt(new Date().toISOString().slice(0, 10));
     setLubeExecutionNotes("");
     setLubeOverrideDueDate("");
+    setLubeExecutionHours("");
     setLubeExecuteDialogOpen(true);
   };
 
