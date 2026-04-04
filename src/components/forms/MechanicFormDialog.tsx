@@ -72,6 +72,7 @@ export function MechanicFormDialog({ open, onOpenChange, mechanic, onSave }: Pro
           available: mechanic.available,
           machineIds: mechanic.machineIds || [],
           componentIds: mechanic.componentIds || [],
+          hourlyCost: mechanic.hourlyCost ?? 0,
         }
       : {
           name: "",
@@ -82,6 +83,7 @@ export function MechanicFormDialog({ open, onOpenChange, mechanic, onSave }: Pro
           available: true,
           machineIds: [],
           componentIds: [],
+          hourlyCost: 0,
         },
   });
 
