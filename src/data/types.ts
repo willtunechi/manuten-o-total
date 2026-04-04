@@ -92,6 +92,7 @@ export interface LubricationExecution {
   previousDueDate: string;
   nextDueDateAfterExecution: string;
   manuallyAdjusted: boolean;
+  actualHours?: number;
 }
 
 export interface Mechanic {
@@ -127,6 +128,7 @@ export interface Ticket {
   photoUrl?: string;
   resolutionPhotoUrl?: string;
   partsUsed?: { partId: string; quantity: number }[];
+  actualHours?: number;
   title?: string; // Compatibility
   description?: string; // Compatibility
 }
@@ -218,6 +220,7 @@ export interface PlanExecution {
   startedAt: string;
   completedAt?: string;
   status: 'in_progress' | 'completed';
+  actualHours?: number;
   itemResults: PlanItemResult[];
   machineStops: MachineStopRecord[];
 }

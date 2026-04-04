@@ -65,6 +65,7 @@ type TicketResolutionDraft = {
   resolutionPhotoUrl: string;
   machineReturned: boolean | null;
   partsUsed: Array<{ partId: string; quantity: number }>;
+  actualHours: string;
 };
 
 type HistoryRow = {
@@ -214,6 +215,7 @@ export default function MachineDetail() {
     resolutionPhotoUrl: "",
     machineReturned: null,
     partsUsed: [],
+    actualHours: "",
   });
   const [resolutionUploading, setResolutionUploading] = useState(false);
   const [ticketPartSelection, setTicketPartSelection] = useState<{ partId: string; quantity: number }>({ partId: "", quantity: 1 });
@@ -225,6 +227,7 @@ export default function MachineDetail() {
   const [lubeExecutedAt, setLubeExecutedAt] = useState<string>(() => new Date().toISOString().slice(0, 10));
   const [lubeExecutionNotes, setLubeExecutionNotes] = useState("");
   const [lubeOverrideDueDate, setLubeOverrideDueDate] = useState("");
+  const [lubeExecutionHours, setLubeExecutionHours] = useState("");
 
   const machine = machines.find((m) => m.id === id);
   const component = components.find((c) => c.id === id);
@@ -488,6 +491,7 @@ export default function MachineDetail() {
       resolutionPhotoUrl: ticket.resolutionPhotoUrl || "",
       machineReturned: null,
       partsUsed: ticket.partsUsed || [],
+      actualHours: ticket.actualHours != null ? String(ticket.actualHours) : "",
     });
     setTicketPartSelection({ partId: "", quantity: 1 });
   };
@@ -621,6 +625,7 @@ export default function MachineDetail() {
       photoUrl: ticketDraft.photoUrl,
       resolutionPhotoUrl: ticketDraft.resolutionPhotoUrl,
       partsUsed: ticketDraft.partsUsed,
+      actualHours: ticketDraft.actualHours ? Number(ticketDraft.actualHours) : undefined,
     });
 
     // If resolved and machine returned, resume the machine
@@ -688,6 +693,7 @@ export default function MachineDetail() {
     setLubeExecutedAt(new Date().toISOString().slice(0, 10));
     setLubeExecutionNotes("");
     setLubeOverrideDueDate("");
+    setLubeExecutionHours("");
     setLubeExecuteDialogOpen(true);
   };
 
@@ -697,6 +703,7 @@ export default function MachineDetail() {
       executedAt: lubeExecutedAt,
       notes: lubeExecutionNotes.trim() || undefined,
       nextDueDate: lubeOverrideDueDate || undefined,
+      actualHours: lubeExecutionHours ? Number(lubeExecutionHours) : undefined,
     });
     setLubeExecuteDialogOpen(false);
   };
@@ -1584,6 +1591,18 @@ export default function MachineDetail() {
                 )}
 
                 <div className="space-y-1">
+                  <p className="text-xs text-muted-foreground">Horas trabalhadas</p>
+                  <Input
+                    type="number"
+                    min={0}
+                    step={0.5}
+                    placeholder="Ex: 2.5"
+                    value={ticketDraft.actualHours}
+                    onChange={(e) => setTicketDraft((prev) => ({ ...prev, actualHours: e.target.value }))}
+                  />
+                </div>
+
+                <div className="space-y-1">
                   <p className="text-xs text-muted-foreground">Comentário</p>
                   <Textarea
                     rows={3}
@@ -1705,6 +1724,10 @@ export default function MachineDetail() {
             <div className="space-y-1">
               <Label>Observação</Label>
               <Textarea value={lubeExecutionNotes} onChange={(e) => setLubeExecutionNotes(e.target.value)} rows={3} />
+            </div>
+            <div className="space-y-1">
+              <Label>Horas trabalhadas</Label>
+              <Input type="number" min={0} step={0.5} placeholder="Ex: 1.5" value={lubeExecutionHours} onChange={(e) => setLubeExecutionHours(e.target.value)} />
             </div>
           </div>
           <DialogFooter>

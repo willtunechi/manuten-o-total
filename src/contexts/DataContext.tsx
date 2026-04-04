@@ -80,7 +80,7 @@ interface DataContextType {
   removeMaintenancePlan: (id: string) => void;
   startPlanExecution: (planId: string, machineId?: string) => Promise<string>;
   updatePlanItemResult: (executionId: string, itemResult: PlanItemResult) => Promise<void>;
-  completePlanExecution: (executionId: string) => Promise<void>;
+  completePlanExecution: (executionId: string, actualHours?: number) => Promise<void>;
   stopMachineForExecution: (executionId: string) => void;
   resumeMachineForExecution: (executionId: string) => void;
   addWorkOrder: (w: {
@@ -226,6 +226,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       comment: (t.comment && t.comment !== "null") ? t.comment : undefined,
       photoUrl: t.photo_url || undefined,
       resolutionPhotoUrl: (t as any).resolution_photo_url || undefined,
+      actualHours: (t as any).actual_hours != null ? Number((t as any).actual_hours) : undefined,
       partsUsed: (partsUsed || []).filter((pu) => pu.ticket_id === t.id).map((pu) => ({
         partId: pu.part_id,
         quantity: Number(pu.quantity),
@@ -702,6 +703,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     if (t.resolutionPhotoUrl !== undefined) update.resolution_photo_url = t.resolutionPhotoUrl;
     if (t.resolvedAt !== undefined) update.resolved_at = t.resolvedAt;
     if (t.reportedBy !== undefined) update.reported_by = t.reportedBy;
+    if (t.actualHours !== undefined) update.actual_hours = t.actualHours;
 
     if (Object.keys(update).length > 0) {
       const { error } = await supabase.from("tickets").update(update).eq("id", id);
@@ -1163,10 +1165,14 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  const completePlanExecution = useCallback(async (executionId: string) => {
-    await supabase.from("plan_executions").update({
+  const completePlanExecution = useCallback(async (executionId: string, actualHours?: number) => {
+    const updateData: Record<string, unknown> = {
       status: "completed", completed_at: new Date().toISOString(),
-    }).eq("id", executionId);
+    };
+    if (actualHours !== undefined && actualHours !== null) {
+      updateData.actual_hours = actualHours;
+    }
+    await supabase.from("plan_executions").update(updateData).eq("id", executionId);
 
     await loadPlanExecutions();
     await loadParts();
