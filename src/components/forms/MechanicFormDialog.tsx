@@ -258,6 +258,13 @@ export function MechanicFormDialog({ open, onOpenChange, mechanic, onSave }: Pro
             )}
           </div>
 
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-1">
+              <Label>Custo por Hora (R$)</Label>
+              <Input {...register("hourlyCost")} type="number" step="0.01" min="0" placeholder="0.00" />
+            </div>
+          </div>
+
           {isSupervisorRole ? (
             <div className="rounded-md border p-3 bg-muted/30 text-xs text-muted-foreground">
               Supervisores e Planejadores têm acesso a todas as máquinas e componentes automaticamente.
