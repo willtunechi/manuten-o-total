@@ -93,6 +93,7 @@ export default function Settings() {
   const resetComponentForm = () => {
     setComponentForm(emptyComponentForm);
     setEditingComponentId(null);
+    setComponentPhoto(undefined);
   };
 
   const handleCreateOrUpdateMachine = () => {
