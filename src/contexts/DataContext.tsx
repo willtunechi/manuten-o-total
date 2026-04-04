@@ -147,6 +147,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       sector: m.sector,
       status: m.status as Machine["status"],
       horimeter: Number(m.horimeter),
+      photoUrl: (m as any).photo_url || undefined,
     })));
   }, []);
 
