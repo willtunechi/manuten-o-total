@@ -215,6 +215,7 @@ export default function MachineDetail() {
     resolutionPhotoUrl: "",
     machineReturned: null,
     partsUsed: [],
+    actualHours: "",
   });
   const [resolutionUploading, setResolutionUploading] = useState(false);
   const [ticketPartSelection, setTicketPartSelection] = useState<{ partId: string; quantity: number }>({ partId: "", quantity: 1 });
