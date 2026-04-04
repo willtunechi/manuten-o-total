@@ -127,6 +127,7 @@ export interface Ticket {
   photoUrl?: string;
   resolutionPhotoUrl?: string;
   partsUsed?: { partId: string; quantity: number }[];
+  actualHours?: number;
   title?: string; // Compatibility
   description?: string; // Compatibility
 }
