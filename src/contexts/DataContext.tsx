@@ -165,6 +165,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       status: c.status as MachineComponent["status"],
       model: c.model || undefined,
       sector: c.sector || undefined,
+      photoUrl: (c as any).photo_url || undefined,
     })));
   }, []);
 
