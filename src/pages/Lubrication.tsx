@@ -150,6 +150,7 @@ export default function Lubrication() {
     setFormAttention(plan.attentionPoints);
     setFormFrequency(String(plan.frequencyDays));
     setFormDueDate(plan.nextDueDate);
+    setFormPhoto(plan.photoUrl);
     setEditPlan(plan);
   };
 
