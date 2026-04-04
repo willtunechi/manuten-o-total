@@ -551,6 +551,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       level: m.level, available: m.available,
       can_execute_checklist: m.canExecuteChecklist ?? false,
       can_execute_preventive: m.canExecutePreventive ?? false,
+      hourly_cost: m.hourlyCost ?? 0,
     }).select().single();
     if (error) { toast({ title: "Erro ao cadastrar colaborador", description: error.message, variant: "destructive" }); return; }
     if (m.machineIds?.length) {
