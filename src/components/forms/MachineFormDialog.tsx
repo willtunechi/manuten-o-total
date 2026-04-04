@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { PhotoUpload } from "@/components/forms/PhotoUpload";
 import type { Machine, MachineStatus, MachineType } from "@/data/types";
 import { MACHINE_STATUS_LABELS, MACHINE_TYPE_LABELS } from "@/data/types";
 
