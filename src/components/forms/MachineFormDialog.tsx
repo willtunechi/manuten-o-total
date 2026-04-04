@@ -59,6 +59,7 @@ export function MachineFormDialog({ open, onOpenChange, machine, onSave }: Props
       sector: "",
       horimeter: data.horimeter,
       status: data.status as MachineStatus,
+      photoUrl,
     });
     reset();
     onOpenChange(false);
