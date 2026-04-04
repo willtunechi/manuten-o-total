@@ -494,6 +494,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     if (m.sector !== undefined) update.sector = m.sector;
     if (m.status !== undefined) update.status = m.status;
     if (m.horimeter !== undefined) update.horimeter = m.horimeter;
+    if (m.photoUrl !== undefined) update.photo_url = m.photoUrl || null;
     if (Object.keys(update).length > 0) {
       const { error } = await supabase.from("machines").update(update).eq("id", id);
       if (error) { toast({ title: "Erro ao atualizar máquina", description: error.message, variant: "destructive" }); return; }
