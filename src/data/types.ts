@@ -21,6 +21,7 @@ export interface Machine {
   sector: string;
   status: MachineStatus;
   horimeter: number;
+  photoUrl?: string;
   dailyChecklistTotal?: number;
   dailyChecklistCompleted?: number;
   preventiveOverdue?: number;
