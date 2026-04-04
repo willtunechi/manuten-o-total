@@ -1164,10 +1164,14 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  const completePlanExecution = useCallback(async (executionId: string) => {
-    await supabase.from("plan_executions").update({
+  const completePlanExecution = useCallback(async (executionId: string, actualHours?: number) => {
+    const updateData: Record<string, unknown> = {
       status: "completed", completed_at: new Date().toISOString(),
-    }).eq("id", executionId);
+    };
+    if (actualHours !== undefined && actualHours !== null) {
+      updateData.actual_hours = actualHours;
+    }
+    await supabase.from("plan_executions").update(updateData).eq("id", executionId);
 
     await loadPlanExecutions();
     await loadParts();
