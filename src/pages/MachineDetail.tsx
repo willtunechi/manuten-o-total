@@ -1722,6 +1722,10 @@ export default function MachineDetail() {
               <Label>Observação</Label>
               <Textarea value={lubeExecutionNotes} onChange={(e) => setLubeExecutionNotes(e.target.value)} rows={3} />
             </div>
+            <div className="space-y-1">
+              <Label>Horas trabalhadas</Label>
+              <Input type="number" min={0} step={0.5} placeholder="Ex: 1.5" value={lubeExecutionHours} onChange={(e) => setLubeExecutionHours(e.target.value)} />
+            </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setLubeExecuteDialogOpen(false)}>Cancelar</Button>
