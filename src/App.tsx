@@ -70,6 +70,7 @@ function AppRoutes() {
           <Route element={<AppLayout />}>
             <Route path="/" element={canAccessRoute("/") ? <Dashboard /> : <Navigate to="/machines" replace />} />
             <Route path="/machines" element={<Machines />} />
+            <Route path="/machine-history" element={<MachineHistory />} />
             <Route path="/components/:id" element={<ComponentDetail />} />
             <Route path="/machines/:id" element={<MachineDetail />} />
             <Route path="/tickets" element={<Tickets />} />

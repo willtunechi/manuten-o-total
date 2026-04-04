@@ -31,6 +31,7 @@ const allMenuItems = [
   { title: "Gerenciamento", url: "/management", icon: BarChart3 },
   { title: "Relatórios", url: "/reports", icon: FileBarChart },
   { title: "Máquinas", url: "/machines", icon: Factory },
+  { title: "Histórico", url: "/machine-history", icon: History },
   { title: "Chamados", url: "/tickets", icon: ClipboardList },
   { title: "Preventivas", url: "/preventive-plans", icon: ShieldCheck },
   { title: "Checklists", url: "/checklists", icon: ListChecks },

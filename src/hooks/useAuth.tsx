@@ -108,7 +108,7 @@ export function useAuth() {
     }
 
     if (role === "mechanic") {
-      return match(["/", "/machines", "/components", "/tickets", "/preventive-plans", "/checklists", "/lubrication", "/inventory"]);
+      return match(["/", "/machines", "/components", "/tickets", "/preventive-plans", "/checklists", "/lubrication", "/inventory", "/machine-history"]);
     }
 
     // Management is only for admin and supervisors (already handled by isAdmin || isSupervisor above)
