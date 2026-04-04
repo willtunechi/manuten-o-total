@@ -535,6 +535,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     if (c.status !== undefined) update.status = c.status;
     if (c.model !== undefined) update.model = c.model;
     if (c.sector !== undefined) update.sector = c.sector;
+    if (c.photoUrl !== undefined) update.photo_url = c.photoUrl || null;
     if (Object.keys(update).length > 0) {
       const { error } = await supabase.from("components").update(update).eq("id", id);
       if (error) { toast({ title: "Erro ao atualizar componente", description: error.message, variant: "destructive" }); return; }
