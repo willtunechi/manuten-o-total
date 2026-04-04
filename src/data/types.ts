@@ -219,6 +219,7 @@ export interface PlanExecution {
   startedAt: string;
   completedAt?: string;
   status: 'in_progress' | 'completed';
+  actualHours?: number;
   itemResults: PlanItemResult[];
   machineStops: MachineStopRecord[];
 }
