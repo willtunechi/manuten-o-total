@@ -477,7 +477,8 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     const { error } = await supabase.from("machines").insert({
       tag: m.tag, type: m.type, model: m.model, manufacturer: m.manufacturer,
       year: m.year, sector: m.sector, status: m.status, horimeter: m.horimeter,
-    });
+      photo_url: m.photoUrl || null,
+    } as any);
     if (error) { toast({ title: "Erro ao cadastrar máquina", description: error.message, variant: "destructive" }); return; }
     await loadMachines();
     toast({ title: "Máquina cadastrada com sucesso" });
