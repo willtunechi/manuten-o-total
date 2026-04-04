@@ -38,6 +38,7 @@ export function PlanExecutionDialog({ open, onOpenChange, plan, execution, onSta
   const [expandedItem, setExpandedItem] = useState<string | null>(null);
   const [addingPart, setAddingPart] = useState<{ itemId: string; partId: string; quantity: number } | null>(null);
   const [now, setNow] = useState(Date.now());
+  const [completionHours, setCompletionHours] = useState("");
 
   const currentExecution = execution;
 
