@@ -81,6 +81,7 @@ export interface LubricationPlan {
   nextDueDate: string;
   lastExecutionAt?: string;
   active: boolean;
+  photoUrl?: string;
 }
 
 export interface LubricationExecution {
