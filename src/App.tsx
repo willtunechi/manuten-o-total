@@ -27,6 +27,7 @@ import ComponentDetail from "./pages/ComponentDetail";
 import Lubrication from "./pages/Lubrication";
 import Reports from "./pages/Reports";
 import Registrations from "./pages/Registrations";
+import Management from "./pages/Management";
 const queryClient = new QueryClient();
 
 function AppRoutes() {
