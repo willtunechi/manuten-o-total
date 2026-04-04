@@ -32,14 +32,15 @@ export interface Machine {
 export interface MachineComponent {
   id: string;
   name: string;
-  tag: string; // Added for compatibility with MachineCard
+  tag: string;
   type: ComponentType;
   machineType: MachineType;
   machineId?: string;
   ruleId?: string;
-  status: MachineStatus; // Added
-  model?: string; // Added
-  sector?: string; // Added
+  status: MachineStatus;
+  model?: string;
+  sector?: string;
+  photoUrl?: string;
   dailyChecklistTotal?: number;
   dailyChecklistCompleted?: number;
   preventiveOverdue?: number;
