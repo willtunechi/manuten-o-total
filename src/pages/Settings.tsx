@@ -185,6 +185,7 @@ export default function Settings() {
       machineId: component.machineId || "",
       applyMode: "current",
     });
+    setComponentPhoto(component.photoUrl);
   };
 
   const handleAddComponentType = () => {
