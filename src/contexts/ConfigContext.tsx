@@ -222,6 +222,7 @@ export function ConfigProvider({ children }: { children: React.ReactNode }) {
         previousDueDate: row.previous_due_date || undefined,
         nextDueDateAfterExecution: row.next_due_date_after || undefined,
         manuallyAdjusted: row.manually_adjusted,
+        actualHours: (row as any).actual_hours != null ? Number((row as any).actual_hours) : undefined,
       })),
     );
   }, []);
