@@ -65,6 +65,7 @@ type TicketResolutionDraft = {
   resolutionPhotoUrl: string;
   machineReturned: boolean | null;
   partsUsed: Array<{ partId: string; quantity: number }>;
+  actualHours: string;
 };
 
 type HistoryRow = {
