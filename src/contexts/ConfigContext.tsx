@@ -555,20 +555,25 @@ export function ConfigProvider({ children }: { children: React.ReactNode }) {
   );
 
   const executeLubricationPlan = useCallback(
-    async (id: string, payload: { executedAt: string; notes?: string; nextDueDate?: string }) => {
+    async (id: string, payload: { executedAt: string; notes?: string; nextDueDate?: string; actualHours?: number }) => {
       const plan = lubricationPlans.find((p) => p.id === id);
       if (!plan) return;
 
       const nextDueDate = payload.nextDueDate || addDaysIso(payload.executedAt, plan.frequencyDays);
 
-      const { error: execError } = await supabase.from("lubrication_executions").insert({
+      const insertData: Record<string, unknown> = {
         plan_id: id,
         executed_at: payload.executedAt,
         notes: payload.notes || "",
         previous_due_date: plan.nextDueDate || null,
         next_due_date_after: nextDueDate,
         manually_adjusted: !!payload.nextDueDate,
-      });
+      };
+      if (payload.actualHours !== undefined) {
+        insertData.actual_hours = payload.actualHours;
+      }
+
+      const { error: execError } = await supabase.from("lubrication_executions").insert(insertData);
       if (execError) {
         console.error("Error inserting lubrication execution:", execError);
         return;
