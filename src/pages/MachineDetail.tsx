@@ -624,6 +624,7 @@ export default function MachineDetail() {
       photoUrl: ticketDraft.photoUrl,
       resolutionPhotoUrl: ticketDraft.resolutionPhotoUrl,
       partsUsed: ticketDraft.partsUsed,
+      actualHours: ticketDraft.actualHours ? Number(ticketDraft.actualHours) : undefined,
     });
 
     // If resolved and machine returned, resume the machine
