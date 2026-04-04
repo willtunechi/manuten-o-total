@@ -68,7 +68,7 @@ export function PartFormDialog({ open, onOpenChange, part, onSave }: Props) {
   }, [part, open, reset]);
 
   const onSubmit = (data: FormData) => {
-    onSave({ sku: data.sku!, description: data.description!, unit: data.unit!, location: data.location!, quantity: data.quantity!, minStock: data.minStock!, supplier: data.supplier!, unitCost: data.unitCost! });
+    onSave({ sku: data.sku!, description: data.description!, unit: data.unit!, location: data.location!, quantity: data.quantity!, minStock: data.minStock!, supplier: data.supplier!, unitCost: data.unitCost!, photoUrl });
     reset();
     onOpenChange(false);
   };
