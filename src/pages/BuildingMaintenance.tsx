@@ -3,7 +3,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, Building2, MapPin, Clock, CheckCircle2, PlayCircle } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Plus, Building2, MapPin, Clock, CheckCircle2, PlayCircle, User, Calendar } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "@/hooks/use-toast";
@@ -178,6 +179,107 @@ export default function BuildingMaintenance() {
         onSaved={load}
         assignedTo={userName}
       />
+
+      <Dialog open={!!detail} onOpenChange={(o) => !o && setDetail(null)}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          {detail && (() => {
+            const prio = PRIORITY_LABELS[detail.priority] || PRIORITY_LABELS.medium;
+            const stat = STATUS_LABELS[detail.status] || STATUS_LABELS.pending;
+            return (
+              <>
+                <DialogHeader>
+                  <p className="text-xs text-muted-foreground font-mono">MP-{String(detail.code).padStart(4, "0")}</p>
+                  <DialogTitle className="text-xl">{detail.title}</DialogTitle>
+                  <div className="flex flex-wrap gap-2 pt-2">
+                    <Badge variant="outline" className={prio.cls}>{prio.label}</Badge>
+                    <Badge variant="outline" className={stat.cls}>{stat.label}</Badge>
+                  </div>
+                </DialogHeader>
+
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-3 text-sm">
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                      <Building2 className="h-4 w-4 text-primary" />
+                      <span>Setor: <span className="text-foreground font-medium">{detail.building_sectors?.name || "-"}</span></span>
+                    </div>
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                      <MapPin className="h-4 w-4 text-primary" />
+                      <span>Localização: <span className="text-foreground font-medium">{detail.building_locations?.name || "-"}</span></span>
+                    </div>
+                    {detail.requested_by && (
+                      <div className="flex items-center gap-2 text-muted-foreground">
+                        <User className="h-4 w-4 text-primary" />
+                        <span>Solicitado por: <span className="text-foreground font-medium">{detail.requested_by}</span></span>
+                      </div>
+                    )}
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                      <Calendar className="h-4 w-4 text-primary" />
+                      <span>{new Date(detail.created_at).toLocaleString("pt-BR")}</span>
+                    </div>
+                    {detail.assigned_to && (
+                      <div className="flex items-center gap-2 text-muted-foreground">
+                        <User className="h-4 w-4 text-primary" />
+                        <span>Responsável: <span className="text-foreground font-medium">{detail.assigned_to}</span></span>
+                      </div>
+                    )}
+                    {detail.actual_hours != null && (
+                      <div className="flex items-center gap-2 text-muted-foreground">
+                        <Clock className="h-4 w-4 text-primary" />
+                        <span>Horas: <span className="text-foreground font-medium">{detail.actual_hours}h</span></span>
+                      </div>
+                    )}
+                  </div>
+
+                  {detail.description && (
+                    <div className="rounded-md border border-border bg-muted/30 p-3">
+                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">Descrição</p>
+                      <p className="text-sm whitespace-pre-wrap">{detail.description}</p>
+                    </div>
+                  )}
+
+                  {detail.photo_url && (
+                    <div>
+                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Foto da Solicitação</p>
+                      <img src={detail.photo_url} alt="Solicitação" className="w-full max-h-[400px] object-contain rounded-md border border-border bg-background" />
+                    </div>
+                  )}
+
+                  {detail.status === "resolved" && detail.resolution_notes && (
+                    <div className="rounded-md border border-emerald-500/30 bg-emerald-500/5 p-3 space-y-2">
+                      <p className="text-xs font-semibold text-emerald-400 uppercase tracking-wider">Resolução</p>
+                      <p className="text-sm whitespace-pre-wrap">{detail.resolution_notes}</p>
+                      {detail.resolved_at && (
+                        <p className="text-xs text-muted-foreground">Concluído em {new Date(detail.resolved_at).toLocaleString("pt-BR")}</p>
+                      )}
+                    </div>
+                  )}
+
+                  {detail.resolution_photo_url && (
+                    <div>
+                      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Foto da Resolução</p>
+                      <img src={detail.resolution_photo_url} alt="Resolução" className="w-full max-h-[400px] object-contain rounded-md border border-border bg-background" />
+                    </div>
+                  )}
+                </div>
+
+                <DialogFooter className="gap-2 flex-wrap">
+                  {canResolve && detail.status === "pending" && (
+                    <Button className="gap-1" onClick={() => { startWork(detail.id); setDetail(null); }}>
+                      <PlayCircle className="h-4 w-4" /> Iniciar Atendimento
+                    </Button>
+                  )}
+                  {canResolve && detail.status === "in_progress" && (
+                    <Button className="gap-1" onClick={() => { setResolveId(detail.id); setDetail(null); }}>
+                      <CheckCircle2 className="h-4 w-4" /> Resolver
+                    </Button>
+                  )}
+                  <Button variant="outline" onClick={() => setDetail(null)}>Fechar</Button>
+                </DialogFooter>
+              </>
+            );
+          })()}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
