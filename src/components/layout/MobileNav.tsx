@@ -23,7 +23,10 @@ export function MobileNav() {
   const primaryItems = allPrimaryItems.filter((item) => canAccessRoute(item.url));
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-40 bg-card border-t border-border safe-area-bottom">
+    <nav className="fixed bottom-0 left-0 right-0 z-40 bg-card/80 backdrop-blur-xl border-t border-border/30 safe-area-bottom">
+      {/* Top edge glow */}
+      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
+      
       <div className="flex justify-around items-center h-16">
         {primaryItems.map((item) => {
           const isActive = item.url === "/" ? location.pathname === "/" : location.pathname.startsWith(item.url);
@@ -33,13 +36,14 @@ export function MobileNav() {
               to={item.url}
               end={item.url === "/"}
               className={cn(
-                "flex flex-col items-center gap-1 px-2 py-1 text-[10px] font-medium min-w-0",
-                isActive ? "text-primary" : "text-muted-foreground"
+                "flex flex-col items-center gap-1 px-2 py-1 text-[10px] font-medium min-w-0 transition-all duration-200",
+                isActive ? "text-primary scale-110" : "text-muted-foreground"
               )}
               activeClassName=""
             >
-              <item.icon className="h-5 w-5" />
+              <item.icon className={cn("h-5 w-5", isActive && "drop-shadow-[0_0_8px_hsl(var(--primary)/0.5)]")} />
               <span className="truncate">{item.title}</span>
+              {isActive && <div className="w-1 h-1 rounded-full bg-primary glow-primary-intense" />}
             </NavLink>
           );
         })}

@@ -1,4 +1,4 @@
-﻿import {
+import {
   LayoutDashboard,
   Cog,
   ClipboardList,
@@ -64,18 +64,21 @@ export function AppSidebar({ collapsed, onToggle, mobileOpen, onMobileClose }: A
       <>
         {mobileOpen && (
           <div
-            className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm"
+            className="fixed inset-0 z-40 bg-black/60 backdrop-blur-md"
             onClick={onMobileClose}
           />
         )}
         <aside
           className={cn(
-            "fixed inset-y-0 left-0 z-50 w-64 bg-sidebar border-r border-border flex flex-col transition-transform duration-300",
+            "fixed inset-y-0 left-0 z-50 w-64 bg-sidebar/90 backdrop-blur-xl border-r border-border/30 flex flex-col transition-transform duration-300",
             mobileOpen ? "translate-x-0" : "-translate-x-full"
           )}
         >
-          <div className="flex items-center gap-2 px-3 h-14 border-b border-border">
-            <span className="font-bold text-lg text-primary tracking-tight truncate">Manutenção</span>
+          {/* Sidebar glow accent */}
+          <div className="absolute top-0 right-0 w-px h-full bg-gradient-to-b from-primary/20 via-transparent to-primary/10" />
+
+          <div className="flex items-center gap-2 px-3 h-14 border-b border-border/30">
+            <span className="font-bold text-lg text-gradient-primary tracking-tight truncate">Manutenção</span>
             <Button
               variant="ghost"
               size="icon"
@@ -85,7 +88,7 @@ export function AppSidebar({ collapsed, onToggle, mobileOpen, onMobileClose }: A
               <X className="h-5 w-5" />
             </Button>
           </div>
-          <nav className="flex-1 overflow-y-auto py-2 px-2 space-y-1">
+          <nav className="flex-1 overflow-y-auto py-2 px-2 space-y-0.5">
             {menuItems.map((item) => {
               const isActive = item.url === "/" ? location.pathname === "/" : location.pathname.startsWith(item.url);
               return (
@@ -94,16 +97,16 @@ export function AppSidebar({ collapsed, onToggle, mobileOpen, onMobileClose }: A
                   to={item.url}
                   end={item.url === "/"}
                   className={cn(
-                    "flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition-colors",
-                    "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+                    "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200",
+                    "hover:bg-sidebar-accent/80 hover:text-sidebar-accent-foreground",
                     isActive
-                      ? "bg-primary/10 text-primary border-l-2 border-primary"
-                      : "text-sidebar-foreground"
+                      ? "bg-primary/10 text-primary border-l-2 border-primary glow-primary"
+                      : "text-sidebar-foreground hover:translate-x-1"
                   )}
                   activeClassName=""
                   onClick={onMobileClose}
                 >
-                  <item.icon className={cn("h-5 w-5 shrink-0", isActive && "text-primary")} />
+                  <item.icon className={cn("h-5 w-5 shrink-0 transition-colors", isActive && "text-primary drop-shadow-[0_0_6px_hsl(var(--primary)/0.5)]")} />
                   <span className="truncate">{item.title}</span>
                 </NavLink>
               );
@@ -117,13 +120,16 @@ export function AppSidebar({ collapsed, onToggle, mobileOpen, onMobileClose }: A
   return (
     <aside
       className={cn(
-        "flex flex-col border-r border-border bg-sidebar h-screen sticky top-0 transition-all duration-300 z-30",
+        "flex flex-col border-r border-border/30 bg-sidebar/80 backdrop-blur-xl h-screen sticky top-0 transition-all duration-300 z-30 relative",
         collapsed ? "w-16" : "w-60"
       )}
     >
-      <div className="flex items-center gap-2 px-3 h-14 border-b border-border">
+      {/* Right edge glow */}
+      <div className="absolute top-0 right-0 w-px h-full bg-gradient-to-b from-primary/20 via-transparent to-primary/10" />
+
+      <div className="flex items-center gap-2 px-3 h-14 border-b border-border/30">
         {!collapsed && (
-          <span className="font-bold text-lg text-primary tracking-tight truncate">Manutenção</span>
+          <span className="font-bold text-lg text-gradient-primary tracking-tight truncate">Manutenção</span>
         )}
         <Button
           variant="ghost"
@@ -134,7 +140,7 @@ export function AppSidebar({ collapsed, onToggle, mobileOpen, onMobileClose }: A
           <ChevronLeft className={cn("h-4 w-4 transition-transform", collapsed && "rotate-180")} />
         </Button>
       </div>
-      <nav className="flex-1 overflow-y-auto py-2 px-2 space-y-1">
+      <nav className="flex-1 overflow-y-auto py-2 px-2 space-y-0.5">
         {menuItems.map((item) => {
           const isActive = item.url === "/" ? location.pathname === "/" : location.pathname.startsWith(item.url);
           return (
@@ -143,15 +149,15 @@ export function AppSidebar({ collapsed, onToggle, mobileOpen, onMobileClose }: A
               to={item.url}
               end={item.url === "/"}
               className={cn(
-                "flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition-colors",
-                "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+                "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200",
+                "hover:bg-sidebar-accent/80 hover:text-sidebar-accent-foreground",
                 isActive
-                  ? "bg-primary/10 text-primary border-l-2 border-primary"
-                  : "text-sidebar-foreground"
+                  ? "bg-primary/10 text-primary border-l-2 border-primary glow-primary"
+                  : "text-sidebar-foreground hover:translate-x-1"
               )}
               activeClassName=""
             >
-              <item.icon className={cn("h-5 w-5 shrink-0", isActive && "text-primary")} />
+              <item.icon className={cn("h-5 w-5 shrink-0 transition-colors", isActive && "text-primary drop-shadow-[0_0_6px_hsl(var(--primary)/0.5)]")} />
               {!collapsed && <span className="truncate">{item.title}</span>}
             </NavLink>
           );
