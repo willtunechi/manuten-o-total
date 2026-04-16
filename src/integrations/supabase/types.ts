@@ -47,6 +47,128 @@ export type Database = {
         }
         Relationships: []
       }
+      building_locations: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          sector_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          sector_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          sector_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "building_locations_sector_id_fkey"
+            columns: ["sector_id"]
+            isOneToOne: false
+            referencedRelation: "building_sectors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      building_maintenance_requests: {
+        Row: {
+          actual_hours: number | null
+          assigned_to: string | null
+          code: number
+          created_at: string
+          description: string
+          id: string
+          location_id: string | null
+          photo_url: string | null
+          priority: string
+          requested_by: string | null
+          resolution_notes: string | null
+          resolution_photo_url: string | null
+          resolved_at: string | null
+          sector_id: string | null
+          started_at: string | null
+          status: string
+          title: string
+        }
+        Insert: {
+          actual_hours?: number | null
+          assigned_to?: string | null
+          code?: number
+          created_at?: string
+          description?: string
+          id?: string
+          location_id?: string | null
+          photo_url?: string | null
+          priority?: string
+          requested_by?: string | null
+          resolution_notes?: string | null
+          resolution_photo_url?: string | null
+          resolved_at?: string | null
+          sector_id?: string | null
+          started_at?: string | null
+          status?: string
+          title?: string
+        }
+        Update: {
+          actual_hours?: number | null
+          assigned_to?: string | null
+          code?: number
+          created_at?: string
+          description?: string
+          id?: string
+          location_id?: string | null
+          photo_url?: string | null
+          priority?: string
+          requested_by?: string | null
+          resolution_notes?: string | null
+          resolution_photo_url?: string | null
+          resolved_at?: string | null
+          sector_id?: string | null
+          started_at?: string | null
+          status?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "building_maintenance_requests_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "building_locations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "building_maintenance_requests_sector_id_fkey"
+            columns: ["sector_id"]
+            isOneToOne: false
+            referencedRelation: "building_sectors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      building_sectors: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
       component_rules: {
         Row: {
           apply_mode: string
