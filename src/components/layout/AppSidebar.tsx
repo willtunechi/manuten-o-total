@@ -17,6 +17,7 @@ import {
   BookOpen,
   BarChart3,
   History,
+  Building2,
 } from "lucide-react";
 
 import { NavLink } from "@/components/NavLink";
@@ -36,6 +37,7 @@ const allMenuItems = [
   { title: "Preventivas", url: "/preventive-plans", icon: ShieldCheck },
   { title: "Checklists", url: "/checklists", icon: ListChecks },
   { title: "Lubrificação", url: "/lubrication", icon: Droplets },
+  { title: "Manutenção Predial", url: "/building-maintenance", icon: Building2 },
   { title: "Colaboradores", url: "/collaborators", icon: Users },
   { title: "Estoque", url: "/inventory", icon: Package },
   { title: "Compras", url: "/purchases", icon: ShoppingCart },
