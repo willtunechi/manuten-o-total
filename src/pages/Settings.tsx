@@ -8,7 +8,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Plus, Pencil, Trash2 } from "lucide-react";
-import { ThemeSettings } from "@/components/settings/ThemeSettings";
 import { PhotoUpload } from "@/components/forms/PhotoUpload";
 
 import { useData } from "@/contexts/DataContext";
@@ -212,11 +211,10 @@ export default function Settings() {
       </div>
 
       <Tabs defaultValue="machines" className="space-y-4">
-        <TabsList className="grid w-full md:w-[960px] grid-cols-4">
+        <TabsList className="grid w-full md:w-[720px] grid-cols-3">
           <TabsTrigger value="machines">Máquinas</TabsTrigger>
           <TabsTrigger value="components">Componentes</TabsTrigger>
           <TabsTrigger value="component_types">Tipos de Componentes</TabsTrigger>
-          <TabsTrigger value="appearance">Aparência</TabsTrigger>
         </TabsList>
 
         <TabsContent value="machines" className="space-y-4">
@@ -541,10 +539,6 @@ export default function Settings() {
               )}
             </CardContent>
           </Card>
-        </TabsContent>
-
-        <TabsContent value="appearance" className="space-y-4">
-          <ThemeSettings />
         </TabsContent>
       </Tabs>
     </div>
