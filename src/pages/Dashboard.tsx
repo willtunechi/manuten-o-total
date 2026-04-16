@@ -279,7 +279,7 @@ export default function Dashboard() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">Dashboard</h1>
+      <h1 className="text-2xl font-bold text-gradient-primary">Dashboard</h1>
         <p className="text-muted-foreground text-sm">KPIs de manutenção com filtros por período e tipo de máquina.</p>
       </div>
 
@@ -413,12 +413,12 @@ export default function Dashboard() {
 
 function MetricCard({ title, value, subtitle }: { title: string; value: string; subtitle: string }) {
   return (
-    <Card>
+    <Card className="border-shimmer group overflow-hidden">
       <CardHeader className="pb-2">
         <CardTitle className="text-sm text-muted-foreground">{title}</CardTitle>
       </CardHeader>
       <CardContent>
-        <p className="text-2xl font-bold">{value}</p>
+        <p className="text-2xl font-bold text-gradient-primary">{value}</p>
         <p className="text-xs text-muted-foreground mt-1">{subtitle}</p>
       </CardContent>
     </Card>
