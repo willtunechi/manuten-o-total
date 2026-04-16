@@ -98,23 +98,25 @@ export function useAuth() {
 
   // Route access control
   const canAccessRoute = (path: string): boolean => {
+    // Building maintenance is open to all authenticated users
+    if (path === "/building-maintenance" || path.startsWith("/building-maintenance")) return !!role;
     if (isAdmin || isSupervisor) return true;
 
     const match = (routes: string[]) =>
       routes.some((r) => path === r || (r !== "/" && path.startsWith(r)));
 
     if (role === "planejador") {
-      return match(["/", "/inventory", "/purchases", "/stock-entries", "/stock-count", "/registrations"]);
+      return match(["/", "/inventory", "/purchases", "/stock-entries", "/stock-count", "/registrations", "/building-maintenance"]);
     }
 
     if (role === "mechanic") {
-      return match(["/", "/machines", "/components", "/tickets", "/preventive-plans", "/checklists", "/lubrication", "/inventory", "/machine-history"]);
+      return match(["/", "/machines", "/components", "/tickets", "/preventive-plans", "/checklists", "/lubrication", "/inventory", "/machine-history", "/building-maintenance"]);
     }
 
     // Management is only for admin and supervisors (already handled by isAdmin || isSupervisor above)
 
     if (role === "operator") {
-      return match(["/machines", "/components", "/tickets"]);
+      return match(["/machines", "/components", "/tickets", "/building-maintenance"]);
     }
 
     return false;
