@@ -1,43 +1,31 @@
 
+The user wants a new "Manutenção Predial" (Building Maintenance) feature, separate from machine tickets. Let me plan this concisely.
 
-## Plano: Renomear "Logística" para "Planejador" e remover "Supervisor Logística"
+**Scope:**
+1. New "Cadastros" tabs: "Setor Predial" and "Localização Predial" (alongside existing Fornecedores/Localizações).
+2. New page `/building-maintenance` with:
+   - Request button (open new building maintenance request)
+   - List view to see/resolve requests (similar to tickets flow)
+3. Sidebar entry + route + role access.
 
-### Resumo
-- Renomear o perfil `logistica` para `planejador` em todo o sistema
-- Remover o perfil `supervisor_logistica` (o Planejador fica abaixo do Supervisor de Manutenção)
-- Atualizar banco de dados, tipos, labels, permissões e edge functions
+**Database:**
+- `building_sectors` (id, name, created_at)
+- `building_locations` (id, name, sector_id, created_at)
+- `building_maintenance_requests` (id, code serial, sector_id, location_id, title, description, priority, status [pending/in_progress/resolved], requested_by, assigned_to, photo_url, resolution_notes, resolution_photo_url, actual_hours, created_at, started_at, resolved_at)
+- RLS: authenticated full access (matches existing pattern)
+- Sequence for code (e.g., MP-0001)
 
-### Alterações
+**Frontend files:**
+- `src/pages/BuildingMaintenance.tsx` — single page with two tabs: "Solicitar/Lista" and uses dialogs for create + resolve. Filters by status.
+- `src/components/forms/BuildingRequestDialog.tsx` — create request (sector dropdown, location dropdown filtered by sector, title, description, priority, photo upload to `ticket-attachments`).
+- `src/components/forms/BuildingResolveDialog.tsx` — resolve (notes, photo, actual hours).
+- `src/pages/Registrations.tsx` — add 2 new tabs: "Setor Predial" with CRUD, "Localização Predial" with CRUD + sector selector.
+- `src/components/layout/AppSidebar.tsx` — add "Manutenção Predial" entry (icon: Building2).
+- `src/App.tsx` — register route.
+- `src/hooks/useAuth.tsx` — allow route for all roles (or admin/supervisor/planejador/technician — exclude operator from resolving but allow requesting). Simpler: allow all authenticated users; restrict resolve action by role inside the page.
 
-**1. Migração SQL**
-- Adicionar valor `planejador` ao enum `app_role`
-- Atualizar registros existentes de `logistica` → `planejador` e `supervisor_logistica` → remover/converter
-- Não é possível remover valores de enum no PostgreSQL, mas os valores antigos deixam de ser usados
+**Permissions:**
+- Anyone authenticated can create a request.
+- Only admin/supervisor/planejador/technician can mark in_progress/resolved.
 
-**2. `src/hooks/useAuth.tsx`**
-- Trocar `logistica` → `planejador` no tipo `AppRole`
-- Remover `supervisor_logistica` do tipo e de `SUPERVISOR_ROLES`
-- Atualizar `creatableRoles`: trocar label "Logística" → "Planejador", remover "Supervisor Logística"
-- Atualizar `canAccessRoute`: trocar checagem de `logistica` → `planejador`
-
-**3. Labels em múltiplos arquivos** (AppHeader, Settings, Mechanics, MechanicFormDialog)
-- Trocar `logistica: "Logística"` → `planejador: "Planejador"`
-- Remover `supervisor_logistica: "Supervisor Logística"`
-
-**4. `src/components/forms/MechanicFormDialog.tsx`**
-- Atualizar o schema zod: trocar `logistica` → `planejador`, remover `supervisor_logistica`
-- Atualizar lógica `isSupervisorRole` (remover checagem de `logistica`)
-
-**5. `src/pages/Mechanics.tsx`**
-- Atualizar `subordinateMap`: remover `supervisor_logistica` entry
-- Atualizar labels
-
-**6. `supabase/functions/create-user/index.ts`**
-- Remover `supervisor_logistica` de `SUPERVISOR_ROLES`
-- Trocar `logistica` → `planejador` em `SUBORDINATE_ROLES`
-
-**7. `src/integrations/supabase/types.ts`**
-- Atualizar tipos gerados para refletir as mudanças
-
-**8 arquivos** serão editados + 1 migração SQL criada.
-
+**No design changes** — reuse existing glass-card / 3D theme.
