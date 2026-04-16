@@ -53,6 +53,7 @@ export default function BuildingMaintenance() {
   const [requests, setRequests] = useState<Request[]>([]);
   const [createOpen, setCreateOpen] = useState(false);
   const [resolveId, setResolveId] = useState<string | null>(null);
+  const [detail, setDetail] = useState<Request | null>(null);
 
   const load = async () => {
     const { data } = await supabase
