@@ -134,37 +134,14 @@ function applyThemeToDOM(mode: ThemeMode, colors: ThemeColors) {
 }
 
 export function ThemeProvider({ children, isAdmin = false }: { children: React.ReactNode; isAdmin?: boolean }) {
-  const [mode, setModeState] = useState<ThemeMode>("light");
+  const [mode, setModeState] = useState<ThemeMode>("dark");
   const [colors, setColorsState] = useState<ThemeColors>(DEFAULT_COLORS);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [settingsId, setSettingsId] = useState<string | null>(null);
 
-  // Load theme from DB
+  // Force dark theme on mount — appearance customization removed
   useEffect(() => {
-    async function load() {
-      const { data, error } = await supabase
-        .from("theme_settings")
-        .select("*")
-        .limit(1)
-        .maybeSingle();
-
-      if (!error && data) {
-        const m = (data.theme_mode === "dark" ? "dark" : "light") as ThemeMode;
-        const c: ThemeColors = {
-          background: data.background_color || DEFAULT_COLORS.background,
-          primary: data.primary_color || DEFAULT_COLORS.primary,
-          secondary: data.secondary_color || DEFAULT_COLORS.secondary,
-          accent: data.accent_color || DEFAULT_COLORS.accent,
-          sidebar: data.sidebar_color || DEFAULT_COLORS.sidebar,
-        };
-        setModeState(m);
-        setColorsState(c);
-        setSettingsId(data.id);
-        applyThemeToDOM(m, c);
-      }
-      setLoading(false);
-    }
-    load();
+    applyThemeToDOM("dark", DEFAULT_COLORS);
   }, []);
 
   const setMode = useCallback((m: ThemeMode) => {
