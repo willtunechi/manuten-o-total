@@ -82,17 +82,17 @@ export default function BuildingMaintenance() {
         const prio = PRIORITY_LABELS[r.priority] || PRIORITY_LABELS.medium;
         const stat = STATUS_LABELS[r.status] || STATUS_LABELS.pending;
         return (
-          <Card key={r.id} className="bg-card border-border hover:border-primary/40 transition-all">
+          <Card key={r.id} className="bg-card border-border hover:border-primary/40 transition-all cursor-pointer group" onClick={() => setDetail(r)}>
             <CardContent className="p-4 space-y-3">
               <div className="flex items-start justify-between gap-2">
                 <div>
                   <p className="text-xs text-muted-foreground font-mono">MP-{String(r.code).padStart(4, "0")}</p>
-                  <h3 className="font-semibold text-sm leading-tight">{r.title}</h3>
+                  <h3 className="font-semibold text-sm leading-tight group-hover:text-primary transition-colors">{r.title}</h3>
                 </div>
                 <Badge variant="outline" className={prio.cls}>{prio.label}</Badge>
               </div>
 
-              <div className="flex flex-wrap gap-1 text-xs text-muted-foreground">
+              <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
                 <span className="flex items-center gap-1"><Building2 className="h-3 w-3" />{r.building_sectors?.name || "-"}</span>
                 <span className="flex items-center gap-1"><MapPin className="h-3 w-3" />{r.building_locations?.name || "-"}</span>
               </div>
@@ -113,21 +113,14 @@ export default function BuildingMaintenance() {
 
               {r.requested_by && <p className="text-xs text-muted-foreground">Solicitado por: <span className="text-foreground">{r.requested_by}</span></p>}
               {r.assigned_to && <p className="text-xs text-muted-foreground">Responsável: <span className="text-foreground">{r.assigned_to}</span></p>}
-              {r.status === "resolved" && r.resolution_notes && (
-                <div className="rounded-md bg-emerald-500/5 border border-emerald-500/20 p-2 text-xs">
-                  <p className="font-medium text-emerald-400 mb-1">Resolução:</p>
-                  <p className="text-muted-foreground">{r.resolution_notes}</p>
-                  {r.actual_hours != null && <p className="text-muted-foreground mt-1">⏱ {r.actual_hours}h</p>}
-                </div>
-              )}
 
               {canResolve && r.status === "pending" && (
-                <Button size="sm" className="w-full gap-1" onClick={() => startWork(r.id)}>
+                <Button size="sm" className="w-full gap-1" onClick={(e) => { e.stopPropagation(); startWork(r.id); }}>
                   <PlayCircle className="h-4 w-4" /> Iniciar Atendimento
                 </Button>
               )}
               {canResolve && r.status === "in_progress" && (
-                <Button size="sm" variant="default" className="w-full gap-1" onClick={() => setResolveId(r.id)}>
+                <Button size="sm" variant="default" className="w-full gap-1" onClick={(e) => { e.stopPropagation(); setResolveId(r.id); }}>
                   <CheckCircle2 className="h-4 w-4" /> Resolver
                 </Button>
               )}
