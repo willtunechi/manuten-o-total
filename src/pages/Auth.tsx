@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "@/hooks/use-toast";
-import logo from "@/assets/logo.png";
+
 
 export default function Auth() {
   const [email, setEmail] = useState("");
@@ -28,7 +28,6 @@ export default function Auth() {
     <div className="min-h-screen flex items-center justify-center bg-muted p-4">
       <Card className="w-full max-w-sm">
         <CardHeader className="text-center">
-          <img src={logo} alt="Logo" className="h-16 mx-auto mb-2" />
           <CardTitle>Entrar</CardTitle>
         </CardHeader>
         <CardContent>
