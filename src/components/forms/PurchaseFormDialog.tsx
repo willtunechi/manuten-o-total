@@ -113,6 +113,8 @@ export function PurchaseFormDialog({ open, onOpenChange, editData }: PurchaseFor
               <p className="text-xs text-destructive">Obrigatório para pedidos já realizados, aguardando entrega ou recebidos.</p>
             )}
           </div>
+          <div className="space-y-2">
+            <Label>Status</Label>
 
             <Select value={status} onValueChange={(v) => setStatus(v as PurchaseStatus)}>
               <SelectTrigger><SelectValue /></SelectTrigger>
