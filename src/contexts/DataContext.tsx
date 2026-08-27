@@ -55,7 +55,7 @@ interface DataContextType {
   updateMechanic: (id: string, m: Partial<Mechanic>) => void;
   removeMechanic: (id: string) => void;
   addPart: (p: Omit<Part, "id">) => void;
-  addPartSync: (p: Omit<Part, "id">) => Part;
+  addPartSync: (p: Omit<Part, "id">) => Promise<Part>;
   updatePart: (id: string, p: Partial<Part>) => void;
   removePart: (id: string) => void;
   addTicket: (t: Omit<Ticket, "id">) => void;
@@ -626,22 +626,23 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     toast({ title: "Peça cadastrada com sucesso" });
   }, [loadParts]);
 
-  const addPartSync = useCallback((p: Omit<Part, "id">): Part => {
-    const newPart: Part = { ...p, id: genId("p") };
-    // Fire and forget the DB insert, reload will pick it up
-    supabase.from("parts").insert({
+  const addPartSync = useCallback(async (p: Omit<Part, "id">): Promise<Part> => {
+    const { data, error } = await supabase.from("parts").insert({
       sku: p.sku || p.code || "", description: p.description || p.name || "",
       unit: p.unit || "un", location: p.location || "",
       quantity: p.quantity ?? p.stock ?? 0, min_stock: p.minStock || 0,
       supplier: p.supplier || "", unit_cost: p.unitCost ?? p.cost ?? 0,
-    }).then(({ data, error }) => {
-      if (!error && data) loadParts();
-      else loadParts(); // reload anyway to sync
-    });
-    // Return temp part for immediate UI use
+    }).select("id").single();
+    if (error || !data) {
+      toast({ title: "Erro ao cadastrar peça", description: error?.message, variant: "destructive" });
+      throw error ?? new Error("Falha ao cadastrar peça");
+    }
+    const newPart: Part = { ...p, id: data.id };
     setParts((prev) => [...prev, newPart]);
+    loadParts();
     return newPart;
   }, [loadParts]);
+
 
   const updatePart = useCallback(async (id: string, p: Partial<Part>) => {
     const update: Record<string, unknown> = {};
@@ -846,11 +847,12 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     });
     if (error) { toast({ title: "Erro ao registrar entrada", description: error.message, variant: "destructive" }); return; }
 
-    // Update part quantity
-    const part = parts.find((p) => p.id === e.partId);
-    if (part) {
-      await supabase.from("parts").update({ quantity: (part.quantity || 0) + e.quantity }).eq("id", e.partId);
+    // Update part quantity (read current value from DB to avoid stale state)
+    const { data: partRow } = await supabase.from("parts").select("quantity").eq("id", e.partId).maybeSingle();
+    if (partRow) {
+      await supabase.from("parts").update({ quantity: (Number(partRow.quantity) || 0) + e.quantity }).eq("id", e.partId);
     }
+
 
     // If linked to purchase order, update its status
     if (e.purchaseOrderId) {
