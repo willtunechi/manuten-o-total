@@ -626,22 +626,23 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     toast({ title: "Peça cadastrada com sucesso" });
   }, [loadParts]);
 
-  const addPartSync = useCallback((p: Omit<Part, "id">): Part => {
-    const newPart: Part = { ...p, id: genId("p") };
-    // Fire and forget the DB insert, reload will pick it up
-    supabase.from("parts").insert({
+  const addPartSync = useCallback(async (p: Omit<Part, "id">): Promise<Part> => {
+    const { data, error } = await supabase.from("parts").insert({
       sku: p.sku || p.code || "", description: p.description || p.name || "",
       unit: p.unit || "un", location: p.location || "",
       quantity: p.quantity ?? p.stock ?? 0, min_stock: p.minStock || 0,
       supplier: p.supplier || "", unit_cost: p.unitCost ?? p.cost ?? 0,
-    }).then(({ data, error }) => {
-      if (!error && data) loadParts();
-      else loadParts(); // reload anyway to sync
-    });
-    // Return temp part for immediate UI use
+    }).select("id").single();
+    if (error || !data) {
+      toast({ title: "Erro ao cadastrar peça", description: error?.message, variant: "destructive" });
+      throw error ?? new Error("Falha ao cadastrar peça");
+    }
+    const newPart: Part = { ...p, id: data.id };
     setParts((prev) => [...prev, newPart]);
+    loadParts();
     return newPart;
   }, [loadParts]);
+
 
   const updatePart = useCallback(async (id: string, p: Partial<Part>) => {
     const update: Record<string, unknown> = {};
