@@ -42,7 +42,10 @@ export function PurchaseFormDialog({ open, onOpenChange, editData }: PurchaseFor
     }
   }, [editData, open]);
 
+  const supplierRequired = ["ordered", "awaiting_delivery", "received"].includes(status);
+
   const handleSubmit = (e: React.FormEvent) => {
+
     e.preventDefault();
     const part = parts.find((p) => p.id === partId);
     const now = new Date().toISOString();
@@ -95,7 +98,9 @@ export function PurchaseFormDialog({ open, onOpenChange, editData }: PurchaseFor
             </div>
           </div>
           <div className="space-y-2">
-            <Label>Fornecedor</Label>
+            <Label>
+              Fornecedor {supplierRequired ? <span className="text-destructive">*</span> : <span className="text-xs text-muted-foreground">(opcional)</span>}
+            </Label>
             <Select value={supplier} onValueChange={setSupplier}>
               <SelectTrigger><SelectValue placeholder="Selecione o fornecedor" /></SelectTrigger>
               <SelectContent>
@@ -104,9 +109,13 @@ export function PurchaseFormDialog({ open, onOpenChange, editData }: PurchaseFor
                 ))}
               </SelectContent>
             </Select>
+            {supplierRequired && !supplier && (
+              <p className="text-xs text-destructive">Obrigatório para pedidos já realizados, aguardando entrega ou recebidos.</p>
+            )}
           </div>
           <div className="space-y-2">
             <Label>Status</Label>
+
             <Select value={status} onValueChange={(v) => setStatus(v as PurchaseStatus)}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
@@ -122,7 +131,7 @@ export function PurchaseFormDialog({ open, onOpenChange, editData }: PurchaseFor
           </div>
           <div className="flex justify-end gap-2">
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>
-            <Button type="submit" disabled={!partId}>Salvar</Button>
+            <Button type="submit" disabled={!partId || (supplierRequired && !supplier)}>Salvar</Button>
           </div>
         </form>
       </DialogContent>
