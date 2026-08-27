@@ -133,8 +133,9 @@ export function StockEntryFormDialog({ open, onOpenChange }: { open: boolean; on
   }, [open]);
 
   // ── Match or create a part for each NF-e item ─────────────────────────────
-  const processItems = useCallback((nfe: NFeData, xmlText: string, chave?: string): ItemResult[] => {
-    return nfe.items.map((item) => {
+  const processItems = useCallback(async (nfe: NFeData, xmlText: string, chave?: string): Promise<ItemResult[]> => {
+    const results: ItemResult[] = [];
+    for (const item of nfe.items) {
       // Try match by SKU (cProd) or description substring
       const match = parts.find(
         (p) =>
@@ -143,17 +144,18 @@ export function StockEntryFormDialog({ open, onOpenChange }: { open: boolean; on
       );
 
       if (match) {
-        return {
+        results.push({
           item,
           partId: match.id,
           partSku: match.sku || match.description,
           partDescription: match.description,
           isNew: false,
-        };
+        });
+        continue;
       }
 
-      // Create new part automatically
-      const newPart = addPartSync({
+      // Create new part automatically (awaits real DB id)
+      const newPart = await addPartSync({
         sku: item.cProd,
         description: item.xProd,
         unit: item.uCom || "un",
@@ -164,17 +166,18 @@ export function StockEntryFormDialog({ open, onOpenChange }: { open: boolean; on
         supplier: nfe.xNome || "",
       });
 
-      return {
+      results.push({
         item,
         partId: newPart.id,
         partSku: newPart.sku || item.cProd,
         partDescription: newPart.description,
         isNew: true,
-      };
-    });
+      });
+    }
+    return results;
   }, [parts, addPartSync]);
 
-  const applyXml = useCallback((text: string, fromChave?: string) => {
+  const applyXml = useCallback(async (text: string, fromChave?: string) => {
     setInvoiceXml(text);
     const parsed = parseNFeXml(text);
     if (!parsed) {
@@ -186,15 +189,20 @@ export function StockEntryFormDialog({ open, onOpenChange }: { open: boolean; on
     if (parsed.cnpjEmit) setScannedCnpj(parsed.cnpjEmit);
     if (fromChave || parsed.chNFe) setNfeAccessKey(fromChave ?? parsed.chNFe ?? "");
 
-    const results = processItems(parsed, text, fromChave);
-    setItemResults(results);
-    setProcessed(false);
+    try {
+      const results = await processItems(parsed, text, fromChave);
+      setItemResults(results);
+      setProcessed(false);
 
-    const newCount = results.filter((r) => r.isNew).length;
-    toast.success(
-      `NF-e ${parsed.nNF} — ${parsed.items.length} item(s) carregado(s)${newCount > 0 ? `, ${newCount} peça(s) nova(s) criada(s)` : ""}`
-    );
+      const newCount = results.filter((r) => r.isNew).length;
+      toast.success(
+        `NF-e ${parsed.nNF} — ${parsed.items.length} item(s) carregado(s)${newCount > 0 ? `, ${newCount} peça(s) nova(s) criada(s)` : ""}`
+      );
+    } catch (err) {
+      toast.error(`Erro ao cadastrar peças da NF-e: ${err instanceof Error ? err.message : String(err)}`);
+    }
   }, [processItems]);
+
 
   // ── Fetch XML via API ──────────────────────────────────────────────────────
   const fetchXmlFromApi = useCallback(async (chave: string) => {
