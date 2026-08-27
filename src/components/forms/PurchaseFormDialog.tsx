@@ -131,7 +131,7 @@ export function PurchaseFormDialog({ open, onOpenChange, editData }: PurchaseFor
           </div>
           <div className="flex justify-end gap-2">
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>
-            <Button type="submit" disabled={!partId}>Salvar</Button>
+            <Button type="submit" disabled={!partId || (supplierRequired && !supplier)}>Salvar</Button>
           </div>
         </form>
       </DialogContent>
