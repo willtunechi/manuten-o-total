@@ -55,7 +55,7 @@ interface DataContextType {
   updateMechanic: (id: string, m: Partial<Mechanic>) => void;
   removeMechanic: (id: string) => void;
   addPart: (p: Omit<Part, "id">) => void;
-  addPartSync: (p: Omit<Part, "id">) => Part;
+  addPartSync: (p: Omit<Part, "id">) => Promise<Part>;
   updatePart: (id: string, p: Partial<Part>) => void;
   removePart: (id: string) => void;
   addTicket: (t: Omit<Ticket, "id">) => void;
