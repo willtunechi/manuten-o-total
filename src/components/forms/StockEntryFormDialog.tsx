@@ -253,12 +253,12 @@ export function StockEntryFormDialog({ open, onOpenChange }: { open: boolean; on
   };
 
   // ── Submit: create one stock entry per item ───────────────────────────────
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (itemResults.length === 0) return;
 
-    itemResults.forEach((r) => {
-      addStockEntry({
+    for (const r of itemResults) {
+      await addStockEntry({
         partId: r.partId,
         quantity: Math.ceil(r.item.qCom),
         invoiceNumber: invoiceNumber || undefined,
@@ -271,11 +271,12 @@ export function StockEntryFormDialog({ open, onOpenChange }: { open: boolean; on
           r.item.vFrete > 0 ? `Frete: ${formatCurrency(r.item.vFrete)}` : "",
         ].filter(Boolean).join(" | "),
       });
-    });
+    }
     setProcessed(true);
     toast.success(`${itemResults.length} entrada(s) registrada(s) com sucesso!`);
     onOpenChange(false);
   };
+
 
   const hasDanfeInfo = !!(nfeAccessKey || nfeData || fetchingXml);
 
