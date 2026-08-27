@@ -42,7 +42,10 @@ export function PurchaseFormDialog({ open, onOpenChange, editData }: PurchaseFor
     }
   }, [editData, open]);
 
+  const supplierRequired = ["ordered", "awaiting_delivery", "received"].includes(status);
+
   const handleSubmit = (e: React.FormEvent) => {
+
     e.preventDefault();
     const part = parts.find((p) => p.id === partId);
     const now = new Date().toISOString();
