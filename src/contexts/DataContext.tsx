@@ -847,11 +847,12 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     });
     if (error) { toast({ title: "Erro ao registrar entrada", description: error.message, variant: "destructive" }); return; }
 
-    // Update part quantity
-    const part = parts.find((p) => p.id === e.partId);
-    if (part) {
-      await supabase.from("parts").update({ quantity: (part.quantity || 0) + e.quantity }).eq("id", e.partId);
+    // Update part quantity (read current value from DB to avoid stale state)
+    const { data: partRow } = await supabase.from("parts").select("quantity").eq("id", e.partId).maybeSingle();
+    if (partRow) {
+      await supabase.from("parts").update({ quantity: (Number(partRow.quantity) || 0) + e.quantity }).eq("id", e.partId);
     }
+
 
     // If linked to purchase order, update its status
     if (e.purchaseOrderId) {
