@@ -215,6 +215,32 @@ Deno.serve(async (req) => {
       });
     }
 
+    if (action === "delete") {
+      const { userId } = body;
+
+      if (!userId) {
+        return new Response(JSON.stringify({ error: "userId is required" }), {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      if (!isAdmin) {
+        return new Response(JSON.stringify({ error: "Only admins can delete users" }), {
+          status: 403,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      await adminClient.from("user_roles").delete().eq("user_id", userId);
+      const { error: deleteError } = await adminClient.auth.admin.deleteUser(userId);
+      if (deleteError) throw deleteError;
+
+      return new Response(JSON.stringify({ success: true }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     return new Response(JSON.stringify({ error: "Invalid action" }), {
       status: 400,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
