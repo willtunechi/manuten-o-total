@@ -15,7 +15,7 @@ export default function Auth() {
     e.preventDefault();
     setLoading(true);
     try {
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      const { error } = await supabase.auth.signInWithPassword({ email: email.includes("@") ? email.trim() : `${email.trim().toLowerCase()}@app.local`, password });
       if (error) throw error;
     } catch (error: any) {
       toast({ title: "Erro", description: error.message, variant: "destructive" });
@@ -33,8 +33,8 @@ export default function Auth() {
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <Input
-              type="email"
-              placeholder="Email"
+              type="text"
+              placeholder="Email ou usuário"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
