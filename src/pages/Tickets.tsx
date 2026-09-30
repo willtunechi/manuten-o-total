@@ -3,14 +3,16 @@ import { useSearchParams } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Plus, Pencil, Trash2, Eye } from "lucide-react";
+import { Plus, Trash2, Eye, Printer } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { PRIORITY_LABELS, OS_TYPE_LABELS, TICKET_STATUS_LABELS } from "@/data/types";
 import type { Priority, TicketStatus, Ticket } from "@/data/types";
 import { useData } from "@/contexts/DataContext";
 import { useAuth } from "@/hooks/useAuth";
 import { TicketFormDialog } from "@/components/forms/TicketFormDialog";
 import { DeleteConfirmDialog } from "@/components/forms/DeleteConfirmDialog";
+import { TicketPrintSheet } from "@/components/tickets/TicketPrintSheet";
 
 const priorityColor: Record<Priority, string> = {
   critical: "bg-priority-critical text-white",
@@ -104,6 +106,13 @@ export default function Tickets() {
     });
   };
 
+  const handlePriorityChange = (priority: Priority) => {
+    if (!viewing || !canEditMaintenanceRoles || viewing.priority === priority) return;
+    const updatedTicket = { ...viewing, priority };
+    setViewing(updatedTicket);
+    void updateTicket(viewing.id, { priority });
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -169,7 +178,7 @@ export default function Tickets() {
 
       {/* Detail Dialog */}
       <Dialog open={!!viewing} onOpenChange={(open) => { if (!open) setViewing(undefined); }}>
-        <DialogContent className="max-w-lg">
+        <DialogContent className="max-w-lg ticket-detail-dialog">
           <DialogHeader>
             <DialogTitle>
               {viewing?.code ? `OS-${String(viewing.code).padStart(4, '0')}` : 'Detalhes do Chamado'}
@@ -193,7 +202,20 @@ export default function Tickets() {
                 <div>
                   <span className="text-xs text-muted-foreground">Prioridade</span>
                   <div className="mt-0.5">
-                    <Badge className={priorityColor[viewing.priority]}>{PRIORITY_LABELS[viewing.priority]}</Badge>
+                    {canEditMaintenanceRoles ? (
+                      <Select value={viewing.priority} onValueChange={(value: Priority) => handlePriorityChange(value)}>
+                        <SelectTrigger className="h-9 w-full" aria-label="Editar prioridade do chamado">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {Object.entries(PRIORITY_LABELS).map(([value, label]) => (
+                            <SelectItem key={value} value={value}>{label}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    ) : (
+                      <Badge className={priorityColor[viewing.priority]}>{PRIORITY_LABELS[viewing.priority]}</Badge>
+                    )}
                   </div>
                 </div>
                 <div>
@@ -269,9 +291,18 @@ export default function Tickets() {
                 </div>
               )}
 
-              <div className="flex justify-end gap-2 pt-2">
+              <div className="flex justify-end gap-2 pt-2 no-print">
+                <Button variant="outline" size="sm" className="gap-2" onClick={() => window.print()}>
+                  <Printer className="h-4 w-4" /> Imprimir
+                </Button>
                 <Button variant="outline" size="sm" onClick={() => setViewing(undefined)}>Fechar</Button>
               </div>
+
+              <TicketPrintSheet
+                ticket={viewing}
+                assetLabel={getAssetLabel(viewing.machineId)}
+                parts={getPartsUsedLabels(viewing)}
+              />
             </div>
           )}
         </DialogContent>
