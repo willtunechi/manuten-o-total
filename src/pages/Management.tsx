@@ -225,9 +225,9 @@ export default function Management() {
                 <TableHeader>
                   <TableRow>
                     <TableHead>Colaborador</TableHead>
-                    <TableHead className="w-20">Função</TableHead>
+                    <TableHead className="w-24">Cargo</TableHead>
                     <TableHead className="w-16">Turno</TableHead>
-                    <TableHead className="w-24">Status</TableHead>
+                    <TableHead className="w-28">Horário</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -241,17 +241,12 @@ export default function Management() {
                     mechanics.map((m) => (
                       <TableRow key={m.id}>
                         <TableCell className="font-medium">{m.name}</TableCell>
-                        <TableCell className="text-xs capitalize">
-                          {m.role === "mechanic" ? "Mecânico" : m.role === "operator" ? "Operador" : m.role}
+                        <TableCell className="text-xs">
+                          {m.jobTitle || (m.role === "mechanic" ? "Mecânico" : m.role === "operator" ? "Operador" : m.role)}
                         </TableCell>
-                        <TableCell className="text-center">{m.shift}</TableCell>
+                        <TableCell className="text-center">{m.shift || "-"}</TableCell>
                         <TableCell>
-                          <Badge variant="outline" className={m.available
-                            ? "bg-green-500/20 text-green-400 border-green-500/30"
-                            : "bg-red-500/20 text-red-400 border-red-500/30"
-                          }>
-                            {m.available ? "Disponível" : "Ocupado"}
-                          </Badge>
+                          <Badge variant="outline">{shiftHours(m.shift)}</Badge>
                         </TableCell>
                       </TableRow>
                     ))
