@@ -344,6 +344,27 @@ export type Database = {
           },
         ]
       }
+      job_roles: {
+        Row: {
+          base_role: Database["public"]["Enums"]["app_role"]
+          created_at: string
+          id: string
+          name: string
+        }
+        Insert: {
+          base_role?: Database["public"]["Enums"]["app_role"]
+          created_at?: string
+          id?: string
+          name: string
+        }
+        Update: {
+          base_role?: Database["public"]["Enums"]["app_role"]
+          created_at?: string
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
       lines: {
         Row: {
           active: boolean
@@ -659,6 +680,7 @@ export type Database = {
           email: string | null
           hourly_cost: number
           id: string
+          job_title: string | null
           level: string
           name: string
           role: string
@@ -671,6 +693,7 @@ export type Database = {
           email?: string | null
           hourly_cost?: number
           id?: string
+          job_title?: string | null
           level?: string
           name: string
           role?: string
@@ -683,6 +706,7 @@ export type Database = {
           email?: string | null
           hourly_cost?: number
           id?: string
+          job_title?: string | null
           level?: string
           name?: string
           role?: string
@@ -904,6 +928,30 @@ export type Database = {
           },
         ]
       }
+      shifts: {
+        Row: {
+          created_at: string
+          end_time: string
+          id: string
+          name: string
+          start_time: string
+        }
+        Insert: {
+          created_at?: string
+          end_time?: string
+          id?: string
+          name: string
+          start_time?: string
+        }
+        Update: {
+          created_at?: string
+          end_time?: string
+          id?: string
+          name?: string
+          start_time?: string
+        }
+        Relationships: []
+      }
       stock_entries: {
         Row: {
           entry_date: string
@@ -954,6 +1002,33 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      stop_reasons: {
+        Row: {
+          counts_in_indicators: boolean
+          created_at: string
+          id: string
+          is_system: boolean
+          key: string
+          name: string
+        }
+        Insert: {
+          counts_in_indicators?: boolean
+          created_at?: string
+          id?: string
+          is_system?: boolean
+          key: string
+          name: string
+        }
+        Update: {
+          counts_in_indicators?: boolean
+          created_at?: string
+          id?: string
+          is_system?: boolean
+          key?: string
+          name?: string
+        }
+        Relationships: []
       }
       suppliers: {
         Row: {
