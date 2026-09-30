@@ -152,21 +152,34 @@ export default function Machines() {
 
   const sortByTag = <T extends { tag: string }>(arr: T[]) => [...arr].sort((a, b) => a.tag.localeCompare(b.tag, 'pt-BR', { numeric: true }));
 
-  const categorizedAssets = useMemo(() => ({
-    misturador: sortByTag(machines.filter((m) => m.type === "misturador" && byFilters(m))),
-    extrusora: sortByTag(machines.filter((m) => m.type === "extrusora" && byFilters(m))),
-    trocador_calor: sortByTag(components.filter((c) => c.type === "trocador_calor" && byFilters(c))),
-    bomba_vacuo: sortByTag(components.filter((c) => c.type === "bomba_vacuo" && byFilters(c))),
-    tanque_agua: sortByTag(components.filter((c) => c.type === "tanque_agua" && byFilters(c))),
-  }), [machines, components, statusFilter, nameFilter, typeFilter]);
+  const typeLabel = (type: string) =>
+    (MACHINE_TYPE_LABELS as Record<string, string>)[type] ||
+    componentTypes.find((ct) => ct.key === type)?.name ||
+    type;
 
-  const categories = [
-    { key: "misturador", label: MACHINE_TYPE_LABELS.misturador },
-    { key: "extrusora", label: MACHINE_TYPE_LABELS.extrusora },
-    { key: "trocador_calor", label: "Trocador de Calor" },
-    { key: "bomba_vacuo", label: "Bomba de Vácuo" },
-    { key: "tanque_agua", label: "Gala" },
-  ] as const;
+  // Agrupa máquinas E componentes pelo tipo, para nenhum ativo ficar de fora
+  const { categorizedAssets, categories } = useMemo(() => {
+    const grouped = new Map<string, Array<(typeof machines)[number] | (typeof components)[number]>>();
+    [...machines, ...components].forEach((asset) => {
+      if (!byFilters(asset as any)) return;
+      const list = grouped.get(asset.type) || [];
+      list.push(asset);
+      grouped.set(asset.type, list);
+    });
+
+    const preferredOrder = ["misturador", "extrusora", "trocador_calor", "bomba_vacuo", "tanque_agua"];
+    const keys = Array.from(grouped.keys()).sort((a, b) => {
+      const ia = preferredOrder.indexOf(a);
+      const ib = preferredOrder.indexOf(b);
+      if (ia !== -1 || ib !== -1) return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib);
+      return typeLabel(a).localeCompare(typeLabel(b), "pt-BR");
+    });
+
+    const result: Record<string, Array<(typeof machines)[number] | (typeof components)[number]>> = {};
+    keys.forEach((key) => { result[key] = sortByTag(grouped.get(key) || []); });
+
+    return { categorizedAssets: result, categories: keys.map((key) => ({ key, label: typeLabel(key) })) };
+  }, [machines, components, statusFilter, nameFilter, typeFilter, componentTypes]);
 
   const renderAssetColumn = (items: Array<(typeof machines)[number] | (typeof components)[number]>) => {
     if (items.length === 0) return null;
