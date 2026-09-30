@@ -230,7 +230,7 @@ export default function Machines() {
             <SelectTrigger><SelectValue placeholder="Filtrar por tipo" /></SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Todos</SelectItem>
-              {Object.entries(MACHINE_TYPE_LABELS).map(([value, label]) => (
+              {typeOptions.map(({ value, label }) => (
                 <SelectItem key={value} value={value}>{label}</SelectItem>
               ))}
             </SelectContent>
