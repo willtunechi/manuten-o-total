@@ -73,7 +73,16 @@ export default function Reports() {
     workOrders,
     purchaseOrders,
   } = useData();
+  const { stopReasons } = useData();
   const { lubricationPlans } = useConfig();
+  const ignoredStopReasons = useMemo(
+    () => new Set(stopReasons.filter((r) => !r.countsInIndicators).map((r) => r.key)),
+    [stopReasons],
+  );
+  const stopReasonLabels = useMemo(
+    () => Object.fromEntries(stopReasons.map((r) => [r.key, r.name])) as Record<string, string>,
+    [stopReasons],
+  );
 
   const now = useMemo(() => new Date(), []);
   const defaultStart = useMemo(() => { const d = new Date(now); d.setDate(d.getDate() - 30); return d; }, [now]);

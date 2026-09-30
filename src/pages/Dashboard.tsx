@@ -198,7 +198,7 @@ export default function Dashboard() {
 
     const availability = ((possibleHours - downtimeHours) / possibleHours) * 100;
     return clamp(availability, 0, 100);
-  }, [filteredAssets.length, now, periodDays, selectedStopRecords, windowStart]);
+  }, [filteredAssets.length, now, periodDays, selectedStopRecords, windowStart, ignoredStopReasons]);
 
   const partCostById = useMemo(() => {
     const map = new Map<string, number>();
