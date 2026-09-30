@@ -101,6 +101,7 @@ export interface Mechanic {
   email?: string;
   role: 'mechanic' | 'operator' | 'planejador' | 'supervisor_manutencao' | 'supervisor_operacoes';
   shift: string;
+  jobTitle?: string;
   level: 'junior' | 'mid' | 'senior';
   available: boolean;
   machineIds?: string[];
