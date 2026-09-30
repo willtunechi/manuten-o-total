@@ -117,7 +117,7 @@ export default function Reports() {
     assetStopRecords.forEach((r) => {
       if (!filteredAssetIds.has(r.assetId)) return;
       if (new Date(r.stoppedAt) < windowStart) return;
-      if (r.reason === 'no_production') return; // Não conta nos indicadores
+      if (r.reason && ignoredStopReasons.has(r.reason)) return; // Motivo marcado para não contar nos indicadores
       const end = r.resumedAt ? r.resumedAt : now.toISOString();
       const hours = hoursBetween(r.stoppedAt, end);
       map.set(r.assetId, (map.get(r.assetId) || 0) + hours);
