@@ -227,6 +227,10 @@
     visibility: hidden !important;
   }
 
+  #root > * {
+    display: none !important;
+  }
+
   body,
   #root {
     background: white !important;
@@ -236,6 +240,20 @@
   .ticket-print-sheet,
   .ticket-print-sheet * {
     visibility: visible !important;
+  }
+
+  [data-radix-popper-content-wrapper] {
+    display: none !important;
+  }
+
+  .ticket-detail-dialog {
+    position: static !important;
+    width: auto !important;
+    max-width: none !important;
+    transform: none !important;
+    border: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
   }
 
   .ticket-print-sheet {
