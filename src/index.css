@@ -227,10 +227,6 @@
     visibility: hidden !important;
   }
 
-  #root > * {
-    display: none !important;
-  }
-
   body,
   #root {
     background: white !important;
@@ -247,13 +243,22 @@
   }
 
   .ticket-detail-dialog {
-    position: static !important;
-    width: auto !important;
+    position: fixed !important;
+    inset: 0 !important;
+    display: block !important;
+    width: 100vw !important;
+    height: 100vh !important;
     max-width: none !important;
     transform: none !important;
     border: 0 !important;
     padding: 0 !important;
+    background: white !important;
     box-shadow: none !important;
+    animation: none !important;
+  }
+
+  .ticket-detail-dialog > *:not(.ticket-print-sheet) {
+    display: none !important;
   }
 
   .ticket-print-sheet {

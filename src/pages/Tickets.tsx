@@ -185,7 +185,8 @@ export default function Tickets() {
             </DialogTitle>
           </DialogHeader>
           {viewing && (
-            <div className="space-y-4">
+            <>
+            <div className="space-y-4 no-print">
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <span className="text-xs text-muted-foreground">Equipamento</span>
@@ -298,12 +299,13 @@ export default function Tickets() {
                 <Button variant="outline" size="sm" onClick={() => setViewing(undefined)}>Fechar</Button>
               </div>
 
-              <TicketPrintSheet
-                ticket={viewing}
-                assetLabel={getAssetLabel(viewing.machineId)}
-                parts={getPartsUsedLabels(viewing)}
-              />
             </div>
+            <TicketPrintSheet
+              ticket={viewing}
+              assetLabel={getAssetLabel(viewing.machineId)}
+              parts={getPartsUsedLabels(viewing)}
+            />
+            </>
           )}
         </DialogContent>
       </Dialog>
