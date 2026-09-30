@@ -3,16 +3,157 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, Pencil, Trash2, MapPin, Truck, Building2, Home } from "lucide-react";
+import { Plus, Pencil, Trash2, MapPin, Truck, Building2, Home, MonitorStop, Clock, BadgeCheck } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { DeleteConfirmDialog } from "@/components/forms/DeleteConfirmDialog";
+import { useData } from "@/contexts/DataContext";
+import type { StopReasonConfig, Shift, JobRole } from "@/data/types";
 
 interface Item { id: string; name: string }
 interface BuildingLocation extends Item { sector_id: string | null }
+
+const BASE_ROLE_OPTIONS = [
+  { value: "mechanic", label: "Mecânico" },
+  { value: "operator", label: "Operador" },
+  { value: "logistica", label: "Logística" },
+  { value: "planejador", label: "Planejador" },
+  { value: "supervisor_manutencao", label: "Supervisor de Manutenção" },
+  { value: "supervisor_operacoes", label: "Supervisor de Operações" },
+  { value: "supervisor_logistica", label: "Supervisor de Logística" },
+  { value: "admin", label: "Administrador" },
+] as const;
+
+const slugify = (name: string) =>
+  name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, "");
+
+function StopReasonDialog({ open, onOpenChange, initial, onSave }: {
+  open: boolean; onOpenChange: (o: boolean) => void;
+  initial: { name: string; countsInIndicators: boolean };
+  onSave: (name: string, counts: boolean) => Promise<boolean>;
+}) {
+  const [name, setName] = useState(initial.name);
+  const [counts, setCounts] = useState(initial.countsInIndicators);
+  useEffect(() => { if (open) { setName(initial.name); setCounts(initial.countsInIndicators); } }, [open, initial]);
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!name.trim()) return;
+    if (await onSave(name.trim(), counts)) onOpenChange(false);
+  };
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-sm">
+        <DialogHeader><DialogTitle>Motivo de Parada</DialogTitle></DialogHeader>
+        <form onSubmit={submit} className="space-y-4">
+          <div className="space-y-1">
+            <Label>Nome *</Label>
+            <Input value={name} onChange={(e) => setName(e.target.value)} autoFocus />
+          </div>
+          <div className="flex items-center justify-between rounded-md border p-3">
+            <div>
+              <Label className="cursor-pointer">Contar nos indicadores</Label>
+              <p className="text-xs text-muted-foreground">Desligue para paradas que não afetam a disponibilidade.</p>
+            </div>
+            <Switch checked={counts} onCheckedChange={setCounts} />
+          </div>
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>
+            <Button type="submit">Salvar</Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function ShiftDialog({ open, onOpenChange, initial, onSave }: {
+  open: boolean; onOpenChange: (o: boolean) => void;
+  initial: { name: string; startTime: string; endTime: string };
+  onSave: (name: string, start: string, end: string) => Promise<boolean>;
+}) {
+  const [name, setName] = useState(initial.name);
+  const [start, setStart] = useState(initial.startTime);
+  const [end, setEnd] = useState(initial.endTime);
+  useEffect(() => { if (open) { setName(initial.name); setStart(initial.startTime); setEnd(initial.endTime); } }, [open, initial]);
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!name.trim() || !start || !end) return;
+    if (await onSave(name.trim(), start, end)) onOpenChange(false);
+  };
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-sm">
+        <DialogHeader><DialogTitle>Turno</DialogTitle></DialogHeader>
+        <form onSubmit={submit} className="space-y-4">
+          <div className="space-y-1">
+            <Label>Nome *</Label>
+            <Input value={name} onChange={(e) => setName(e.target.value)} autoFocus placeholder="Ex.: Manhã" />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1">
+              <Label>Início *</Label>
+              <Input type="time" value={start} onChange={(e) => setStart(e.target.value)} />
+            </div>
+            <div className="space-y-1">
+              <Label>Fim *</Label>
+              <Input type="time" value={end} onChange={(e) => setEnd(e.target.value)} />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>
+            <Button type="submit">Salvar</Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function JobRoleDialog({ open, onOpenChange, initial, onSave }: {
+  open: boolean; onOpenChange: (o: boolean) => void;
+  initial: { name: string; baseRole: string };
+  onSave: (name: string, baseRole: string) => Promise<boolean>;
+}) {
+  const [name, setName] = useState(initial.name);
+  const [baseRole, setBaseRole] = useState(initial.baseRole);
+  useEffect(() => { if (open) { setName(initial.name); setBaseRole(initial.baseRole); } }, [open, initial]);
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!name.trim() || !baseRole) return;
+    if (await onSave(name.trim(), baseRole)) onOpenChange(false);
+  };
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-sm">
+        <DialogHeader><DialogTitle>Cargo</DialogTitle></DialogHeader>
+        <form onSubmit={submit} className="space-y-4">
+          <div className="space-y-1">
+            <Label>Nome do cargo *</Label>
+            <Input value={name} onChange={(e) => setName(e.target.value)} autoFocus placeholder="Ex.: Mecânico Eletricista" />
+          </div>
+          <div className="space-y-1">
+            <Label>Nível de acesso *</Label>
+            <Select value={baseRole} onValueChange={setBaseRole}>
+              <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
+              <SelectContent>
+                {BASE_ROLE_OPTIONS.map((o) => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}
+              </SelectContent>
+            </Select>
+            <p className="text-xs text-muted-foreground">Define as permissões de quem tiver este cargo.</p>
+          </div>
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>Cancelar</Button>
+            <Button type="submit">Salvar</Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
 
 function useSimpleTable(table: "locations" | "suppliers" | "building_sectors") {
   const [items, setItems] = useState<Item[]>([]);
