@@ -14,13 +14,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useData } from "@/contexts/DataContext";
 import type { Mechanic } from "@/data/types";
 
-const shiftOptions = ["Manhã", "Tarde", "Noite"] as const;
-
 const schema = z.object({
   name: z.string().min(3, "Mínimo 3 caracteres"),
   email: z.string().email("Email inválido").optional().or(z.literal("")),
   role: z.enum(["mechanic", "operator", "planejador", "supervisor_manutencao", "supervisor_operacoes"]),
-  shift: z.enum(shiftOptions).optional().default("Manhã"),
+  jobTitle: z.string().optional().default(""),
+  shift: z.string().min(1, "Selecione o turno").default("Manhã"),
   level: z.enum(["junior", "mid", "senior"]),
   available: z.boolean(),
   machineIds: z.array(z.string()).default([]),
