@@ -51,7 +51,11 @@ const levelLabels: Record<FormData["level"], string> = {
 };
 
 export function MechanicFormDialog({ open, onOpenChange, mechanic, onSave }: Props) {
-  const { machines, components } = useData();
+  const { machines, components, shifts, jobRoles } = useData();
+  const shiftOptions = shifts.length > 0
+    ? shifts.map((s) => ({ name: s.name, label: `${s.name} (${s.startTime} - ${s.endTime})` }))
+    : [{ name: "Manhã", label: "Manhã" }, { name: "Tarde", label: "Tarde" }, { name: "Noite", label: "Noite" }];
+  const defaultShift = shiftOptions[0].name;
   const {
     register,
     handleSubmit,
@@ -66,7 +70,8 @@ export function MechanicFormDialog({ open, onOpenChange, mechanic, onSave }: Pro
           name: mechanic.name,
           email: mechanic.email || "",
           role: mechanic.role,
-          shift: (mechanic.shift as FormData["shift"]) || "Manhã",
+          jobTitle: mechanic.jobTitle || "",
+          shift: mechanic.shift || defaultShift,
           level: mechanic.level,
           available: mechanic.available,
           machineIds: mechanic.machineIds || [],
@@ -77,7 +82,8 @@ export function MechanicFormDialog({ open, onOpenChange, mechanic, onSave }: Pro
           name: "",
           email: "",
           role: "mechanic",
-          shift: "Manhã",
+          jobTitle: "",
+          shift: defaultShift,
           level: "junior",
           available: true,
           machineIds: [],
@@ -94,7 +100,8 @@ export function MechanicFormDialog({ open, onOpenChange, mechanic, onSave }: Pro
             name: mechanic.name,
             email: mechanic.email || "",
             role: mechanic.role,
-            shift: (mechanic.shift as FormData["shift"]) || "Manhã",
+            jobTitle: mechanic.jobTitle || "",
+            shift: mechanic.shift || defaultShift,
             level: mechanic.level,
             available: mechanic.available,
             machineIds: mechanic.machineIds || [],
@@ -105,7 +112,8 @@ export function MechanicFormDialog({ open, onOpenChange, mechanic, onSave }: Pro
             name: "",
             email: "",
             role: "mechanic",
-            shift: "Manhã",
+            jobTitle: "",
+            shift: defaultShift,
             level: "junior",
             available: true,
             machineIds: [],
