@@ -145,6 +145,11 @@ export default function Machines() {
 
   const getAssetType = (item: any) => item.type;
 
+  const typeLabel = (type: string) =>
+    (MACHINE_TYPE_LABELS as Record<string, string>)[type] ||
+    componentTypes.find((ct) => ct.key === type)?.name ||
+    type;
+
   const typeOptions = useMemo(() => {
     const seen = new Set<string>();
     const opts: { value: string; label: string }[] = [];
@@ -163,11 +168,6 @@ export default function Machines() {
     (typeFilter === "all" || item.type === typeFilter);
 
   const sortByTag = <T extends { tag: string }>(arr: T[]) => [...arr].sort((a, b) => a.tag.localeCompare(b.tag, 'pt-BR', { numeric: true }));
-
-  const typeLabel = (type: string) =>
-    (MACHINE_TYPE_LABELS as Record<string, string>)[type] ||
-    componentTypes.find((ct) => ct.key === type)?.name ||
-    type;
 
   // Agrupa máquinas E componentes pelo tipo, para nenhum ativo ficar de fora
   const { categorizedAssets, categories } = useMemo(() => {
