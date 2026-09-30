@@ -319,6 +319,84 @@ export default function Registrations() {
   const suppliers = useSimpleTable("suppliers");
   const buildingSectors = useSimpleTable("building_sectors");
   const buildingLocations = useBuildingLocations();
+  const { stopReasons, shifts, jobRoles, reloadRegistrations } = useData();
+
+  const dbError = (error: { message: string } | null) => {
+    if (error) { toast({ title: "Erro", description: error.message, variant: "destructive" }); return true; }
+    return false;
+  };
+
+  // ── Motivos de parada ──
+  const [reasonOpen, setReasonOpen] = useState(false);
+  const [reasonInitial, setReasonInitial] = useState({ name: "", countsInIndicators: true });
+  const [reasonSave, setReasonSave] = useState<(n: string, c: boolean) => Promise<boolean>>(() => async () => true);
+
+  const addStopReason = async (name: string, counts: boolean) => {
+    const { error } = await supabase.from("stop_reasons").insert({ name, key: slugify(name), counts_in_indicators: counts });
+    if (dbError(error)) return false;
+    await reloadRegistrations(); return true;
+  };
+  const updateStopReason = async (id: string, name: string, counts: boolean) => {
+    const { error } = await supabase.from("stop_reasons").update({ name, counts_in_indicators: counts }).eq("id", id);
+    if (dbError(error)) return false;
+    await reloadRegistrations(); return true;
+  };
+  const openReasonAdd = () => { setReasonInitial({ name: "", countsInIndicators: true }); setReasonSave(() => addStopReason); setReasonOpen(true); };
+  const openReasonEdit = (r: StopReasonConfig) => {
+    setReasonInitial({ name: r.name, countsInIndicators: r.countsInIndicators });
+    setReasonSave(() => (n: string, c: boolean) => updateStopReason(r.id, n, c));
+    setReasonOpen(true);
+  };
+
+  // ── Turnos ──
+  const [shiftOpen, setShiftOpen] = useState(false);
+  const [shiftInitial, setShiftInitial] = useState({ name: "", startTime: "06:00", endTime: "14:00" });
+  const [shiftSave, setShiftSave] = useState<(n: string, s: string, e: string) => Promise<boolean>>(() => async () => true);
+
+  const addShift = async (name: string, start: string, end: string) => {
+    const { error } = await supabase.from("shifts").insert({ name, start_time: start, end_time: end });
+    if (dbError(error)) return false;
+    await reloadRegistrations(); return true;
+  };
+  const updateShift = async (id: string, name: string, start: string, end: string) => {
+    const { error } = await supabase.from("shifts").update({ name, start_time: start, end_time: end }).eq("id", id);
+    if (dbError(error)) return false;
+    await reloadRegistrations(); return true;
+  };
+  const openShiftAdd = () => { setShiftInitial({ name: "", startTime: "06:00", endTime: "14:00" }); setShiftSave(() => addShift); setShiftOpen(true); };
+  const openShiftEdit = (s: Shift) => {
+    setShiftInitial({ name: s.name, startTime: s.startTime, endTime: s.endTime });
+    setShiftSave(() => (n: string, st: string, en: string) => updateShift(s.id, n, st, en));
+    setShiftOpen(true);
+  };
+
+  // ── Cargos ──
+  const [roleOpen, setRoleOpen] = useState(false);
+  const [roleInitial, setRoleInitial] = useState({ name: "", baseRole: "mechanic" });
+  const [roleSave, setRoleSave] = useState<(n: string, b: string) => Promise<boolean>>(() => async () => true);
+
+  const addJobRole = async (name: string, baseRole: string) => {
+    const { error } = await supabase.from("job_roles").insert({ name, base_role: baseRole as JobRole["baseRole"] });
+    if (dbError(error)) return false;
+    await reloadRegistrations(); return true;
+  };
+  const updateJobRole = async (id: string, name: string, baseRole: string) => {
+    const { error } = await supabase.from("job_roles").update({ name, base_role: baseRole as JobRole["baseRole"] }).eq("id", id);
+    if (dbError(error)) return false;
+    await reloadRegistrations(); return true;
+  };
+  const openRoleAdd = () => { setRoleInitial({ name: "", baseRole: "mechanic" }); setRoleSave(() => addJobRole); setRoleOpen(true); };
+  const openRoleEdit = (r: JobRole) => {
+    setRoleInitial({ name: r.name, baseRole: r.baseRole });
+    setRoleSave(() => (n: string, b: string) => updateJobRole(r.id, n, b));
+    setRoleOpen(true);
+  };
+
+  const removeFrom = async (table: "stop_reasons" | "shifts" | "job_roles", id: string) => {
+    const { error } = await supabase.from(table).delete().eq("id", id);
+    if (dbError(error)) return;
+    await reloadRegistrations();
+  };
 
   const [formOpen, setFormOpen] = useState(false);
   const [formTitle, setFormTitle] = useState("");
