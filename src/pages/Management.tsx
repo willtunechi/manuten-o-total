@@ -26,7 +26,11 @@ const statusLabel: Record<string, string> = {
 };
 
 export default function Management() {
-  const { mechanics, tickets, machines, workOrders, planExecutions, maintenancePlans } = useData();
+  const { mechanics, tickets, machines, workOrders, planExecutions, maintenancePlans, shifts } = useData();
+  const shiftHours = (name?: string) => {
+    const found = shifts.find((s) => s.name === name);
+    return found ? `${found.startTime} - ${found.endTime}` : "-";
+  };
 
   // Open tickets sorted by priority
   const openTickets = useMemo(() => {
@@ -120,8 +124,8 @@ export default function Management() {
               <Users className="h-5 w-5 text-primary" />
             </div>
             <div>
-              <p className="text-2xl font-bold">{stats.availableMechanics}/{mechanics.length}</p>
-              <p className="text-xs text-muted-foreground">Disponíveis</p>
+              <p className="text-2xl font-bold">{mechanics.length}</p>
+              <p className="text-xs text-muted-foreground">Colaboradores</p>
             </div>
           </CardContent>
         </Card>
