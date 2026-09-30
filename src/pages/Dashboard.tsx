@@ -27,7 +27,11 @@ function clamp(value: number, min: number, max: number) {
 }
 
 export default function Dashboard() {
-  const { tickets, maintenancePlans, planExecutions, machines, components, parts, assetStopRecords } = useData();
+  const { tickets, maintenancePlans, planExecutions, machines, components, parts, assetStopRecords, stopReasons } = useData();
+  const ignoredStopReasons = useMemo(
+    () => new Set(stopReasons.filter((r) => !r.countsInIndicators).map((r) => r.key)),
+    [stopReasons],
+  );
   const now = useMemo(() => new Date(), []);
 
   const defaultStart = useMemo(() => { const d = new Date(now); d.setDate(d.getDate() - 30); return d; }, [now]);
@@ -185,7 +189,7 @@ export default function Dashboard() {
     const possibleHours = assetsCount * periodDays * 24;
 
     const downtimeHours = selectedStopRecords.reduce((sum, record) => {
-      if (record.reason === 'no_production') return sum; // Não conta nos indicadores
+      if (record.reason && ignoredStopReasons.has(record.reason)) return sum; // Motivo marcado para não contar nos indicadores
       const startMs = Math.max(new Date(record.stoppedAt).getTime(), windowStartMs);
       const endMs = Math.min(new Date(record.resumedAt || now.toISOString()).getTime(), nowMs);
       if (endMs <= startMs) return sum;
