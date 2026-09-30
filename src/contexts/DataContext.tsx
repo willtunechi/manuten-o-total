@@ -136,6 +136,9 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   const [assetStopRecords, setAssetStopRecords] = useState<AssetStopRecord[]>([]);
   const [components, setComponents] = useState<MachineComponent[]>([]);
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
+  const [stopReasons, setStopReasons] = useState<StopReasonConfig[]>([]);
+  const [shifts, setShifts] = useState<Shift[]>([]);
+  const [jobRoles, setJobRoles] = useState<JobRole[]>([]);
   const [userAssignedMachineIds, setUserAssignedMachineIds] = useState<string[] | null>(null);
   const [userAssignedComponentIds, setUserAssignedComponentIds] = useState<string[] | null>(null);
 
@@ -393,6 +396,23 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       description: r.description || undefined,
       maintenanceType: r.maintenance_type as AssetStopRecord["maintenanceType"],
     })));
+  }, []);
+
+  const loadRegistrations = useCallback(async () => {
+    const [{ data: reasons }, { data: shiftRows }, { data: roleRows }] = await Promise.all([
+      supabase.from("stop_reasons").select("*").order("name"),
+      supabase.from("shifts").select("*").order("name"),
+      supabase.from("job_roles").select("*").order("name"),
+    ]);
+    setStopReasons((reasons || []).map((r) => ({
+      id: r.id,
+      key: r.key,
+      name: r.name,
+      countsInIndicators: r.counts_in_indicators,
+      isSystem: r.is_system,
+    })));
+    setShifts((shiftRows || []).map((s) => ({ id: s.id, name: s.name, startTime: s.start_time, endTime: s.end_time })));
+    setJobRoles((roleRows || []).map((r) => ({ id: r.id, name: r.name, baseRole: r.base_role })));
   }, []);
 
   const loadSuppliers = useCallback(async () => {
