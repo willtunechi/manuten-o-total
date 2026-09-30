@@ -14,13 +14,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useData } from "@/contexts/DataContext";
 import type { Mechanic } from "@/data/types";
 
-const shiftOptions = ["Manhã", "Tarde", "Noite"] as const;
-
 const schema = z.object({
   name: z.string().min(3, "Mínimo 3 caracteres"),
   email: z.string().email("Email inválido").optional().or(z.literal("")),
   role: z.enum(["mechanic", "operator", "planejador", "supervisor_manutencao", "supervisor_operacoes"]),
-  shift: z.enum(shiftOptions).optional().default("Manhã"),
+  jobTitle: z.string().optional().default(""),
+  shift: z.string().min(1, "Selecione o turno").default("Manhã"),
   level: z.enum(["junior", "mid", "senior"]),
   available: z.boolean(),
   machineIds: z.array(z.string()).default([]),
@@ -52,7 +51,11 @@ const levelLabels: Record<FormData["level"], string> = {
 };
 
 export function MechanicFormDialog({ open, onOpenChange, mechanic, onSave }: Props) {
-  const { machines, components } = useData();
+  const { machines, components, shifts, jobRoles } = useData();
+  const shiftOptions = shifts.length > 0
+    ? shifts.map((s) => ({ name: s.name, label: `${s.name} (${s.startTime} - ${s.endTime})` }))
+    : [{ name: "Manhã", label: "Manhã" }, { name: "Tarde", label: "Tarde" }, { name: "Noite", label: "Noite" }];
+  const defaultShift = shiftOptions[0].name;
   const {
     register,
     handleSubmit,
@@ -67,7 +70,8 @@ export function MechanicFormDialog({ open, onOpenChange, mechanic, onSave }: Pro
           name: mechanic.name,
           email: mechanic.email || "",
           role: mechanic.role,
-          shift: (mechanic.shift as FormData["shift"]) || "Manhã",
+          jobTitle: mechanic.jobTitle || "",
+          shift: mechanic.shift || defaultShift,
           level: mechanic.level,
           available: mechanic.available,
           machineIds: mechanic.machineIds || [],
@@ -78,7 +82,8 @@ export function MechanicFormDialog({ open, onOpenChange, mechanic, onSave }: Pro
           name: "",
           email: "",
           role: "mechanic",
-          shift: "Manhã",
+          jobTitle: "",
+          shift: defaultShift,
           level: "junior",
           available: true,
           machineIds: [],
@@ -95,7 +100,8 @@ export function MechanicFormDialog({ open, onOpenChange, mechanic, onSave }: Pro
             name: mechanic.name,
             email: mechanic.email || "",
             role: mechanic.role,
-            shift: (mechanic.shift as FormData["shift"]) || "Manhã",
+            jobTitle: mechanic.jobTitle || "",
+            shift: mechanic.shift || defaultShift,
             level: mechanic.level,
             available: mechanic.available,
             machineIds: mechanic.machineIds || [],
@@ -106,7 +112,8 @@ export function MechanicFormDialog({ open, onOpenChange, mechanic, onSave }: Pro
             name: "",
             email: "",
             role: "mechanic",
-            shift: "Manhã",
+            jobTitle: "",
+            shift: defaultShift,
             level: "junior",
             available: true,
             machineIds: [],
@@ -187,6 +194,7 @@ export function MechanicFormDialog({ open, onOpenChange, mechanic, onSave }: Pro
       name: data.name,
       email: data.email || undefined,
       role: data.role,
+      jobTitle: data.jobTitle || undefined,
       shift: data.shift,
       level: data.level,
       available: data.available,
@@ -259,6 +267,36 @@ export function MechanicFormDialog({ open, onOpenChange, mechanic, onSave }: Pro
           </div>
 
           <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-1">
+              <Label>Cargo</Label>
+              <Select
+                value={watch("jobTitle") || ""}
+                onValueChange={(value) => {
+                  setValue("jobTitle", value);
+                  const found = jobRoles.find((r) => r.name === value);
+                  if (found && found.baseRole !== "admin" && found.baseRole !== "logistica" && found.baseRole !== "supervisor_logistica") {
+                    setValue("role", found.baseRole as FormData["role"]);
+                  }
+                }}
+              >
+                <SelectTrigger><SelectValue placeholder={jobRoles.length ? "Selecione o cargo" : "Cadastre cargos em Cadastros"} /></SelectTrigger>
+                <SelectContent>
+                  {jobRoles.map((r) => <SelectItem key={r.id} value={r.name}>{r.name}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-1">
+              <Label>Turno / Horário de trabalho *</Label>
+              <Select value={watch("shift")} onValueChange={(value) => setValue("shift", value)}>
+                <SelectTrigger><SelectValue placeholder="Selecione o turno" /></SelectTrigger>
+                <SelectContent>
+                  {shiftOptions.map((s) => <SelectItem key={s.name} value={s.name}>{s.label}</SelectItem>)}
+                </SelectContent>
+              </Select>
+              {errors.shift && <p className="text-xs text-destructive">{errors.shift.message}</p>}
+            </div>
+
             <div className="space-y-1">
               <Label>Custo por Hora (R$)</Label>
               <Input {...register("hourlyCost")} type="number" step="0.01" min="0" placeholder="0.00" />

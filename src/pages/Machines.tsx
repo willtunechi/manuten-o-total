@@ -12,7 +12,7 @@ type StatusFilter = "all" | keyof typeof MACHINE_STATUS_LABELS;
 export default function Machines() {
   const isMobile = useIsMobile();
   const { machines: allMachines, components: allComponents, maintenancePlans, planExecutions, tickets, userAssignedMachineIds, userAssignedComponentIds } = useData();
-  const { lubricationPlans: allLubricationPlans } = useConfig();
+  const { lubricationPlans: allLubricationPlans, componentTypes } = useConfig();
 
   const rawMachines = userAssignedMachineIds !== null
     ? allMachines.filter((m) => userAssignedMachineIds.includes(m.id))
@@ -145,6 +145,23 @@ export default function Machines() {
 
   const getAssetType = (item: any) => item.type;
 
+  const typeLabel = (type: string) =>
+    (MACHINE_TYPE_LABELS as Record<string, string>)[type] ||
+    componentTypes.find((ct) => ct.key === type)?.name ||
+    type;
+
+  const typeOptions = useMemo(() => {
+    const seen = new Set<string>();
+    const opts: { value: string; label: string }[] = [];
+    Object.entries(MACHINE_TYPE_LABELS).forEach(([value, label]) => { seen.add(value); opts.push({ value, label }); });
+    [...machines, ...components].forEach((a) => {
+      if (seen.has(a.type)) return;
+      seen.add(a.type);
+      opts.push({ value: a.type, label: typeLabel(a.type) });
+    });
+    return opts;
+  }, [machines, components, componentTypes]);
+
   const byFilters = <T extends { id: string; status: keyof typeof MACHINE_STATUS_LABELS; type: string }>(item: T) =>
     (statusFilter === "all" || item.status === statusFilter) &&
     (nameFilter === "all" || item.id === nameFilter) &&
@@ -152,21 +169,29 @@ export default function Machines() {
 
   const sortByTag = <T extends { tag: string }>(arr: T[]) => [...arr].sort((a, b) => a.tag.localeCompare(b.tag, 'pt-BR', { numeric: true }));
 
-  const categorizedAssets = useMemo(() => ({
-    misturador: sortByTag(machines.filter((m) => m.type === "misturador" && byFilters(m))),
-    extrusora: sortByTag(machines.filter((m) => m.type === "extrusora" && byFilters(m))),
-    trocador_calor: sortByTag(components.filter((c) => c.type === "trocador_calor" && byFilters(c))),
-    bomba_vacuo: sortByTag(components.filter((c) => c.type === "bomba_vacuo" && byFilters(c))),
-    tanque_agua: sortByTag(components.filter((c) => c.type === "tanque_agua" && byFilters(c))),
-  }), [machines, components, statusFilter, nameFilter, typeFilter]);
+  // Agrupa máquinas E componentes pelo tipo, para nenhum ativo ficar de fora
+  const { categorizedAssets, categories } = useMemo(() => {
+    const grouped = new Map<string, Array<(typeof machines)[number] | (typeof components)[number]>>();
+    [...machines, ...components].forEach((asset) => {
+      if (!byFilters(asset as any)) return;
+      const list = grouped.get(asset.type) || [];
+      list.push(asset);
+      grouped.set(asset.type, list);
+    });
 
-  const categories = [
-    { key: "misturador", label: MACHINE_TYPE_LABELS.misturador },
-    { key: "extrusora", label: MACHINE_TYPE_LABELS.extrusora },
-    { key: "trocador_calor", label: "Trocador de Calor" },
-    { key: "bomba_vacuo", label: "Bomba de Vácuo" },
-    { key: "tanque_agua", label: "Gala" },
-  ] as const;
+    const preferredOrder = ["misturador", "extrusora", "trocador_calor", "bomba_vacuo", "tanque_agua"];
+    const keys = Array.from(grouped.keys()).sort((a, b) => {
+      const ia = preferredOrder.indexOf(a);
+      const ib = preferredOrder.indexOf(b);
+      if (ia !== -1 || ib !== -1) return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib);
+      return typeLabel(a).localeCompare(typeLabel(b), "pt-BR");
+    });
+
+    const result: Record<string, Array<(typeof machines)[number] | (typeof components)[number]>> = {};
+    keys.forEach((key) => { result[key] = sortByTag(grouped.get(key) || []); });
+
+    return { categorizedAssets: result, categories: keys.map((key) => ({ key, label: typeLabel(key) })) };
+  }, [machines, components, statusFilter, nameFilter, typeFilter, componentTypes]);
 
   const renderAssetColumn = (items: Array<(typeof machines)[number] | (typeof components)[number]>) => {
     if (items.length === 0) return null;
@@ -217,7 +242,7 @@ export default function Machines() {
             <SelectTrigger><SelectValue placeholder="Filtrar por tipo" /></SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Todos</SelectItem>
-              {Object.entries(MACHINE_TYPE_LABELS).map(([value, label]) => (
+              {typeOptions.map(({ value, label }) => (
                 <SelectItem key={value} value={value}>{label}</SelectItem>
               ))}
             </SelectContent>

@@ -21,6 +21,9 @@ import type {
   MachineComponent,
   MachineStatus,
   StopReason,
+  StopReasonConfig,
+  Shift,
+  JobRole,
   AssetStopRecord,
   WorkOrder,
   WorkOrderType,
@@ -30,6 +33,10 @@ import { toast } from "@/hooks/use-toast";
 type Supplier = { id: string; name: string };
 
 interface DataContextType {
+  stopReasons: StopReasonConfig[];
+  shifts: Shift[];
+  jobRoles: JobRole[];
+  reloadRegistrations: () => Promise<void>;
   machines: Machine[];
   mechanics: Mechanic[];
   parts: Part[];
@@ -129,6 +136,9 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   const [assetStopRecords, setAssetStopRecords] = useState<AssetStopRecord[]>([]);
   const [components, setComponents] = useState<MachineComponent[]>([]);
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
+  const [stopReasons, setStopReasons] = useState<StopReasonConfig[]>([]);
+  const [shifts, setShifts] = useState<Shift[]>([]);
+  const [jobRoles, setJobRoles] = useState<JobRole[]>([]);
   const [userAssignedMachineIds, setUserAssignedMachineIds] = useState<string[] | null>(null);
   const [userAssignedComponentIds, setUserAssignedComponentIds] = useState<string[] | null>(null);
 
@@ -180,6 +190,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       email: m.email || undefined,
       role: m.role as Mechanic["role"],
       shift: m.shift,
+      jobTitle: (m as any).job_title || undefined,
       level: m.level as Mechanic["level"],
       available: m.available,
       canExecuteChecklist: m.can_execute_checklist,
@@ -388,6 +399,23 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     })));
   }, []);
 
+  const loadRegistrations = useCallback(async () => {
+    const [{ data: reasons }, { data: shiftRows }, { data: roleRows }] = await Promise.all([
+      supabase.from("stop_reasons").select("*").order("name"),
+      supabase.from("shifts").select("*").order("name"),
+      supabase.from("job_roles").select("*").order("name"),
+    ]);
+    setStopReasons((reasons || []).map((r) => ({
+      id: r.id,
+      key: r.key,
+      name: r.name,
+      countsInIndicators: r.counts_in_indicators,
+      isSystem: r.is_system,
+    })));
+    setShifts((shiftRows || []).map((s) => ({ id: s.id, name: s.name, startTime: s.start_time, endTime: s.end_time })));
+    setJobRoles((roleRows || []).map((r) => ({ id: r.id, name: r.name, baseRole: r.base_role })));
+  }, []);
+
   const loadSuppliers = useCallback(async () => {
     const { data, error } = await supabase.from("suppliers").select("*").order("name");
     if (error) { console.error("load suppliers:", error); return; }
@@ -470,6 +498,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     loadWorkOrders();
     loadAssetStopRecords();
     loadSuppliers();
+    loadRegistrations();
   }, []);
 
   // ─── MACHINES ──────────────────────────────────────────────
@@ -557,6 +586,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   const addMechanic = useCallback(async (m: Omit<Mechanic, "id">) => {
     const { data, error } = await supabase.from("mechanics").insert({
       name: m.name, email: m.email || null, role: m.role, shift: m.shift,
+      job_title: m.jobTitle || null,
       level: m.level, available: m.available,
       can_execute_checklist: m.canExecuteChecklist ?? false,
       can_execute_preventive: m.canExecutePreventive ?? false,
@@ -579,6 +609,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     if (m.email !== undefined) updateData.email = m.email || null;
     if (m.role !== undefined) updateData.role = m.role;
     if (m.shift !== undefined) updateData.shift = m.shift;
+    if (m.jobTitle !== undefined) updateData.job_title = m.jobTitle || null;
     if (m.level !== undefined) updateData.level = m.level;
     if (m.available !== undefined) updateData.available = m.available;
     if (m.canExecuteChecklist !== undefined) updateData.can_execute_checklist = m.canExecuteChecklist;
@@ -1203,6 +1234,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
         machines, mechanics, parts, tickets, preventivePlans, failures, notifications,
         purchaseOrders, stockEntries, inventoryCounts, checklistTemplates,
         maintenancePlans, planExecutions, workOrders, assetStopRecords, suppliers,
+        stopReasons, shifts, jobRoles, reloadRegistrations: loadRegistrations,
         userAssignedMachineIds, userAssignedComponentIds,
         addMachine, updateMachine, removeMachine,
         addMechanic, updateMechanic, removeMechanic,

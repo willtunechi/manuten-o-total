@@ -26,7 +26,11 @@ const statusLabel: Record<string, string> = {
 };
 
 export default function Management() {
-  const { mechanics, tickets, machines, workOrders, planExecutions, maintenancePlans } = useData();
+  const { mechanics, tickets, machines, workOrders, planExecutions, maintenancePlans, shifts } = useData();
+  const shiftHours = (name?: string) => {
+    const found = shifts.find((s) => s.name === name);
+    return found ? `${found.startTime} - ${found.endTime}` : "-";
+  };
 
   // Open tickets sorted by priority
   const openTickets = useMemo(() => {
@@ -98,7 +102,7 @@ export default function Management() {
 
   // KPI stats
   const stats = useMemo(() => {
-    const availableMechanics = mechanics.filter((m) => m.available).length;
+    const availableMechanics = mechanics.length;
     const criticalTickets = openTickets.filter((t) => t.priority === "critical" || t.priority === "high").length;
     const resolvedThisWeek = recentResolved.length;
     const activeOSCount = activeWorkOrders.length;
@@ -120,8 +124,8 @@ export default function Management() {
               <Users className="h-5 w-5 text-primary" />
             </div>
             <div>
-              <p className="text-2xl font-bold">{stats.availableMechanics}/{mechanics.length}</p>
-              <p className="text-xs text-muted-foreground">Disponíveis</p>
+              <p className="text-2xl font-bold">{mechanics.length}</p>
+              <p className="text-xs text-muted-foreground">Colaboradores</p>
             </div>
           </CardContent>
         </Card>
@@ -225,9 +229,9 @@ export default function Management() {
                 <TableHeader>
                   <TableRow>
                     <TableHead>Colaborador</TableHead>
-                    <TableHead className="w-20">Função</TableHead>
+                    <TableHead className="w-24">Cargo</TableHead>
                     <TableHead className="w-16">Turno</TableHead>
-                    <TableHead className="w-24">Status</TableHead>
+                    <TableHead className="w-28">Horário</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -241,17 +245,12 @@ export default function Management() {
                     mechanics.map((m) => (
                       <TableRow key={m.id}>
                         <TableCell className="font-medium">{m.name}</TableCell>
-                        <TableCell className="text-xs capitalize">
-                          {m.role === "mechanic" ? "Mecânico" : m.role === "operator" ? "Operador" : m.role}
+                        <TableCell className="text-xs">
+                          {m.jobTitle || (m.role === "mechanic" ? "Mecânico" : m.role === "operator" ? "Operador" : m.role)}
                         </TableCell>
-                        <TableCell className="text-center">{m.shift}</TableCell>
+                        <TableCell className="text-center">{m.shift || "-"}</TableCell>
                         <TableCell>
-                          <Badge variant="outline" className={m.available
-                            ? "bg-green-500/20 text-green-400 border-green-500/30"
-                            : "bg-red-500/20 text-red-400 border-red-500/30"
-                          }>
-                            {m.available ? "Disponível" : "Ocupado"}
-                          </Badge>
+                          <Badge variant="outline">{shiftHours(m.shift)}</Badge>
                         </TableCell>
                       </TableRow>
                     ))

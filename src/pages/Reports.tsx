@@ -73,7 +73,16 @@ export default function Reports() {
     workOrders,
     purchaseOrders,
   } = useData();
+  const { stopReasons } = useData();
   const { lubricationPlans } = useConfig();
+  const ignoredStopReasons = useMemo(
+    () => new Set(stopReasons.filter((r) => !r.countsInIndicators).map((r) => r.key)),
+    [stopReasons],
+  );
+  const stopReasonLabels = useMemo(
+    () => Object.fromEntries(stopReasons.map((r) => [r.key, r.name])) as Record<string, string>,
+    [stopReasons],
+  );
 
   const now = useMemo(() => new Date(), []);
   const defaultStart = useMemo(() => { const d = new Date(now); d.setDate(d.getDate() - 30); return d; }, [now]);
@@ -108,7 +117,7 @@ export default function Reports() {
     assetStopRecords.forEach((r) => {
       if (!filteredAssetIds.has(r.assetId)) return;
       if (new Date(r.stoppedAt) < windowStart) return;
-      if (r.reason === 'no_production') return; // Não conta nos indicadores
+      if (r.reason && ignoredStopReasons.has(r.reason)) return; // Motivo marcado para não contar nos indicadores
       const end = r.resumedAt ? r.resumedAt : now.toISOString();
       const hours = hoursBetween(r.stoppedAt, end);
       map.set(r.assetId, (map.get(r.assetId) || 0) + hours);
@@ -117,27 +126,19 @@ export default function Reports() {
       .map(([id, hours]) => ({ asset: assetMap.get(id)?.tag || id, hours: Math.round(hours * 10) / 10 }))
       .sort((a, b) => b.hours - a.hours)
       .slice(0, 10);
-  }, [assetStopRecords, windowStart, assetMap, now]);
+  }, [assetStopRecords, windowStart, assetMap, now, filteredAssetIds, ignoredStopReasons]);
 
   // ─── 2. Motivo das Paradas ───
   const downtimeByReason = useMemo(() => {
-    const reasonLabels: Record<string, string> = {
-      corrective: "Corretiva",
-      preventive: "Preventiva",
-      checklist: "Checklist",
-      lubrication: "Lubrificação",
-      no_production: "Sem Produção",
-      other: "Outros",
-    };
     const map = new Map<string, number>();
     assetStopRecords.forEach((r) => {
       if (!filteredAssetIds.has(r.assetId)) return;
       if (new Date(r.stoppedAt) < windowStart) return;
-      const label = reasonLabels[r.reason || "other"] || "Outros";
+      const label = stopReasonLabels[r.reason || "other"] || "Outros";
       map.set(label, (map.get(label) || 0) + 1);
     });
     return Array.from(map.entries()).map(([name, value]) => ({ name, value }));
-  }, [assetStopRecords, windowStart]);
+  }, [assetStopRecords, windowStart, filteredAssetIds, stopReasonLabels]);
 
   // ─── 3. MTTR por Ativo (Top 10) ───
   const mttrByAsset = useMemo(() => {

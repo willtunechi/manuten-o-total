@@ -27,7 +27,12 @@ const levelLabels: Record<Mechanic["level"], string> = {
 };
 
 export default function Mechanics() {
-  const { mechanics, machines, components, addMechanic, updateMechanic, removeMechanic } = useData();
+  const { mechanics, machines, components, addMechanic, updateMechanic, removeMechanic, shifts } = useData();
+  const shiftLabel = (name?: string) => {
+    if (!name) return "Sem turno";
+    const found = shifts.find((s) => s.name === name);
+    return found ? `${found.name} ${found.startTime}-${found.endTime}` : name;
+  };
   const { role, isAdmin } = useAuth();
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<Mechanic | undefined>();
@@ -88,10 +93,10 @@ export default function Mechanics() {
                   </div>
                   <div>
                     <p className="font-semibold">{m.name}</p>
-                    <p className="text-xs text-muted-foreground">{roleLabels[m.role]}</p>
+                    <p className="text-xs text-muted-foreground">{m.jobTitle || roleLabels[m.role]}</p>
                   </div>
-                  <Badge variant={m.available ? "default" : "secondary"} className="ml-auto">
-                    {m.available ? "Disponível" : "Indisponível"}
+                  <Badge variant="outline" className="ml-auto">
+                    {shiftLabel(m.shift)}
                   </Badge>
                 </div>
 
