@@ -145,6 +145,18 @@ export default function Machines() {
 
   const getAssetType = (item: any) => item.type;
 
+  const typeOptions = useMemo(() => {
+    const seen = new Set<string>();
+    const opts: { value: string; label: string }[] = [];
+    Object.entries(MACHINE_TYPE_LABELS).forEach(([value, label]) => { seen.add(value); opts.push({ value, label }); });
+    [...machines, ...components].forEach((a) => {
+      if (seen.has(a.type)) return;
+      seen.add(a.type);
+      opts.push({ value: a.type, label: typeLabel(a.type) });
+    });
+    return opts;
+  }, [machines, components, componentTypes]);
+
   const byFilters = <T extends { id: string; status: keyof typeof MACHINE_STATUS_LABELS; type: string }>(item: T) =>
     (statusFilter === "all" || item.status === statusFilter) &&
     (nameFilter === "all" || item.id === nameFilter) &&
