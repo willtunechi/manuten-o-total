@@ -197,7 +197,29 @@ export interface PlanItemResult {
   partsUsed: { partId: string; quantity: number }[];
 }
 
-export type StopReason = 'checklist' | 'preventive' | 'corrective' | 'lubrication' | 'no_production' | 'other';
+/** Motivo de parada: chave livre, cadastrada em Cadastros → Motivos de Parada */
+export type StopReason = string;
+
+export interface StopReasonConfig {
+  id: string;
+  key: string;
+  name: string;
+  countsInIndicators: boolean;
+  isSystem: boolean;
+}
+
+export interface Shift {
+  id: string;
+  name: string;
+  startTime: string;
+  endTime: string;
+}
+
+export interface JobRole {
+  id: string;
+  name: string;
+  baseRole: string;
+}
 
 export interface MachineStopRecord {
   id: string;
