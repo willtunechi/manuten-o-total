@@ -12,7 +12,7 @@ type StatusFilter = "all" | keyof typeof MACHINE_STATUS_LABELS;
 export default function Machines() {
   const isMobile = useIsMobile();
   const { machines: allMachines, components: allComponents, maintenancePlans, planExecutions, tickets, userAssignedMachineIds, userAssignedComponentIds } = useData();
-  const { lubricationPlans: allLubricationPlans } = useConfig();
+  const { lubricationPlans: allLubricationPlans, componentTypes } = useConfig();
 
   const rawMachines = userAssignedMachineIds !== null
     ? allMachines.filter((m) => userAssignedMachineIds.includes(m.id))
