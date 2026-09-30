@@ -268,6 +268,36 @@ export function MechanicFormDialog({ open, onOpenChange, mechanic, onSave }: Pro
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1">
+              <Label>Cargo</Label>
+              <Select
+                value={watch("jobTitle") || ""}
+                onValueChange={(value) => {
+                  setValue("jobTitle", value);
+                  const found = jobRoles.find((r) => r.name === value);
+                  if (found && found.baseRole !== "admin" && found.baseRole !== "logistica" && found.baseRole !== "supervisor_logistica") {
+                    setValue("role", found.baseRole as FormData["role"]);
+                  }
+                }}
+              >
+                <SelectTrigger><SelectValue placeholder={jobRoles.length ? "Selecione o cargo" : "Cadastre cargos em Cadastros"} /></SelectTrigger>
+                <SelectContent>
+                  {jobRoles.map((r) => <SelectItem key={r.id} value={r.name}>{r.name}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-1">
+              <Label>Turno / Horário de trabalho *</Label>
+              <Select value={watch("shift")} onValueChange={(value) => setValue("shift", value)}>
+                <SelectTrigger><SelectValue placeholder="Selecione o turno" /></SelectTrigger>
+                <SelectContent>
+                  {shiftOptions.map((s) => <SelectItem key={s.name} value={s.name}>{s.label}</SelectItem>)}
+                </SelectContent>
+              </Select>
+              {errors.shift && <p className="text-xs text-destructive">{errors.shift.message}</p>}
+            </div>
+
+            <div className="space-y-1">
               <Label>Custo por Hora (R$)</Label>
               <Input {...register("hourlyCost")} type="number" step="0.01" min="0" placeholder="0.00" />
             </div>
