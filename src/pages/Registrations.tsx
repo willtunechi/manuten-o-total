@@ -407,7 +407,7 @@ export default function Registrations() {
   const [bLocInitial, setBLocInitial] = useState<{ name: string; sector_id: string | null }>({ name: "", sector_id: null });
   const [bLocSave, setBLocSave] = useState<(name: string, sid: string | null) => Promise<boolean>>(() => async () => true);
 
-  const [deleting, setDeleting] = useState<{ id: string; name: string; type: "location" | "supplier" | "building_sector" | "building_location" } | null>(null);
+  const [deleting, setDeleting] = useState<{ id: string; name: string; type: "location" | "supplier" | "building_sector" | "building_location" | "stop_reason" | "shift" | "job_role" } | null>(null);
 
   const openSimpleAdd = (type: "location" | "supplier" | "building_sector") => {
     const map = { location: ["Nova Localização", locations.add], supplier: ["Novo Fornecedor", suppliers.add], building_sector: ["Novo Setor Predial", buildingSectors.add] } as const;
@@ -431,8 +431,13 @@ export default function Registrations() {
     else if (deleting.type === "supplier") suppliers.remove(deleting.id);
     else if (deleting.type === "building_sector") buildingSectors.remove(deleting.id);
     else if (deleting.type === "building_location") buildingLocations.remove(deleting.id);
+    else if (deleting.type === "stop_reason") removeFrom("stop_reasons", deleting.id);
+    else if (deleting.type === "shift") removeFrom("shifts", deleting.id);
+    else if (deleting.type === "job_role") removeFrom("job_roles", deleting.id);
     setDeleting(null);
   };
+
+  const baseRoleLabel = (value: string) => BASE_ROLE_OPTIONS.find((o) => o.value === value)?.label || value;
 
   return (
     <div className="space-y-6">
