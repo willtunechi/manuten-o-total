@@ -443,15 +443,18 @@ export default function Registrations() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold">Cadastros</h1>
-        <p className="text-muted-foreground text-sm">Localizações, Fornecedores e Manutenção Predial</p>
+        <p className="text-muted-foreground text-sm">Localizações, Fornecedores, Manutenção Predial, Motivos de Parada, Turnos e Cargos</p>
       </div>
 
       <Tabs defaultValue="locations">
-        <TabsList>
+        <TabsList className="flex-wrap h-auto">
           <TabsTrigger value="locations" className="gap-2"><MapPin className="h-4 w-4" /> Localizações</TabsTrigger>
           <TabsTrigger value="suppliers" className="gap-2"><Truck className="h-4 w-4" /> Fornecedores</TabsTrigger>
           <TabsTrigger value="building_sectors" className="gap-2"><Building2 className="h-4 w-4" /> Setor Predial</TabsTrigger>
           <TabsTrigger value="building_locations" className="gap-2"><Home className="h-4 w-4" /> Localização Predial</TabsTrigger>
+          <TabsTrigger value="stop_reasons" className="gap-2"><MonitorStop className="h-4 w-4" /> Motivos de Parada</TabsTrigger>
+          <TabsTrigger value="shifts" className="gap-2"><Clock className="h-4 w-4" /> Turnos</TabsTrigger>
+          <TabsTrigger value="job_roles" className="gap-2"><BadgeCheck className="h-4 w-4" /> Cargos</TabsTrigger>
         </TabsList>
 
         <TabsContent value="locations" className="space-y-4">
