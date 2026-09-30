@@ -190,6 +190,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       email: m.email || undefined,
       role: m.role as Mechanic["role"],
       shift: m.shift,
+      jobTitle: (m as any).job_title || undefined,
       level: m.level as Mechanic["level"],
       available: m.available,
       canExecuteChecklist: m.can_execute_checklist,
@@ -608,6 +609,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     if (m.email !== undefined) updateData.email = m.email || null;
     if (m.role !== undefined) updateData.role = m.role;
     if (m.shift !== undefined) updateData.shift = m.shift;
+    if (m.jobTitle !== undefined) updateData.job_title = m.jobTitle || null;
     if (m.level !== undefined) updateData.level = m.level;
     if (m.available !== undefined) updateData.available = m.available;
     if (m.canExecuteChecklist !== undefined) updateData.can_execute_checklist = m.canExecuteChecklist;
