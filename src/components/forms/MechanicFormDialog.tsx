@@ -194,6 +194,7 @@ export function MechanicFormDialog({ open, onOpenChange, mechanic, onSave }: Pro
       name: data.name,
       email: data.email || undefined,
       role: data.role,
+      jobTitle: data.jobTitle || undefined,
       shift: data.shift,
       level: data.level,
       available: data.available,
