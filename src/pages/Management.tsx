@@ -98,7 +98,7 @@ export default function Management() {
 
   // KPI stats
   const stats = useMemo(() => {
-    const availableMechanics = mechanics.filter((m) => m.available).length;
+    const availableMechanics = mechanics.length;
     const criticalTickets = openTickets.filter((t) => t.priority === "critical" || t.priority === "high").length;
     const resolvedThisWeek = recentResolved.length;
     const activeOSCount = activeWorkOrders.length;
