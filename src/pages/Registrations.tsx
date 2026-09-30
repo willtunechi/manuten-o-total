@@ -482,7 +482,50 @@ export default function Registrations() {
             sub={(it: BuildingLocation) => it.sector_id ? `Setor: ${sectorMap[it.sector_id] || "-"}` : null}
           />
         </TabsContent>
+
+        <TabsContent value="stop_reasons" className="space-y-4">
+          <div className="flex justify-between items-center gap-3">
+            <p className="text-xs text-muted-foreground">Motivos usados ao parar máquinas. Desmarque "contar nos indicadores" para paradas que não devem afetar a disponibilidade.</p>
+            <Button className="gap-2 shrink-0" onClick={openReasonAdd}><Plus className="h-4 w-4" /> Novo Motivo</Button>
+          </div>
+          <ItemList
+            items={stopReasons}
+            icon={MonitorStop}
+            onEdit={(i) => openReasonEdit(i as unknown as StopReasonConfig)}
+            onDelete={(i) => setDeleting({ id: i.id, name: i.name, type: "stop_reason" })}
+            sub={(it: StopReasonConfig) => it.countsInIndicators ? "Conta nos indicadores" : "Não conta nos indicadores"}
+          />
+        </TabsContent>
+
+        <TabsContent value="shifts" className="space-y-4">
+          <div className="flex justify-end"><Button className="gap-2" onClick={openShiftAdd}><Plus className="h-4 w-4" /> Novo Turno</Button></div>
+          <ItemList
+            items={shifts}
+            icon={Clock}
+            onEdit={(i) => openShiftEdit(i as unknown as Shift)}
+            onDelete={(i) => setDeleting({ id: i.id, name: i.name, type: "shift" })}
+            sub={(it: Shift) => `${it.startTime} às ${it.endTime}`}
+          />
+        </TabsContent>
+
+        <TabsContent value="job_roles" className="space-y-4">
+          <div className="flex justify-between items-center gap-3">
+            <p className="text-xs text-muted-foreground">Cargos disponíveis para os colaboradores, com o nível de acesso de cada um.</p>
+            <Button className="gap-2 shrink-0" onClick={openRoleAdd}><Plus className="h-4 w-4" /> Novo Cargo</Button>
+          </div>
+          <ItemList
+            items={jobRoles}
+            icon={BadgeCheck}
+            onEdit={(i) => openRoleEdit(i as unknown as JobRole)}
+            onDelete={(i) => setDeleting({ id: i.id, name: i.name, type: "job_role" })}
+            sub={(it: JobRole) => `Acesso: ${baseRoleLabel(it.baseRole)}`}
+          />
+        </TabsContent>
       </Tabs>
+
+      <StopReasonDialog open={reasonOpen} onOpenChange={setReasonOpen} initial={reasonInitial} onSave={reasonSave} />
+      <ShiftDialog open={shiftOpen} onOpenChange={setShiftOpen} initial={shiftInitial} onSave={shiftSave} />
+      <JobRoleDialog open={roleOpen} onOpenChange={setRoleOpen} initial={roleInitial} onSave={roleSave} />
 
       <NameFormDialog open={formOpen} onOpenChange={setFormOpen} title={formTitle} initialName={formInitial} onSave={formSave} />
       <BuildingLocationDialog open={bLocOpen} onOpenChange={setBLocOpen} sectors={buildingSectors.items} initial={bLocInitial} onSave={bLocSave} />
