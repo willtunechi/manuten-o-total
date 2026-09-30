@@ -497,6 +497,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     loadWorkOrders();
     loadAssetStopRecords();
     loadSuppliers();
+    loadRegistrations();
   }, []);
 
   // ─── MACHINES ──────────────────────────────────────────────
@@ -584,6 +585,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   const addMechanic = useCallback(async (m: Omit<Mechanic, "id">) => {
     const { data, error } = await supabase.from("mechanics").insert({
       name: m.name, email: m.email || null, role: m.role, shift: m.shift,
+      job_title: m.jobTitle || null,
       level: m.level, available: m.available,
       can_execute_checklist: m.canExecuteChecklist ?? false,
       can_execute_preventive: m.canExecutePreventive ?? false,
@@ -1230,6 +1232,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
         machines, mechanics, parts, tickets, preventivePlans, failures, notifications,
         purchaseOrders, stockEntries, inventoryCounts, checklistTemplates,
         maintenancePlans, planExecutions, workOrders, assetStopRecords, suppliers,
+        stopReasons, shifts, jobRoles, reloadRegistrations: loadRegistrations,
         userAssignedMachineIds, userAssignedComponentIds,
         addMachine, updateMachine, removeMachine,
         addMechanic, updateMechanic, removeMechanic,
