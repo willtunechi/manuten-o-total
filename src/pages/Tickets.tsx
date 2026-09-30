@@ -1,9 +1,9 @@
 import { useState, useMemo, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Plus, Trash2, Eye, Printer } from "lucide-react";
+import { Plus, Trash2, Eye, Printer, CheckCircle2 } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { PRIORITY_LABELS, OS_TYPE_LABELS, TICKET_STATUS_LABELS } from "@/data/types";
@@ -31,6 +31,11 @@ export default function Tickets() {
   const { tickets, machines, components, mechanics, parts, addTicket, updateTicket, removeTicket, stopMachine, stopComponent, userAssignedMachineIds, userAssignedComponentIds } = useData();
   const { role, session, isAdmin, isSupervisor } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const goResolve = (t: Ticket) => {
+    const isMachine = machines.some((m) => m.id === t.machineId);
+    navigate(`${isMachine ? "/machines" : "/components"}/${t.machineId}?tab=chamados&resolve=${t.id}`);
+  };
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<Ticket | undefined>();
   const [deleting, setDeleting] = useState<Ticket | undefined>();
@@ -164,6 +169,11 @@ export default function Tickets() {
                   <Button size="sm" variant="ghost" className="gap-1" onClick={(e) => { e.stopPropagation(); setViewing(t); }}>
                     <Eye className="h-3.5 w-3.5" />
                   </Button>
+                  {canEditMaintenanceRoles && t.status !== "resolved" && (
+                    <Button size="sm" variant="outline" className="gap-1" onClick={(e) => { e.stopPropagation(); goResolve(t); }}>
+                      <CheckCircle2 className="h-3.5 w-3.5" /> Concluir
+                    </Button>
+                  )}
                   {(isAdmin || isSupervisor) && (
                     <Button size="sm" variant="outline" className="gap-1 text-destructive hover:text-destructive" onClick={(e) => { e.stopPropagation(); setDeleting(t); }}>
                       <Trash2 className="h-3.5 w-3.5" />
@@ -293,6 +303,11 @@ export default function Tickets() {
               )}
 
               <div className="flex justify-end gap-2 pt-2 no-print">
+                {canEditMaintenanceRoles && viewing.status !== "resolved" && (
+                  <Button size="sm" className="gap-2" onClick={() => goResolve(viewing)}>
+                    <CheckCircle2 className="h-4 w-4" /> Concluir
+                  </Button>
+                )}
                 <Button variant="outline" size="sm" className="gap-2" onClick={() => window.print()}>
                   <Printer className="h-4 w-4" /> Imprimir
                 </Button>

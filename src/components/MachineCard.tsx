@@ -75,9 +75,7 @@ export function MachineCard({ machine, onClick }: MachineCardProps) {
     const lubricationPending = (machine as any).lubricationPending || 0;
 
     const { workOrders, tickets } = useData();
-    const openTicket = (machine.status === 'stopped' || machine.status === 'maintenance')
-        ? tickets.find((t) => t.machineId === machine.id && (t.status === 'pending' || t.status === 'in_maintenance'))
-        : undefined;
+    const openTicket = tickets.find((t) => t.machineId === machine.id && (t.status === 'pending' || t.status === 'in_maintenance'));
     const hasOpenOS = !!(openTicket ||
         ((machine.status === 'stopped' || machine.status === 'maintenance') &&
          workOrders.some((wo) => wo.assetId === machine.id && (wo.status === 'open' || wo.status === 'in_progress'))));

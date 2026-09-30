@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import {
@@ -169,8 +169,9 @@ export default function MachineDetail() {
   const [searchParams] = useSearchParams();
   const initialTab = searchParams.get("tab") || "checklist";
   const isMobile = useIsMobile();
-  const { role, loading: authLoading } = useAuth();
+  const { role, loading: authLoading, isAdmin, isSupervisor } = useAuth();
   const isOperator = role === "operator";
+  const canEditPriority = isAdmin || isSupervisor || role === "mechanic";
   const {
     machines,
     components,
@@ -495,6 +496,14 @@ export default function MachineDetail() {
     });
     setTicketPartSelection({ partId: "", quantity: 1 });
   };
+
+  const resolveParam = searchParams.get("resolve");
+  useEffect(() => {
+    if (!resolveParam) return;
+    const t = tickets.find((tk) => tk.id === resolveParam);
+    if (t) openTicketResolution(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [resolveParam, tickets.length]);
 
   const checklistSelectedCount = checklistPendingRows.reduce((count, row) => {
     const result = checklistDrafts[row.planId]?.[row.item.id]?.result;
@@ -1430,6 +1439,23 @@ export default function MachineDetail() {
                   <div>
                     <span className="text-xs text-muted-foreground">Prioridade</span>
                     <div className="mt-0.5">
+                      {canEditPriority ? (
+                        <Select
+                          value={ticketViewing.priority}
+                          onValueChange={(value: Priority) => {
+                            if (value === ticketViewing.priority) return;
+                            setTicketViewing({ ...ticketViewing, priority: value });
+                            void updateTicket(ticketViewing.id, { priority: value });
+                          }}
+                        >
+                          <SelectTrigger className="h-9 w-full" aria-label="Editar prioridade do chamado"><SelectValue /></SelectTrigger>
+                          <SelectContent>
+                            {Object.entries(PRIORITY_LABELS).map(([value, label]) => (
+                              <SelectItem key={value} value={value}>{label}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      ) : (
                       <Badge className={
                         ticketViewing.priority === "critical" ? "bg-red-600 text-white" :
                         ticketViewing.priority === "high" ? "bg-orange-600 text-white" :
@@ -1438,6 +1464,7 @@ export default function MachineDetail() {
                       }>
                         {PRIORITY_LABELS[ticketViewing.priority]}
                       </Badge>
+                      )}
                     </div>
                   </div>
                   <div>
