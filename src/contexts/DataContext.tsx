@@ -33,6 +33,10 @@ import { toast } from "@/hooks/use-toast";
 type Supplier = { id: string; name: string };
 
 interface DataContextType {
+  stopReasons: StopReasonConfig[];
+  shifts: Shift[];
+  jobRoles: JobRole[];
+  reloadRegistrations: () => Promise<void>;
   machines: Machine[];
   mechanics: Mechanic[];
   parts: Part[];
