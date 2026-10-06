@@ -237,6 +237,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       comment: (t.comment && t.comment !== "null") ? t.comment : undefined,
       photoUrl: t.photo_url || undefined,
       resolutionPhotoUrl: (t as any).resolution_photo_url || undefined,
+      assignedMechanicId: (t as any).assigned_mechanic_id || undefined,
       actualHours: (t as any).actual_hours != null ? Number((t as any).actual_hours) : undefined,
       partsUsed: (partsUsed || []).filter((pu) => pu.ticket_id === t.id).map((pu) => ({
         partId: pu.part_id,
@@ -711,7 +712,8 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       reported_by: t.reportedBy || t.createdBy || "",
       status: t.status || "pending",
       comment: t.comment || "", photo_url: t.photoUrl || "",
-    }).select().single();
+      assigned_mechanic_id: t.assignedMechanicId || null,
+    } as any).select().single();
     if (error) { toast({ title: "Erro ao abrir chamado", description: error.message, variant: "destructive" }); return; }
     if (t.partsUsed?.length) {
       await supabase.from("ticket_parts_used").insert(t.partsUsed.map((pu) => ({
@@ -736,6 +738,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     if (t.resolvedAt !== undefined) update.resolved_at = t.resolvedAt;
     if (t.reportedBy !== undefined) update.reported_by = t.reportedBy;
     if (t.actualHours !== undefined) update.actual_hours = t.actualHours;
+    if (t.assignedMechanicId !== undefined) update.assigned_mechanic_id = t.assignedMechanicId || null;
 
     if (Object.keys(update).length > 0) {
       const { error } = await supabase.from("tickets").update(update).eq("id", id);

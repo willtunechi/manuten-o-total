@@ -128,6 +128,7 @@ export interface Ticket {
   comment?: string;
   photoUrl?: string;
   resolutionPhotoUrl?: string;
+  assignedMechanicId?: string;
   partsUsed?: { partId: string; quantity: number }[];
   actualHours?: number;
   title?: string; // Compatibility
