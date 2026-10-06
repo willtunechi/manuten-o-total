@@ -1120,6 +1120,7 @@ export type Database = {
       tickets: {
         Row: {
           actual_hours: number | null
+          assigned_mechanic_id: string | null
           code: number
           comment: string | null
           created_at: string
@@ -1137,6 +1138,7 @@ export type Database = {
         }
         Insert: {
           actual_hours?: number | null
+          assigned_mechanic_id?: string | null
           code?: number
           comment?: string | null
           created_at?: string
@@ -1154,6 +1156,7 @@ export type Database = {
         }
         Update: {
           actual_hours?: number | null
+          assigned_mechanic_id?: string | null
           code?: number
           comment?: string | null
           created_at?: string
@@ -1169,7 +1172,15 @@ export type Database = {
           symptom?: string
           type?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "tickets_assigned_mechanic_id_fkey"
+            columns: ["assigned_mechanic_id"]
+            isOneToOne: false
+            referencedRelation: "mechanics"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {
