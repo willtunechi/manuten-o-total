@@ -22,6 +22,7 @@ const schema = z
     machineId: z.string().min(1, "Selecione uma máquina"),
     type: z.enum(["corrective", "inspection"]),
     maintenanceType: z.enum(["mechanical", "electrical"]).optional(),
+    assignedMechanicId: z.string().optional(),
     symptom: z.string().min(10, "Mínimo 10 caracteres"),
     priority: z.string().min(1, "Prioridade obrigatória"),
     createdBy: z.string().min(1, "Informe quem abriu"),
@@ -99,6 +100,7 @@ export function TicketFormDialog({ open, onOpenChange, ticket, onSave }: Props) 
               symptom: ticket.symptom,
               priority: ticket.priority,
               createdBy: ticket.createdBy,
+              assignedMechanicId: ticket.assignedMechanicId || "none",
             }
           : {
               machineType: "",
@@ -108,6 +110,7 @@ export function TicketFormDialog({ open, onOpenChange, ticket, onSave }: Props) 
               symptom: "",
               priority: "medium",
               createdBy: userName,
+              assignedMechanicId: "none",
             },
       );
     });
@@ -200,6 +203,7 @@ export function TicketFormDialog({ open, onOpenChange, ticket, onSave }: Props) 
       photoUrl: uploadedUrl || "",
       partsUsed: ticket?.partsUsed || [],
       resolvedAt: ticket?.resolvedAt,
+      assignedMechanicId: data.assignedMechanicId && data.assignedMechanicId !== "none" ? data.assignedMechanicId : "",
     }, isNewTicket && !selectedAssetAlreadyStopped ? stopMachineOnCreate : false);
     reset();
     setUploadedUrl("");
@@ -288,6 +292,19 @@ export function TicketFormDialog({ open, onOpenChange, ticket, onSave }: Props) 
               {errors.maintenanceType && <p className="text-xs text-destructive">{errors.maintenanceType.message}</p>}
             </div>
           )}
+
+          <div className="space-y-1">
+            <Label>Direcionar para colaborador (opcional)</Label>
+            <Select value={watch("assignedMechanicId") || "none"} onValueChange={(v) => setValue("assignedMechanicId", v)}>
+              <SelectTrigger><SelectValue placeholder="Ninguém específico" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">Ninguém específico</SelectItem>
+                {[...mechanics].sort((a, b) => a.name.localeCompare(b.name)).map((m) => (
+                  <SelectItem key={m.id} value={m.id}>{m.name}{m.jobTitle ? ` — ${m.jobTitle}` : ""}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
 
           <div className="space-y-1">
             <Label>Sintoma *</Label>

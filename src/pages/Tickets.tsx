@@ -163,6 +163,7 @@ export default function Tickets() {
                   <p className="text-sm">{t.symptom}</p>
                   <div className="flex items-center gap-2 text-xs text-muted-foreground">
                     <span>Por {t.reportedBy || t.createdBy} · {new Date(t.createdAt).toLocaleDateString("pt-BR")}</span>
+                    {t.assignedMechanicId && <span>· Responsável: <strong className="text-foreground">{mechanics.find((m) => m.id === t.assignedMechanicId)?.name || "—"}</strong></span>}
                   </div>
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
@@ -226,6 +227,24 @@ export default function Tickets() {
                       </Select>
                     ) : (
                       <Badge className={priorityColor[viewing.priority]}>{PRIORITY_LABELS[viewing.priority]}</Badge>
+                    )}
+                  </div>
+                </div>
+                <div className="col-span-2">
+                  <span className="text-xs text-muted-foreground">Colaborador responsável</span>
+                  <div className="mt-0.5">
+                    {canEditMaintenanceRoles && viewing.status !== "resolved" ? (
+                      <Select value={viewing.assignedMechanicId || "none"} onValueChange={(v) => { const id = v === "none" ? "" : v; setViewing({ ...viewing, assignedMechanicId: id || undefined }); void updateTicket(viewing.id, { assignedMechanicId: id }); }}>
+                        <SelectTrigger className="h-9 w-full" aria-label="Direcionar chamado"><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="none">Ninguém específico</SelectItem>
+                          {[...mechanics].sort((a, b) => a.name.localeCompare(b.name)).map((m) => (
+                            <SelectItem key={m.id} value={m.id}>{m.name}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    ) : (
+                      <p className="text-sm font-medium">{mechanics.find((m) => m.id === viewing.assignedMechanicId)?.name || "Ninguém específico"}</p>
                     )}
                   </div>
                 </div>
