@@ -30,6 +30,24 @@ import type {
 } from "@/data/types";
 import { toast } from "@/hooks/use-toast";
 
+const WA_PRIORITY: Record<string, string> = { critical: "Crítica", high: "Alta", medium: "Média", low: "Baixa" };
+async function assetTag(id: string) {
+  const { data: m } = await supabase.from("machines").select("tag").eq("id", id).maybeSingle();
+  if (m?.tag) return m.tag as string;
+  const { data: c } = await supabase.from("components").select("tag").eq("id", id).maybeSingle();
+  return (c as any)?.tag || "Equipamento";
+}
+async function mechanicName(id?: string | null) {
+  if (!id) return "";
+  const { data } = await supabase.from("mechanics").select("name").eq("id", id).maybeSingle();
+  return (data as any)?.name || "";
+}
+function notifyWhatsApp(text: string) {
+  supabase.functions.invoke("whatsapp-notify", { body: { text } }).then(({ error }) => {
+    if (error) console.error("whatsapp-notify falhou:", error);
+  });
+}
+
 type Supplier = { id: string; name: string };
 
 interface DataContextType {
@@ -722,6 +740,12 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     }
     await loadTickets();
     toast({ title: "Chamado aberto com sucesso" });
+    void (async () => {
+      const os = `OS-${String((data as any).code || 0).padStart(4, "0")}`;
+      const tag = await assetTag(t.machineId);
+      const resp = await mechanicName(t.assignedMechanicId);
+      notifyWhatsApp(`🔧 *Novo chamado ${os}*\nEquipamento: ${tag}\nPrioridade: ${WA_PRIORITY[t.priority] || t.priority}\nProblema: ${t.symptom}\nAberto por: ${t.reportedBy || t.createdBy || "-"}${resp ? `\n👤 Direcionado para: *${resp}*` : ""}`);
+    })();
   }, [loadTickets]);
 
   const updateTicket = useCallback(async (id: string, t: Partial<Ticket>) => {
@@ -740,9 +764,28 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     if (t.actualHours !== undefined) update.actual_hours = t.actualHours;
     if (t.assignedMechanicId !== undefined) update.assigned_mechanic_id = t.assignedMechanicId || null;
 
+    const { data: prevTicket } = await supabase.from("tickets").select("*").eq("id", id).maybeSingle();
     if (Object.keys(update).length > 0) {
       const { error } = await supabase.from("tickets").update(update).eq("id", id);
       if (error) { toast({ title: "Erro ao atualizar chamado", description: error.message, variant: "destructive" }); return; }
+    }
+    if (prevTicket) {
+      const pt: any = prevTicket;
+      const os = `OS-${String(pt.code || 0).padStart(4, "0")}`;
+      const newAssigned = t.assignedMechanicId !== undefined ? (t.assignedMechanicId || null) : pt.assigned_mechanic_id;
+      if (t.assignedMechanicId !== undefined && newAssigned && newAssigned !== pt.assigned_mechanic_id) {
+        void (async () => {
+          const tag = await assetTag(pt.machine_id);
+          const resp = await mechanicName(newAssigned);
+          notifyWhatsApp(`👤 *Chamado ${os} direcionado para ${resp}*\nEquipamento: ${tag}\nPrioridade: ${WA_PRIORITY[pt.priority] || pt.priority}\nProblema: ${pt.symptom}`);
+        })();
+      }
+      if (t.status === "resolved" && pt.status !== "resolved") {
+        void (async () => {
+          const tag = await assetTag(pt.machine_id);
+          notifyWhatsApp(`✅ *Chamado ${os} concluído*\nEquipamento: ${tag}\nProblema: ${pt.symptom}${t.comment ? `\nServiço: ${t.comment}` : ""}\nAberto por: ${pt.reported_by || "-"}`);
+        })();
+      }
     }
 
     // Handle parts used: sync and deduct stock for new parts
