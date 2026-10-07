@@ -70,6 +70,7 @@ export function MechanicFormDialog({ open, onOpenChange, mechanic, onSave }: Pro
       ? {
           name: mechanic.name,
           email: mechanic.email || "",
+          phone: mechanic.phone || "",
           role: mechanic.role,
           jobTitle: mechanic.jobTitle || "",
           shift: mechanic.shift || defaultShift,
@@ -82,6 +83,7 @@ export function MechanicFormDialog({ open, onOpenChange, mechanic, onSave }: Pro
       : {
           name: "",
           email: "",
+          phone: "",
           role: "mechanic",
           jobTitle: "",
           shift: defaultShift,
@@ -100,6 +102,7 @@ export function MechanicFormDialog({ open, onOpenChange, mechanic, onSave }: Pro
         ? {
             name: mechanic.name,
             email: mechanic.email || "",
+            phone: mechanic.phone || "",
             role: mechanic.role,
             jobTitle: mechanic.jobTitle || "",
             shift: mechanic.shift || defaultShift,
@@ -112,6 +115,7 @@ export function MechanicFormDialog({ open, onOpenChange, mechanic, onSave }: Pro
         : {
             name: "",
             email: "",
+            phone: "",
             role: "mechanic",
             jobTitle: "",
             shift: defaultShift,
@@ -194,6 +198,7 @@ export function MechanicFormDialog({ open, onOpenChange, mechanic, onSave }: Pro
     onSave({
       name: data.name,
       email: data.email || undefined,
+      phone: data.phone || undefined,
       role: data.role,
       jobTitle: data.jobTitle || undefined,
       shift: data.shift,
