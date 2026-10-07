@@ -21,8 +21,10 @@ Deno.serve(async (req) => {
     if (userErr || !userData.user) return json({ error: "Não autenticado" }, 401);
 
     const body = await req.json().catch(() => null);
-    const text = typeof body?.text === "string" ? body.text.trim().slice(0, 3000) : "";
-    if (!text) return json({ error: "Texto obrigatório" }, 400);
+    const raw = typeof body?.text === "string" ? body.text.trim() : "";
+    if (!raw) return json({ error: "Texto obrigatório" }, 400);
+    // Toda mensagem começa com o cabeçalho padrão do sistema.
+    const text = (raw.startsWith(MSG_HEADER) ? raw : `${MSG_HEADER}\n\n${raw}`).slice(0, 3000);
 
     let host = (Deno.env.get("MEGA_API_HOST") || "").trim().replace(/\/+$/, "");
     if (host && !/^https?:\/\//.test(host)) host = `https://${host}`;
