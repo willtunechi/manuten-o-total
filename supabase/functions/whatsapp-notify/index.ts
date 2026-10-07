@@ -2,7 +2,7 @@ import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
 import { createClient } from "npm:@supabase/supabase-js@2";
 
 // Números de destino dos avisos (somente dígitos, com DDI). Ajustar quando houver os números definitivos.
-const DEFAULT_RECIPIENTS = ["5541987858228"];
+const DEFAULT_RECIPIENTS = ["5541987858228", "5511981553151", "5511999109227"];
 
 const json = (b: unknown, status = 200) =>
   new Response(JSON.stringify(b), { status, headers: { ...corsHeaders, "Content-Type": "application/json" } });

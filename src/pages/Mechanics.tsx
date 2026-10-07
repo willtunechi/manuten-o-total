@@ -101,6 +101,7 @@ export default function Mechanics() {
                 </div>
 
                 <div className="flex flex-wrap gap-2">
+                  {m.phone && <Badge variant="outline">📱 {m.phone}</Badge>}
                   <Badge variant="outline">{levelLabels[m.level]}</Badge>
                   <Badge variant={isMaintenance ? "default" : "secondary"}>
                     {isMaintenance ? "Manutenção" : "Operação"}

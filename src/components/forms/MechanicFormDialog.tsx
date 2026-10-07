@@ -234,6 +234,10 @@ export function MechanicFormDialog({ open, onOpenChange, mechanic, onSave }: Pro
               {errors.email && <p className="text-xs text-destructive">{errors.email.message}</p>}
               {!mechanic && <p className="text-xs text-muted-foreground">Senha gerada: watbrazil123</p>}
             </div>
+            <div className="space-y-1">
+              <Label>Contato / Telefone (WhatsApp)</Label>
+              <Input {...register("phone")} placeholder="(41) 98765-4321" />
+            </div>
           </div>
 
           <div className={`grid gap-4 ${isSupervisorRole ? "grid-cols-1" : "grid-cols-2"}`}>
