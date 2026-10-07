@@ -4,6 +4,9 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 // Números de destino dos avisos (somente dígitos, com DDI). Ajustar quando houver os números definitivos.
 const DEFAULT_RECIPIENTS = ["5541987858228", "5511981553151", "5511999109227"];
 
+// Cabeçalho fixo no início de toda mensagem enviada.
+const MSG_HEADER = "WAT Brazil - Gerenciamento de Manutenção";
+
 const json = (b: unknown, status = 200) =>
   new Response(JSON.stringify(b), { status, headers: { ...corsHeaders, "Content-Type": "application/json" } });
 
@@ -18,8 +21,10 @@ Deno.serve(async (req) => {
     if (userErr || !userData.user) return json({ error: "Não autenticado" }, 401);
 
     const body = await req.json().catch(() => null);
-    const text = typeof body?.text === "string" ? body.text.trim().slice(0, 3000) : "";
-    if (!text) return json({ error: "Texto obrigatório" }, 400);
+    const raw = typeof body?.text === "string" ? body.text.trim() : "";
+    if (!raw) return json({ error: "Texto obrigatório" }, 400);
+    // Toda mensagem começa com o cabeçalho padrão do sistema.
+    const text = (raw.startsWith(MSG_HEADER) ? raw : `${MSG_HEADER}\n\n${raw}`).slice(0, 3000);
 
     let host = (Deno.env.get("MEGA_API_HOST") || "").trim().replace(/\/+$/, "");
     if (host && !/^https?:\/\//.test(host)) host = `https://${host}`;
