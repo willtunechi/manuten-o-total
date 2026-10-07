@@ -683,6 +683,7 @@ export type Database = {
           job_title: string | null
           level: string
           name: string
+          phone: string | null
           role: string
           shift: string
         }
@@ -696,6 +697,7 @@ export type Database = {
           job_title?: string | null
           level?: string
           name: string
+          phone?: string | null
           role?: string
           shift?: string
         }
@@ -709,6 +711,7 @@ export type Database = {
           job_title?: string | null
           level?: string
           name?: string
+          phone?: string | null
           role?: string
           shift?: string
         }

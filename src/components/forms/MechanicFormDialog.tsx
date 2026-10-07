@@ -17,6 +17,7 @@ import type { Mechanic } from "@/data/types";
 const schema = z.object({
   name: z.string().min(3, "Mínimo 3 caracteres"),
   email: z.string().email("Email inválido").optional().or(z.literal("")),
+  phone: z.string().optional().default(""),
   role: z.enum(["mechanic", "operator", "planejador", "supervisor_manutencao", "supervisor_operacoes"]),
   jobTitle: z.string().optional().default(""),
   shift: z.string().min(1, "Selecione o turno").default("Manhã"),
@@ -69,6 +70,7 @@ export function MechanicFormDialog({ open, onOpenChange, mechanic, onSave }: Pro
       ? {
           name: mechanic.name,
           email: mechanic.email || "",
+          phone: mechanic.phone || "",
           role: mechanic.role,
           jobTitle: mechanic.jobTitle || "",
           shift: mechanic.shift || defaultShift,
@@ -81,6 +83,7 @@ export function MechanicFormDialog({ open, onOpenChange, mechanic, onSave }: Pro
       : {
           name: "",
           email: "",
+          phone: "",
           role: "mechanic",
           jobTitle: "",
           shift: defaultShift,
@@ -99,6 +102,7 @@ export function MechanicFormDialog({ open, onOpenChange, mechanic, onSave }: Pro
         ? {
             name: mechanic.name,
             email: mechanic.email || "",
+            phone: mechanic.phone || "",
             role: mechanic.role,
             jobTitle: mechanic.jobTitle || "",
             shift: mechanic.shift || defaultShift,
@@ -111,6 +115,7 @@ export function MechanicFormDialog({ open, onOpenChange, mechanic, onSave }: Pro
         : {
             name: "",
             email: "",
+            phone: "",
             role: "mechanic",
             jobTitle: "",
             shift: defaultShift,
@@ -193,6 +198,7 @@ export function MechanicFormDialog({ open, onOpenChange, mechanic, onSave }: Pro
     onSave({
       name: data.name,
       email: data.email || undefined,
+      phone: data.phone || undefined,
       role: data.role,
       jobTitle: data.jobTitle || undefined,
       shift: data.shift,
@@ -227,6 +233,10 @@ export function MechanicFormDialog({ open, onOpenChange, mechanic, onSave }: Pro
               <Input {...register("email")} type="email" placeholder="usuario@empresa.com" disabled={!!mechanic} />
               {errors.email && <p className="text-xs text-destructive">{errors.email.message}</p>}
               {!mechanic && <p className="text-xs text-muted-foreground">Senha gerada: watbrazil123</p>}
+            </div>
+            <div className="space-y-1">
+              <Label>Contato / Telefone (WhatsApp)</Label>
+              <Input {...register("phone")} placeholder="(41) 98765-4321" />
             </div>
           </div>
 

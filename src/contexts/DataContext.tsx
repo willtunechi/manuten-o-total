@@ -206,6 +206,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       id: m.id,
       name: m.name,
       email: m.email || undefined,
+      phone: (m as any).phone || undefined,
       role: m.role as Mechanic["role"],
       shift: m.shift,
       jobTitle: (m as any).job_title || undefined,
@@ -604,7 +605,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
 
   const addMechanic = useCallback(async (m: Omit<Mechanic, "id">) => {
     const { data, error } = await supabase.from("mechanics").insert({
-      name: m.name, email: m.email || null, role: m.role, shift: m.shift,
+      name: m.name, email: m.email || null, phone: m.phone || null, role: m.role, shift: m.shift,
       job_title: m.jobTitle || null,
       level: m.level, available: m.available,
       can_execute_checklist: m.canExecuteChecklist ?? false,
@@ -626,6 +627,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     const updateData: Record<string, unknown> = {};
     if (m.name !== undefined) updateData.name = m.name;
     if (m.email !== undefined) updateData.email = m.email || null;
+    if (m.phone !== undefined) updateData.phone = m.phone || null;
     if (m.role !== undefined) updateData.role = m.role;
     if (m.shift !== undefined) updateData.shift = m.shift;
     if (m.jobTitle !== undefined) updateData.job_title = m.jobTitle || null;

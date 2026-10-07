@@ -99,6 +99,7 @@ export interface Mechanic {
   id: string;
   name: string;
   email?: string;
+  phone?: string;
   role: 'mechanic' | 'operator' | 'planejador' | 'supervisor_manutencao' | 'supervisor_operacoes';
   shift: string;
   jobTitle?: string;
