@@ -17,6 +17,7 @@ import type { Mechanic } from "@/data/types";
 const schema = z.object({
   name: z.string().min(3, "Mínimo 3 caracteres"),
   email: z.string().email("Email inválido").optional().or(z.literal("")),
+  phone: z.string().optional().default(""),
   role: z.enum(["mechanic", "operator", "planejador", "supervisor_manutencao", "supervisor_operacoes"]),
   jobTitle: z.string().optional().default(""),
   shift: z.string().min(1, "Selecione o turno").default("Manhã"),
