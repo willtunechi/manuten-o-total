@@ -4,7 +4,7 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 // Números de destino dos avisos (somente dígitos, com DDI). Ajustar quando houver os números definitivos.
 const DEFAULT_RECIPIENTS = ["5541987858228", "5511981553151", "5511999109227"];
 // Grupos de WhatsApp que recebem os avisos (IDs terminando em @g.us).
-const GROUP_IDS: string[] = [];
+const GROUP_IDS: string[] = ["120363412440040092@g.us"]; // Will-GroupTest
 
 // Cabeçalho fixo no início de toda mensagem enviada.
 const MSG_HEADER = "WAT Brazil - Gerenciamento de Manutenção";
