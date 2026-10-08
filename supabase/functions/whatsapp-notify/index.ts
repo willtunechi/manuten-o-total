@@ -3,6 +3,8 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 
 // Números de destino dos avisos (somente dígitos, com DDI). Ajustar quando houver os números definitivos.
 const DEFAULT_RECIPIENTS = ["5541987858228", "5511981553151", "5511999109227"];
+// Grupos de WhatsApp que recebem os avisos (IDs terminando em @g.us).
+const GROUP_IDS: string[] = [];
 
 // Cabeçalho fixo no início de toda mensagem enviada.
 const MSG_HEADER = "WAT Brazil - Gerenciamento de Manutenção";
@@ -21,10 +23,6 @@ Deno.serve(async (req) => {
     if (userErr || !userData.user) return json({ error: "Não autenticado" }, 401);
 
     const body = await req.json().catch(() => null);
-    const raw = typeof body?.text === "string" ? body.text.trim() : "";
-    if (!raw) return json({ error: "Texto obrigatório" }, 400);
-    // Toda mensagem começa com o cabeçalho padrão do sistema.
-    const text = (raw.startsWith(MSG_HEADER) ? raw : `${MSG_HEADER}\n\n${raw}`).slice(0, 3000);
 
     let host = (Deno.env.get("MEGA_API_HOST") || "").trim().replace(/\/+$/, "");
     if (host && !/^https?:\/\//.test(host)) host = `https://${host}`;
@@ -32,12 +30,23 @@ Deno.serve(async (req) => {
     const token = Deno.env.get("MEGA_API_TOKEN");
     if (!host || !instance || !token) return json({ error: "MEGA API não configurada" }, 500);
 
+    if (body?.action === "list-groups") {
+      const r = await fetch(`${host}/rest/group/list/${instance}`, { headers: { Authorization: `Bearer ${token}` } });
+      const t = await r.text();
+      return new Response(t, { status: r.status, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+
+    const raw = typeof body?.text === "string" ? body.text.trim() : "";
+    if (!raw) return json({ error: "Texto obrigatório" }, 400);
+    const text = (raw.startsWith(MSG_HEADER) ? raw : `${MSG_HEADER}\n\n${raw}`).slice(0, 3000);
+
     const results = [];
-    for (const num of DEFAULT_RECIPIENTS) {
+    for (const num of [...DEFAULT_RECIPIENTS, ...GROUP_IDS]) {
+      const to = num.includes("@") ? num : `${num}@s.whatsapp.net`;
       const r = await fetch(`${host}/rest/sendMessage/${instance}/text`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
-        body: JSON.stringify({ messageData: { to: `${num}@s.whatsapp.net`, text } }),
+        body: JSON.stringify({ messageData: { to, text } }),
       });
       const resText = await r.text();
       if (!r.ok) console.error(`MEGA API falhou [${r.status}]: ${resText}`);
